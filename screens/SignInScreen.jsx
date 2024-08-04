@@ -1,14 +1,12 @@
+import React, { useState } from "react";
 import {
   StyleSheet,
-  TouchableOpacity,
-  TextInput,
-  Text,
-  View,
-  Button,
-  Keyboard,
   TouchableWithoutFeedback,
+  Keyboard,
+  View,
+  Text,
+  Button,
 } from "react-native";
-import { useState } from "react";
 import AppLoading from "expo-app-loading";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
@@ -28,8 +26,8 @@ import {
 } from "@expo-google-fonts/poppins";
 
 export default function SignInScreen({ navigation }) {
- const [email, setEmail] = useState("");
- const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
   let [fontsLoaded] = useFonts({
     Commissioner_400Regular,
@@ -45,13 +43,23 @@ export default function SignInScreen({ navigation }) {
   if (!fontsLoaded) {
     return <AppLoading />;
   } else {
-    // confirmation des identifiants pour le SignIn hors fb et Gmail
-
     const handleSubmitConnection = () => {
-      fetch("http://localhost:3000/user/signin")
+      fetch("http://localhost:3000/user/signin", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email,
+          password,
+        }),
+      })
         .then((response) => response.json())
         .then((data) => {
           console.log(data);
+        })
+        .catch((error) => {
+          console.error("Error:", error);
         });
     };
 
@@ -62,27 +70,27 @@ export default function SignInScreen({ navigation }) {
             style={{
               fontFamily: "Commissioner_700Bold",
               color: "#416165",
-              fontSize: "18px",
+              fontSize: 18,
             }}
           >
             Bienvenue sur
-            <Text style={styles.text}>DOG AROUND</Text>
+            <Text style={styles.text}> DOG AROUND</Text>
           </Text>
 
           <Button
             title="Connection Avec Google"
-            //  onPress={}
+            onPress={() => {
+              // onPress
+            }}
           />
           <Button
             title="Connection Avec FaceBook"
-            //  onPress={}
+            onPress={() => {
+              // onPress
+            }}
           />
 
-          <Input 
-          value={email} 
-          onChangeText={setEmail} 
-          placeholder="E-mail" 
-          />
+          <Input value={email} onChangeText={setEmail} placeholder="E-mail" />
 
           <Input
             value={password}
@@ -90,20 +98,23 @@ export default function SignInScreen({ navigation }) {
             placeholder="Mot de passe"
           />
 
-          <Btn title="Connection" />
+          <Btn title="Connection" onPress={handleSubmitConnection} />
 
           <Text
             style={{
               fontFamily: "Commissioner_700Bold",
               color: "#416165",
-              fontSize: "16px",
+              fontSize: 16,
             }}
           >
             Nouveau Sur
-            <Text style={styles.text}>DOG AROUND</Text>?
+            <Text style={styles.text}> DOG AROUND</Text>?
           </Text>
 
-          <Btn title="Inscription" />
+          <Btn
+            title="Inscription"
+            onPress={() => navigation.navigate("SignUpScreen")}
+          />
         </View>
       </TouchableWithoutFeedback>
     );
@@ -115,35 +126,11 @@ const styles = StyleSheet.create({
     height: "100%",
     width: "100%",
     flex: 1,
-
     flexDirection: "column",
     justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "#E8E9ED",
   },
-
-  button: {
-    backgroundColor: "#7DBA84",
-    height: "8%",
-    width: "35%",
-    borderRadius: "10px",
-    justifyContent: "center",
-    alignItems: "center",
-  },
-
-  input: {
-    backgroundColor: "#FFFFFF",
-    height: "5%",
-    width: "80%",
-    borderRadius: "8px",
-  },
-
-  textButton: {
-    fontFamily: "Poppins_600SemiBold",
-
-    color: "#FFFFFF",
-  },
-
   text: {
     color: "#BB7E5D",
   },
