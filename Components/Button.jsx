@@ -1,7 +1,9 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Poppins_600SemiBold } from "@expo-google-fonts/poppins";
 
-export default function Btn({text}) {
+export default function Btn({ text }) {
+
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.btn}>
@@ -20,9 +22,10 @@ const styles = StyleSheet.create({
     borderRadius: 4,
     elevation: 3,
     backgroundColor: "#7DBA84",
-    borderRadius:8
+    borderRadius: 8,
   },
   text: {
     color: "white",
+    fontFamily: Poppins_600SemiBold,
   },
 });

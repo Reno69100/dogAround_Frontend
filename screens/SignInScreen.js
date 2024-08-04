@@ -1,8 +1,12 @@
 import {StyleSheet, TouchableOpacity, TextInput, Text, View, Button, Keyboard, TouchableWithoutFeedback} from "react-native"
 import { useState } from "react";
+import AppLoading from 'expo-app-loading';
+
 import {
     useFonts,
-    
+    Commissioner_400Regular,
+    Commissioner_500Medium,
+    Commissioner_600SemiBold,
     Commissioner_700Bold,
   } from '@expo-google-fonts/commissioner';
   import {
@@ -16,6 +20,21 @@ import {
 export default function SignInScreen({navigation}) {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+
+        let [fontsLoaded] = useFonts({
+          Commissioner_400Regular,
+          Commissioner_500Medium,
+          Commissioner_600SemiBold,
+          Commissioner_700Bold,
+          Poppins_400Regular,
+          Poppins_500Medium,
+          Poppins_600SemiBold,
+          Poppins_700Bold,
+        });
+      
+        if (!fontsLoaded) {
+          return <AppLoading />;
+        } else {
 
 
 
@@ -99,7 +118,7 @@ export default function SignInScreen({navigation}) {
         </View>
      </TouchableWithoutFeedback>
     )
-  
+}
 }
 
 const styles = StyleSheet.create({
