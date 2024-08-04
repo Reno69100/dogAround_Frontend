@@ -11,6 +11,7 @@ import {
 import { useState } from "react";
 import AppLoading from "expo-app-loading";
 import Btn from "../Components/Button";
+import Input from "../Components/Input";
 
 import {
   useFonts,
@@ -27,8 +28,8 @@ import {
 } from "@expo-google-fonts/poppins";
 
 export default function SignInScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+ const [email, setEmail] = useState("");
+ const [password, setPassword] = useState("");
 
   let [fontsLoaded] = useFonts({
     Commissioner_400Regular,
@@ -77,20 +78,19 @@ export default function SignInScreen({ navigation }) {
             //  onPress={}
           />
 
-          <TextInput
-            placeholder="E-mail"
-            onChangeText={(value) => setEmail(value)}
-            value={email}
-            style={styles.input}
+          <Input 
+          value={email} 
+          onChangeText={setEmail} 
+          placeholder="E-mail" 
           />
-          <TextInput
-            placeholder="Mot de passe"
-            onChangeText={(value) => setPassword(value)}
-            value={password}
-            style={styles.input}
-          ></TextInput>
 
-          <Btn text="Connection" />
+          <Input
+            value={password}
+            onChangeText={setPassword}
+            placeholder="Mot de passe"
+          />
+
+          <Btn title="Connection" />
 
           <Text
             style={{
@@ -103,7 +103,7 @@ export default function SignInScreen({ navigation }) {
             <Text style={styles.text}>DOG AROUND</Text>?
           </Text>
 
-          <Btn text="Inscription" />
+          <Btn title="Inscription" />
         </View>
       </TouchableWithoutFeedback>
     );

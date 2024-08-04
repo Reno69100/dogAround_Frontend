@@ -9,7 +9,7 @@ import {
 } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
 
-export default function Btn({ text }) {
+export default function Btn({ title }) {
 
  let [fontsLoaded] = useFonts({
    Poppins_400Regular,
@@ -26,7 +26,7 @@ export default function Btn({ text }) {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.btn}>
-        <Text style={styles.text}>{text}</Text>
+        <Text style={styles.text}>{title}</Text>
       </TouchableOpacity>
     </View>
   );
