@@ -1,17 +1,36 @@
 import React from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
-import { Poppins_600SemiBold } from "@expo-google-fonts/poppins";
+import {
+  useFonts,
+  Poppins_400Regular,
+  Poppins_500Medium,
+  Poppins_600SemiBold,
+  Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
+import AppLoading from "expo-app-loading";
 
 export default function Btn({ text }) {
+
+ let [fontsLoaded] = useFonts({
+   Poppins_400Regular,
+   Poppins_500Medium,
+   Poppins_600SemiBold,
+   Poppins_700Bold,
+ });
+
+
+  if (!fontsLoaded) {
+    return <AppLoading />;
+  } else {
 
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.btn}>
-        <Text style={styles.text}>Go To List</Text>
+        <Text style={styles.text}>{text}</Text>
       </TouchableOpacity>
     </View>
   );
-}
+}}
 
 const styles = StyleSheet.create({
   btn: {
@@ -26,6 +45,6 @@ const styles = StyleSheet.create({
   },
   text: {
     color: "white",
-    fontFamily: Poppins_600SemiBold,
+    fontFamily: "Poppins_600SemiBold,",
   },
 });
