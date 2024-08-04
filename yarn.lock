@@ -2139,6 +2139,11 @@
   resolved "https://registry.yarnpkg.com/@tootallnate/once/-/once-2.0.0.tgz#f544a148d3ab35801c1f633a7441fd87c2e484bf"
   integrity sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==
 
+"@ttungbmt/expo-poppins-font@^0.2.2":
+  version "0.2.2"
+  resolved "https://registry.yarnpkg.com/@ttungbmt/expo-poppins-font/-/expo-poppins-font-0.2.2.tgz#bde86b7d2731de75a3ab8ab9bffacfca78f67bed"
+  integrity sha512-scrbo3o+UqnVeSGYvykvPs4Z/OSmMIuEoGp4XNJzSDWbEZg3cn1+XOZiuIEgorP6fM8C3JaKulWi+tKsBYBoKA==
+
 "@types/babel__core@^7.1.14":
   version "7.20.5"
   resolved "https://registry.yarnpkg.com/@types/babel__core/-/babel__core-7.20.5.tgz#3df15f27ba85319caa07ba08d0721889bb39c017"
