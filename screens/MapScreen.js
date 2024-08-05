@@ -14,7 +14,7 @@ import { importPlaces } from '../reducers/places'
 export default function MapScreen({ navigation }) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
-    const [currentPosition, setCurrentPosition] = useState(null); //Déclaration état contenant la posittion de l'utisateur
+    const [currentPosition, setCurrentPosition] = useState({"latitude": 50.3026331775362, "longitude": 2.796574970709902}); //Déclaration état contenant la posittion de l'utisateur
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
@@ -26,7 +26,7 @@ export default function MapScreen({ navigation }) {
                 //Récupération location du téléphone
                 Location.watchPositionAsync({ distanceInterval: 10 },
                     (location) => {
-                        console.log(location);
+                        console.log(location.coords);
                         setCurrentPosition(location.coords);
                     });
             }
@@ -51,14 +51,14 @@ export default function MapScreen({ navigation }) {
         <View style={styles.container}>
             <MapView
                 style={styles.map}
-                initialRegionregion={{
-                    latitude: 10,
-                    longitude: 10,
+                region={{
+                    latitude: currentPosition.latitude,
+                    longitude: currentPosition.longitude,
                     latitudeDelta: 0.1,
                     longitudeDelta: 0.1,
                 }}
             >
-                {currentPosition && <Marker /* image={require("./assets/avatar.png")} */ coordinate={currentPosition} title="Ma position" pinColor="#fecb2d" />}
+                {currentPosition && <Marker style={styles.maposition} image={require("../assets/avatars/chien_1.png")} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d" />}
                 {/* {markers} */}
             </MapView>
         </View>
@@ -73,5 +73,9 @@ const styles = StyleSheet.create({
     map: {
         width: Dimensions.get('window').width,
         height: Dimensions.get('window').height,
+    },
+    maposition: {
+        width: 20,
+        height: 20,
     },
 });
