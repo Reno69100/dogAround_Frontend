@@ -25,6 +25,9 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 
+import ButtonGoogle from "../Components/ButtonGoogle";
+import ButtonFacebook from "../Components/ButtonFacebook";
+
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -75,18 +78,9 @@ export default function SignInScreen({ navigation }) {
             <Text style={styles.text}> DOG AROUND</Text>
           </Text>
 
-          <Button
-            title="Connection Avec Google"
-            onPress={() => {
-              // onPress
-            }}
-          />
-          <Button
-            title="Connection Avec FaceBook"
-            onPress={() => {
-              // onPress
-            }}
-          />
+          <ButtonGoogle />
+          
+          <ButtonFacebook/>
 
           <Input value={email} onChangeText={setEmail} placeholder="E-mail" />
 
