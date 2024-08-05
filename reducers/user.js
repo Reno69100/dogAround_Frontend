@@ -7,7 +7,7 @@ const initialState = {
     avatar: "",
     pseudo: "",
     city: "",
-    radius: 50,
+    radius: 20000,
     filtres: [],
   },
 };

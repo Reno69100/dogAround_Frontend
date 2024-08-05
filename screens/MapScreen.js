@@ -15,7 +15,10 @@ import { importPlaces } from '../reducers/places'
 export default function MapScreen({ navigation }) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
-    const [currentPosition, setCurrentPosition] = useState({ "latitude": 50.3026331775362, "longitude": 2.796574970709902 }); //Déclaration état contenant la posittion de l'utisateur
+    const places = useSelector((state) => state.places.value); //Recuperation des places dasn le STORE
+    const [currentPosition, setCurrentPosition] = useState({ "latitude": 50, "longitude": 2 }); //Déclaration état contenant la posittion de l'utisateur
+
+    /* console.log(places) */
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
@@ -27,7 +30,6 @@ export default function MapScreen({ navigation }) {
                 //Récupération location du téléphone
                 Location.watchPositionAsync({ distanceInterval: 10 },
                     (location) => {
-                        console.log(location.coords);
                         setCurrentPosition(location.coords);
                     });
             }
@@ -35,18 +37,29 @@ export default function MapScreen({ navigation }) {
 
 
         //Récupération des points d'intérêts autour de l'utilisateur
-        /* const params = {
-            longitude:currentPosition.longitude,
-            latitude:currentPosition.latitude,
-            radius:user.radius,
-        }; */
+        const params = {
+            longitude: currentPosition.longitude,
+            latitude: currentPosition.latitude,
+            radius: user.radius,
+        };
 
-        /* fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params}`)
+        fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params.latitude}/${params.longitude}/${params.radius}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
             .then((response) => response.json())
             .then((data) => {
+                /* console.log(data.places) */
                 data.result && dispatch(importPlaces(data.places));
-            }); */
+            });
     }, []);
+
+    const markers = places.map((e,i)=> {
+        /* console.log(e) */
+        return <Marker key={i+1} coordinate={e.location} title={e.Id}/>
+    })
 
     return (
         <View style={styles.container}>
@@ -55,18 +68,18 @@ export default function MapScreen({ navigation }) {
                 region={{
                     latitude: currentPosition.latitude,
                     longitude: currentPosition.longitude,
-                    latitudeDelta: 0.1,
-                    longitudeDelta: 0.1,
+                    latitudeDelta: 0.05,
+                    longitudeDelta: 0.05,
                 }}
             >
-                {currentPosition && 
-                <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">
-                    <Image
-                        source={require("../assets/avatars/chien_1.png")}
-                        style={{ width: 25, height: 25, resizeMode: "contain" }}
-                    />
-                </Marker>}
-                {/* {markers} */}
+                {currentPosition &&
+                    <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">
+                        <Image
+                            source={require("../assets/avatars/chien_1.png")}
+                            style={{ width: 40, height: 40, resizeMode: "contain" }}
+                        />
+                    </Marker>}
+                {markers}
             </MapView>
         </View>
     );
