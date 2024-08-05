@@ -45,7 +45,7 @@ export default function SignInScreen({ navigation }) {
   }
 
   const handleSubmitConnection = () => {
-    fetch("http://localhost:3000/user/signin", {
+    fetch("http://:3000/user/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -55,10 +55,20 @@ export default function SignInScreen({ navigation }) {
         password,
       }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log(data);
+        navigation.navigate("TabNavigator", { screen: "Map" });
       })
+  };
+
+  const handleClick = () => {
+    navigation.navigate("SignUp");
   };
 
   return (
@@ -98,10 +108,7 @@ export default function SignInScreen({ navigation }) {
           Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
         </Text>
 
-        <Btn
-          title="Inscription"
-          onPress={() => navigation.navigate("SignUpScreen")}
-        />
+        <Btn title="Inscription" onPress={handleClick} />
       </View>
     </TouchableWithoutFeedback>
   );
