@@ -1,7 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image
-
- } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import {
   useFonts,
   Poppins_400Regular,

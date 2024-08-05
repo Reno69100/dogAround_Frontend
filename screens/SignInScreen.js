@@ -78,7 +78,7 @@ export default function SignInScreen({ navigation }) {
       <KeyboardAvoidingView
         style={styles.container}
         behavior="padding"
-        keyboardVerticalOffset={10} 
+        keyboardVerticalOffset={10}
       >
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           <Text style={styles.welcomeText}>
