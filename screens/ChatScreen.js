@@ -5,7 +5,7 @@ import {
     Text,
 } from "react-native";
 
-export default function MapScreen({ navigation }) {
+export default function ChatScreen({ navigation }) {
 
     return (
         <View style={styles.container}>
