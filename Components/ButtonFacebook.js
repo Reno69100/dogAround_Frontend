@@ -24,7 +24,7 @@ export default function ButtonFacebook() {
       <View style={styles.container}>
         <TouchableOpacity style={styles.btn}>
           <Image
-            source={require("../assets/logo-facebook.png")}
+            source={require("../assets/logo/logo-facebook.png")}
             style={styles.logo}
           />
           <Text style={styles.text}>Connection avec Facebook</Text>

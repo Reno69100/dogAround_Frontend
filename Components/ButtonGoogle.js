@@ -26,7 +26,7 @@ export default function ButtonGoogle() {
       <View style={styles.container}>
         <TouchableOpacity style={styles.btn}>
           <Image
-            source={require("../assets/logo-google.png")}
+            source={require("../assets/logo/logo-google.png")}
             style={styles.logo}
           />
           <Text style={styles.text}>Connection avec Google</Text>
