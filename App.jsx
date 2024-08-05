@@ -33,23 +33,23 @@ const TabNavigator = () => {
         let iconName = '';
 
         if (route.name === 'Map') {
-          iconName = 'house';
+          iconName = 'home';
         } else if (route.name === 'Profile') {
           iconName = 'user';
         } else if (route.name === 'Chat') {
-          iconName = 'message';
+          iconName = 'comment';
         }
 
         return <FontAwesome name={iconName} size={size} color={color} />;
       },
       tabBarActiveTintColor: '#FFFFFF',
       tabBarInactiveTintColor: '#000000',
-      backgroundColor: '#7DBA84',
+      tabBarStyle: { backgroundColor: '#7DBA84' },
       headerShown: false,
     })}>
+      <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Map" component={MapScreen} />
       <Tab.Screen name="Profile" component={ProfileScreen} />
-      <Tab.Screen name="Chat" component={ChatScreen} />
     </Tab.Navigator>
   );
 }

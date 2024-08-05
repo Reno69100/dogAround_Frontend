@@ -25,8 +25,8 @@ export default function MapScreen({ navigation }) {
             if (status === 'granted') {
                 //Récupération location du téléphone
                 Location.watchPositionAsync({ distanceInterval: 10 },
-                    
                     (location) => {
+                        console.log(location);
                         setCurrentPosition(location.coords);
                     });
             }
@@ -34,11 +34,11 @@ export default function MapScreen({ navigation }) {
         
 
         //Récupération des points d'intérêts autour de l'utilisateur
-        const params = {
+        /* const params = {
             longitude:currentPosition.longitude,
             latitude:currentPosition.latitude,
             radius:user.radius,
-        };
+        }; */
 
         /* fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params}`)
             .then((response) => response.json())
@@ -59,7 +59,7 @@ export default function MapScreen({ navigation }) {
                 }}
             >
                 {currentPosition && <Marker /* image={require("./assets/avatar.png")} */ coordinate={currentPosition} title="Ma position" pinColor="#fecb2d" />}
-                {markers}
+                {/* {markers} */}
             </MapView>
         </View>
     );
