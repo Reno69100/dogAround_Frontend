@@ -12,8 +12,11 @@ export const placesSlice = createSlice({
         addPlace: (state, action) => {
             state.value.push(action.payload);
         },
+        importPlaces: (state, action) => {
+            state.value.push(action.payload);
+        },
     },
 });
 
-export const { addPlace } = placesSlice.actions;
+export const { addPlace, importPlaces } = placesSlice.actions;
 export default placesSlice.reducer;

@@ -8,23 +8,40 @@ import {
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
+import { useSelector, useDispatch } from 'react-redux';
+import { importPlaces } from '../reducers/places'
+
+const BACKEND_ADDRESS ="http://192.168.1.70:3000";
+
 export default function MapScreen({ navigation }) {
-    const [currentPosition, setCurrentPosition] = useState(null);
+    const dispatch = useDispatch();
+    const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
+    const [currentPosition, setCurrentPosition] = useState(null); //Déclaration état contenant la posittion de l'utisateur
 
     useEffect(() => {
+        //Demande autorisation partage location du téléphone
         (async () => {
             const result = await Location.requestForegroundPermissionsAsync();
             const status = result?.status;
 
             if (status === 'granted') {
+                //Récupération location du téléphone
                 Location.watchPositionAsync({ distanceInterval: 10 },
                     (location) => {
                         setCurrentPosition(location.coords);
                     });
             }
         })();
+        
 
-        /* fetch(`${BACKEND_ADDRESS}/places/${user.nickname}`)
+        //Récupération des points d'intérêts autour de l'utilisateur
+        const params = {
+            longitude:currentPosition.longitude,
+            latitude:currentPosition.latitude,
+            radius:user.radius,
+        };
+
+        /* fetch(`${BACKEND_ADDRESS}/places/${params}`)
             .then((response) => response.json())
             .then((data) => {
                 data.result && dispatch(importPlaces(data.places));

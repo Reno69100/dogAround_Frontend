@@ -57,7 +57,6 @@ const TabNavigator = () => {
 export default function App() {
   return (
     <Provider store={store}>
-      //Configuration stack navigation
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="SignIn" component={SignInScreen} />
