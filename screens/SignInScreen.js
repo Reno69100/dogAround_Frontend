@@ -5,7 +5,8 @@ import {
   Keyboard,
   View,
   Text,
-  Alert,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import AppLoading from "expo-app-loading";
 import Btn from "../Components/Button";
@@ -25,10 +26,13 @@ import {
 } from "@expo-google-fonts/poppins";
 import ButtonGoogle from "../Components/ButtonGoogle";
 import ButtonFacebook from "../Components/ButtonFacebook";
+import { useDispatch } from "react-redux";
+import { login } from "../reducers/user";
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
   let [fontsLoaded] = useFonts({
     Commissioner_400Regular,
@@ -45,29 +49,24 @@ export default function SignInScreen({ navigation }) {
     return <AppLoading />;
   }
 
-  const handleSubmitConnection = () => {
-    if (!email || !password) {
-      Alert.alert("Validation Error", "Please fill in all fields.");
-      return;
-    }
-
-    fetch("http://:3000/user/signin", {
+  const handleConnection = () => {
+    fetch("http://192.168.1.73:3000/users/signin", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        navigation.navigate("TabNavigator", { screen: "Map" });
-      })
+        if (data.result) {
+          dispatch(login({ email: email, token: data.token }));
+          setEmail("");
+          setPassword("");
+          navigation.navigate("TabNavigator", { screen: "Map" });
+        }
+      });
   };
 
   const handleClick = () => {
@@ -76,45 +75,50 @@ export default function SignInScreen({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-      
-        <Text style={styles.welcomeText}>
-          Bienvenue sur <Text style={styles.text}>DOG AROUND</Text>
-        </Text>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior="padding"
+        keyboardVerticalOffset={10}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.welcomeText}>
+            Bienvenue sur <Text style={styles.text}>DOG AROUND</Text>
+          </Text>
 
-        <View style={styles.buttonContainer}>
-          <ButtonGoogle />
-          <ButtonFacebook />
-        </View>
+          <View style={styles.buttonContainer}>
+            <ButtonGoogle />
+            <ButtonFacebook />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Input
-            value={email}
-            onChangeText={setEmail}
-            placeholder="E-mail"
-            accessibilityLabel="Email Input"
-            keyboardType="email-address"
-          />
-          <Input
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Mot de passe"
-            secureTextEntry
-            accessibilityLabel="Password Input"
-          />
-          <Btn
-            style={styles.connection}
-            title="Se connecter"
-            onPress={handleSubmitConnection}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Input
+              value={email}
+              onChangeText={setEmail}
+              placeholder="E-mail"
+              accessibilityLabel="Email Input"
+              keyboardType="email-address"
+            />
+            <Input
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Mot de passe"
+              secureTextEntry
+              accessibilityLabel="Password Input"
+            />
+            <Btn
+              style={styles.connection}
+              title="Se connecter"
+              onPress={handleConnection}
+            />
+          </View>
 
-        <Text style={styles.newUserText}>
-          Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
-        </Text>
+          <Text style={styles.newUserText}>
+            Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
+          </Text>
 
-        <Btn title="Inscription" onPress={handleClick} />
-      </View>
+          <Btn title="Inscription" onPress={handleClick} />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
@@ -123,10 +127,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    justifyContent: "space-evenly",
-    alignItems: "center",
     backgroundColor: "#E8E9ED",
     padding: 20,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   welcomeText: {
     fontFamily: "Commissioner_700Bold",
@@ -138,7 +145,7 @@ const styles = StyleSheet.create({
     color: "#BB7E5D",
   },
   buttonContainer: {
-    width: "90%",
+    width: "80%",
     flexDirection: "row",
     justifyContent: "space-around",
     marginBottom: 20,

@@ -1,7 +1,5 @@
 import React from "react";
-import { View, Text, TouchableOpacity, StyleSheet, Image
-
- } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import {
   useFonts,
   Poppins_400Regular,
@@ -43,7 +41,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     maxWidth: 320,
-    width: 130,
+    width: 110,
     padding: 10,
     fontSize: 14,
     textAlign: "center",
