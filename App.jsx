@@ -13,6 +13,15 @@ import SignUpScreen from './screens/SignUpScreen';
 import ProfileScreen from './screens/ProfileScreen';
 import ChatScreen from './screens/ChatScreen';
 
+import { Provider } from 'react-redux';
+import { configureStore } from '@reduxjs/toolkit';
+import user from './reducers/user';
+import places from './reducers/places';
+
+const store = configureStore({
+  reducer: { user, places },
+});
+
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
@@ -34,7 +43,7 @@ const TabNavigator = () => {
       },
       tabBarActiveTintColor: '#FFFFFF',
       tabBarInactiveTintColor: '#000000',
-      backgroundColor:'#7DBA84',
+      backgroundColor: '#7DBA84',
       headerShown: false,
     })}>
       <Tab.Screen name="Map" component={MapScreen} />
@@ -46,13 +55,15 @@ const TabNavigator = () => {
 
 export default function App() {
   return (
-    <NavigationContainer>
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="SignIn" component={SignInScreen} />
-        <Stack.Screen name="SignUp" component={SignUpScreen} />
-        <Stack.Screen name="TabNavigator" component={TabNavigator} />
-      </Stack.Navigator>
-    </NavigationContainer>
+    <Provider store={store}>
+      <NavigationContainer>
+        <Stack.Navigator screenOptions={{ headerShown: false }}>
+          <Stack.Screen name="SignIn" component={SignInScreen} />
+          <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="TabNavigator" component={TabNavigator} />
+        </Stack.Navigator>
+      </NavigationContainer>
+    </Provider>
   );
 }
 
