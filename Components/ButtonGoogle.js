@@ -43,7 +43,7 @@ const styles = StyleSheet.create({
   },
   btn: {
     maxWidth: 320,
-    width: 130,
+    width: 110,
     padding: 10,
     fontSize: 14,
     textAlign: "center",

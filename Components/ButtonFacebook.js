@@ -40,7 +40,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   btn: {
-    width: 130,
+    width: 110,
     padding: 10,
     fontSize: 14,
     textAlign: "center",

@@ -145,7 +145,7 @@ const styles = StyleSheet.create({
     color: "#BB7E5D",
   },
   buttonContainer: {
-    width: "90%",
+    width: "80%",
     flexDirection: "row",
     justifyContent: "space-around",
     marginBottom: 20,
