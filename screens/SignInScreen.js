@@ -74,7 +74,7 @@ export default function SignInScreen({ navigation }) {
   } */
 
   const handleConnection = () => {
-    fetch("http://192.168.1.70:3000/users/signin", {
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

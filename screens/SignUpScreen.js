@@ -70,7 +70,7 @@ export default function SignUpScreen({ navigation }) {
       return;
     }
 
-    fetch("http://192.168.1.70:3000/users/signup", {
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/signup`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({

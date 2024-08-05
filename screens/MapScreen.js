@@ -11,8 +11,6 @@ import * as Location from 'expo-location';
 import { useSelector, useDispatch } from 'react-redux';
 import { importPlaces } from '../reducers/places'
 
-const BACKEND_ADDRESS ="http://192.168.1.70:3000";
-
 export default function MapScreen({ navigation }) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
@@ -27,6 +25,7 @@ export default function MapScreen({ navigation }) {
             if (status === 'granted') {
                 //Récupération location du téléphone
                 Location.watchPositionAsync({ distanceInterval: 10 },
+                    
                     (location) => {
                         setCurrentPosition(location.coords);
                     });
@@ -41,7 +40,7 @@ export default function MapScreen({ navigation }) {
             radius:user.radius,
         };
 
-        /* fetch(`${BACKEND_ADDRESS}/places/${params}`)
+        /* fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params}`)
             .then((response) => response.json())
             .then((data) => {
                 data.result && dispatch(importPlaces(data.places));
@@ -53,8 +52,8 @@ export default function MapScreen({ navigation }) {
             <MapView
                 style={styles.map}
                 initialRegionregion={{
-                    latitude: currentPosition.latitude,
-                    longitude: currentPosition.longitude,
+                    latitude: 10,
+                    longitude: 10,
                     latitudeDelta: 0.1,
                     longitudeDelta: 0.1,
                 }}
