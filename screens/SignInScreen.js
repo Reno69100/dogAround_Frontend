@@ -58,7 +58,6 @@ export default function SignInScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         console.log(data);
-        
       })
   };
 
@@ -129,14 +128,15 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     width: "100%",
-    gap:10,
+    gap: 10,
     alignItems: "center",
   },
-  connection:{
+  connection: {
+    marginTop: 20,
   },
   inputContainer: {
     width: "100%",
-    gap:7,
+    gap: 10,
     alignItems: "center",
   },
   newUserText: {

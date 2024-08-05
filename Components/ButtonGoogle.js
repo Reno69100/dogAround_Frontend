@@ -46,13 +46,9 @@ const styles = StyleSheet.create({
     width: 250,
     padding: 10,
     fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "700",
     textAlign: "center",
-    textTransform: "uppercase",
     alignItems: "center",
     borderRadius: 8,
-    color: "rgb(65, 63, 63)",
     backgroundColor: "#fff",
     flexDirection:'row',
     justifyContent:'space-between'
@@ -60,7 +56,6 @@ const styles = StyleSheet.create({
   },
   text: {
     fontFamily: "Poppins_700Bold",
-    color: "rgb(65, 63, 63)",
   },
   logo: {
     width: 24,
