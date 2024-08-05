@@ -5,6 +5,7 @@ import {
   Keyboard,
   View,
   Text,
+  Alert,
 } from "react-native";
 import AppLoading from "expo-app-loading";
 import Btn from "../Components/Button";
@@ -45,21 +46,32 @@ export default function SignInScreen({ navigation }) {
   }
 
   const handleSubmitConnection = () => {
-    fetch("http://localhost:3000/user/signin", {
+    if (!email || !password) {
+      Alert.alert("Validation Error", "Please fill in all fields.");
+      return;
+    }
+
+    fetch("http://:3000/user/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
+      body: JSON.stringify({ email, password }),
     })
-      .then((response) => response.json())
+      .then((response) => {
+        if (!response.ok) {
+          throw new Error("Network response was not ok");
+        }
+        return response.json();
+      })
       .then((data) => {
         console.log(data);
-        
+        navigation.navigate("TabNavigator", { screen: "Map" });
       })
+  };
+
+  const handleClick = () => {
+    navigation.navigate("SignUp");
   };
 
   return (
@@ -80,6 +92,7 @@ export default function SignInScreen({ navigation }) {
             onChangeText={setEmail}
             placeholder="E-mail"
             accessibilityLabel="Email Input"
+            keyboardType="email-address"
           />
           <Input
             value={password}
@@ -90,7 +103,7 @@ export default function SignInScreen({ navigation }) {
           />
           <Btn
             style={styles.connection}
-            title="Connection"
+            title="Se connecter"
             onPress={handleSubmitConnection}
           />
         </View>
@@ -99,10 +112,7 @@ export default function SignInScreen({ navigation }) {
           Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
         </Text>
 
-        <Btn
-          title="Inscription"
-          onPress={() => navigation.navigate("SignUpScreen")}
-        />
+        <Btn title="Inscription" onPress={handleClick} />
       </View>
     </TouchableWithoutFeedback>
   );
@@ -112,7 +122,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    height: "100%",
     justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "#E8E9ED",
@@ -128,15 +137,17 @@ const styles = StyleSheet.create({
     color: "#BB7E5D",
   },
   buttonContainer: {
-    width: "100%",
-    gap:10,
-    alignItems: "center",
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
   },
-  connection:{
+  connection: {
+    marginTop: 20,
   },
   inputContainer: {
     width: "100%",
-    gap:7,
+    gap: 10,
     alignItems: "center",
   },
   newUserText: {

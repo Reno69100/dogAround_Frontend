@@ -9,7 +9,7 @@ import {
 } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
 
-export default function ButtonFacebook() {
+export default function ButtonFacebook({onPress}) {
   let [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
@@ -22,12 +22,12 @@ export default function ButtonFacebook() {
   } else {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.btn}>
+        <TouchableOpacity style={styles.btn} onPress={onPress}>
           <Image
             source={require("../assets/logo/logo-facebook.png")}
             style={styles.logo}
           />
-          <Text style={styles.text}>Connection avec Facebook</Text>
+          <Text style={styles.text}>Facebook</Text>
         </TouchableOpacity>
       </View>
     );
@@ -40,17 +40,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   btn: {
-    maxWidth: 320,
-    width: 250,
+    width: 130,
     padding: 10,
     fontSize: 14,
-    lineHeight: 18,
-    fontWeight: "700",
     textAlign: "center",
-    textTransform: "uppercase",
     alignItems: "center",
     borderRadius: 8,
-    color: "rgb(65, 63, 63)",
     backgroundColor: "#3b5998",
     flexDirection: "row",
     justifyContent: "space-between",
@@ -62,7 +57,6 @@ const styles = StyleSheet.create({
   logo: {
     width: 24,
     height: 24,
-    marginRight: 10,
     color: "#fff",
     backgroundColor: "#3b5998",
   },

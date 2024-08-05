@@ -9,42 +9,41 @@ import {
 } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
 
-export default function Btn({ title }) {
-
- let [fontsLoaded] = useFonts({
-   Poppins_400Regular,
-   Poppins_500Medium,
-   Poppins_600SemiBold,
-   Poppins_700Bold,
- });
-
+export default function Btn({ title, style, onPress }) {
+  let [fontsLoaded] = useFonts({
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+  });
 
   if (!fontsLoaded) {
     return <AppLoading />;
-  } else {
+  }
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.btn}>
+      <TouchableOpacity style={[styles.button, style]} onPress={onPress}>
         <Text style={styles.text}>{title}</Text>
       </TouchableOpacity>
     </View>
   );
-}}
+}
 
 const styles = StyleSheet.create({
-  btn: {
+  button: {
+    width:180,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 12,
     paddingHorizontal: 32,
-    borderRadius: 4,
+    borderRadius: 8,
     elevation: 3,
     backgroundColor: "#7DBA84",
-    borderRadius: 8,
   },
   text: {
     color: "white",
-    fontFamily: "Poppins_600SemiBold,",
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 16,
   },
 });
