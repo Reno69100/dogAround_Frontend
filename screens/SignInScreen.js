@@ -77,6 +77,7 @@ export default function SignInScreen({ navigation }) {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <View style={styles.container}>
+      
         <Text style={styles.welcomeText}>
           Bienvenue sur <Text style={styles.text}>DOG AROUND</Text>
         </Text>
