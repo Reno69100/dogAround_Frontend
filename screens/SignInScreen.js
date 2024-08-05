@@ -25,10 +25,13 @@ import {
 } from "@expo-google-fonts/poppins";
 import ButtonGoogle from "../Components/ButtonGoogle";
 import ButtonFacebook from "../Components/ButtonFacebook";
+import { useDispatch } from "react-redux";
+import { login } from "../reducers/user";
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const dispatch = useDispatch();
 
   let [fontsLoaded] = useFonts({
     Commissioner_400Regular,
@@ -45,29 +48,24 @@ export default function SignInScreen({ navigation }) {
     return <AppLoading />;
   }
 
-  const handleSubmitConnection = () => {
-    if (!email || !password) {
-      Alert.alert("Validation Error", "Please fill in all fields.");
-      return;
-    }
-
-    fetch("http://:3000/user/signin", {
+  const handleConnection = () => {
+    fetch("http://192.168.1.73:3000/users/signin", {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ email, password }),
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email,
+        password,
+      }),
     })
-      .then((response) => {
-        if (!response.ok) {
-          throw new Error("Network response was not ok");
-        }
-        return response.json();
-      })
+      .then((response) => response.json())
       .then((data) => {
-        console.log(data);
-        navigation.navigate("TabNavigator", { screen: "Map" });
-      })
+        if (data.result) {
+          dispatch(login({ email: email, token: data.token }));
+          setEmail("");
+          setPassword("");
+           navigation.navigate("TabNavigator", { screen: "Map" });
+        }
+      });
   };
 
   const handleClick = () => {
@@ -104,7 +102,7 @@ export default function SignInScreen({ navigation }) {
           <Btn
             style={styles.connection}
             title="Se connecter"
-            onPress={handleSubmitConnection}
+            onPress={handleConnection}
           />
         </View>
 

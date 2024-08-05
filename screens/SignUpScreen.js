@@ -19,12 +19,14 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
+import { useState } from "react";
+import { useDispatch } from "react-redux";
 import AppLoading from "expo-app-loading";
 import Input from "../Components/Input";
 import Btn from "../Components/Button";
 import ButtonFacebook from "../Components/ButtonFacebook";
 import ButtonGoogle from "../Components/ButtonGoogle";
-
+import { login } from "../reducers/user";
 export default function SignUpScreen({ navigation }) {
   let [fontsLoaded] = useFonts({
     Commissioner_400Regular,
@@ -36,6 +38,50 @@ export default function SignUpScreen({ navigation }) {
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
+
+  const dispatch = useDispatch();
+
+  const [email, setEmail] = useState("");
+  const [pseudo, setPseudo] = useState("");
+  const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [surname, setSurname] = useState("");
+  const [name, setName] = useState("");
+  const [city, setCity] = useState("");
+
+  const handleRegister = () => {
+    if (password !== confirmPassword) {
+      alert("Passwords do not match");
+      return;
+    }
+
+    fetch("http://192.168.1.73:3000/users/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        pseudo: pseudo,
+        password: password,
+        surname: surname,
+        name: name,
+        city: city,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          dispatch(login({ email, pseudo, city, token: data.token }));
+          setEmail("");
+          setPseudo("");
+          setPassword("");
+          setConfirmPassword("");
+          setSurname("");
+          setName("");
+          setCity("");
+          navigation.navigate("TabNavigator", { screen: "Map" });
+        }
+      });
+  };
 
   if (!fontsLoaded) {
     return <AppLoading />;
@@ -58,20 +104,55 @@ export default function SignUpScreen({ navigation }) {
           <View style={styles.mailContainer}>
             <Text style={styles.textMail}>Ou par mail: </Text>
             <View style={styles.inputContainer}>
-              <Input placeholder="E-mail" accessibilityLabel="Email Input" />
-              <Input placeholder="Pseudo" accessibilityLabel="Username Input" />
-              <Input placeholder="Ville" accessibilityLabel="City Input" />
+              <Input
+                placeholder="E-mail"
+                accessibilityLabel="Email Input"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <Input
+                placeholder="Pseudo"
+                accessibilityLabel="Username Input"
+                value={pseudo}
+                onChangeText={setPseudo}
+              />
+              <Input
+                placeholder="Prénom"
+                accessibilityLabel="Surname Input"
+                value={surname}
+                onChangeText={setSurname}
+              />
+              <Input
+                placeholder="Nom"
+                accessibilityLabel="Name Input"
+                value={name}
+                onChangeText={setName}
+              />
+              <Input
+                placeholder="Ville"
+                accessibilityLabel="City Input"
+                value={city}
+                onChangeText={setCity}
+              />
               <Input
                 placeholder="Mot de passe"
                 accessibilityLabel="Password Input"
                 secureTextEntry
+                value={password}
+                onChangeText={setPassword}
               />
               <Input
                 placeholder="Confirme Mot de passe"
                 accessibilityLabel="Confirm Password Input"
                 secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
               />
-              <Btn style={styles.connection} title="Valider" />
+              <Btn
+                style={styles.connection}
+                title="Valider"
+                onPress={handleRegister}
+              />
             </View>
           </View>
         </View>
