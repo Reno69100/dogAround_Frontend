@@ -5,7 +5,8 @@ import {
   Keyboard,
   View,
   Text,
-  Alert,
+  KeyboardAvoidingView,
+  ScrollView,
 } from "react-native";
 import AppLoading from "expo-app-loading";
 import Btn from "../Components/Button";
@@ -63,7 +64,7 @@ export default function SignInScreen({ navigation }) {
           dispatch(login({ email: email, token: data.token }));
           setEmail("");
           setPassword("");
-           navigation.navigate("TabNavigator", { screen: "Map" });
+          navigation.navigate("TabNavigator", { screen: "Map" });
         }
       });
   };
@@ -74,44 +75,50 @@ export default function SignInScreen({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      <View style={styles.container}>
-        <Text style={styles.welcomeText}>
-          Bienvenue sur <Text style={styles.text}>DOG AROUND</Text>
-        </Text>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior="padding"
+        keyboardVerticalOffset={10} 
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.welcomeText}>
+            Bienvenue sur <Text style={styles.text}>DOG AROUND</Text>
+          </Text>
 
-        <View style={styles.buttonContainer}>
-          <ButtonGoogle />
-          <ButtonFacebook />
-        </View>
+          <View style={styles.buttonContainer}>
+            <ButtonGoogle />
+            <ButtonFacebook />
+          </View>
 
-        <View style={styles.inputContainer}>
-          <Input
-            value={email}
-            onChangeText={setEmail}
-            placeholder="E-mail"
-            accessibilityLabel="Email Input"
-            keyboardType="email-address"
-          />
-          <Input
-            value={password}
-            onChangeText={setPassword}
-            placeholder="Mot de passe"
-            secureTextEntry
-            accessibilityLabel="Password Input"
-          />
-          <Btn
-            style={styles.connection}
-            title="Se connecter"
-            onPress={handleConnection}
-          />
-        </View>
+          <View style={styles.inputContainer}>
+            <Input
+              value={email}
+              onChangeText={setEmail}
+              placeholder="E-mail"
+              accessibilityLabel="Email Input"
+              keyboardType="email-address"
+            />
+            <Input
+              value={password}
+              onChangeText={setPassword}
+              placeholder="Mot de passe"
+              secureTextEntry
+              accessibilityLabel="Password Input"
+            />
+            <Btn
+              style={styles.connection}
+              title="Se connecter"
+              onPress={handleConnection}
+            />
+          </View>
 
-        <Text style={styles.newUserText}>
-          Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
-        </Text>
+          <Text style={styles.newUserText}>
+            Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
+          </Text>
 
-        <Btn title="Inscription" onPress={handleClick} />
-      </View>
+          <Btn title="Inscription" onPress={handleClick} />
+        </ScrollView>
+      </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
 }
@@ -120,10 +127,13 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    justifyContent: "space-evenly",
-    alignItems: "center",
     backgroundColor: "#E8E9ED",
     padding: 20,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   welcomeText: {
     fontFamily: "Commissioner_700Bold",
