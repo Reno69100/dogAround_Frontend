@@ -68,10 +68,6 @@ export default function SignInScreen({ navigation }) {
         console.log(data);
         navigation.navigate("TabNavigator", { screen: "Map" });
       })
-      .catch((error) => {
-        console.error("There was a problem with the fetch operation:", error);
-        Alert.alert("Error", "Failed to sign in. Please try again.");
-      });
   };
 
   const handleClick = () => {
