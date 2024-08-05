@@ -4,14 +4,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome';
 import { faDirections, faPaw } from "@fortawesome/free-solid-svg-icons";
 
 
-import {
-    useFonts,
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-  } from "@expo-google-fonts/poppins";
-  import AppLoading from "expo-app-loading";
 import { text } from "@fortawesome/fontawesome-svg-core";
 
   export default function Filter() {

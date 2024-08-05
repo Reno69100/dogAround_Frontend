@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import {
   useFonts,
@@ -7,18 +7,25 @@ import {
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
-import AppLoading from "expo-app-loading";
+/* import AppLoading from "expo-app-loading"; */
+import * as SplashScreen from 'expo-splash-screen';
 
 export default function Btn({ title, style, onPress }) {
-  let [fontsLoaded] = useFonts({
+  const [loaded, error] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
     Poppins_600SemiBold,
     Poppins_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
   }
 
   return (
@@ -32,7 +39,7 @@ export default function Btn({ title, style, onPress }) {
 
 const styles = StyleSheet.create({
   button: {
-    width:180,
+    width: 180,
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 12,

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -23,7 +23,8 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 import { useDispatch } from "react-redux";
-import AppLoading from "expo-app-loading";
+/* import AppLoading from "expo-app-loading"; */
+import * as SplashScreen from 'expo-splash-screen';
 import Input from "../Components/Input";
 import Btn from "../Components/Button";
 import ButtonFacebook from "../Components/ButtonFacebook";
@@ -31,7 +32,18 @@ import ButtonGoogle from "../Components/ButtonGoogle";
 import { login } from "../reducers/user";
 
 export default function SignUpScreen({ navigation }) {
-  let [fontsLoaded] = useFonts({
+  /* let [fontsLoaded] = useFonts({
+    Commissioner_400Regular,
+    Commissioner_500Medium,
+    Commissioner_600SemiBold,
+    Commissioner_700Bold,
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+  }); */
+
+  const [loaded, error] = useFonts({
     Commissioner_400Regular,
     Commissioner_500Medium,
     Commissioner_600SemiBold,
@@ -58,7 +70,7 @@ export default function SignUpScreen({ navigation }) {
       return;
     }
 
-    fetch("http://192.168.1.73:3000/users/signup", {
+    fetch("http://192.168.1.70:3000/users/signup", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -86,9 +98,19 @@ export default function SignUpScreen({ navigation }) {
       });
   };
 
-  if (!fontsLoaded) {
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
+  }
+
+  /* if (!fontsLoaded) {
     return <AppLoading />;
-  } else {
+  } else { */
     return (
       <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
         <KeyboardAvoidingView
@@ -168,7 +190,7 @@ export default function SignUpScreen({ navigation }) {
       </TouchableWithoutFeedback>
     );
   }
-}
+/* } */
 
 const styles = StyleSheet.create({
   container: {

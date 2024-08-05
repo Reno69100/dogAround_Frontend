@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   TouchableWithoutFeedback,
@@ -8,7 +8,8 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-import AppLoading from "expo-app-loading";
+/* import AppLoading from "expo-app-loading"; */
+import * as SplashScreen from 'expo-splash-screen';
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
 import {
@@ -29,12 +30,14 @@ import ButtonFacebook from "../Components/ButtonFacebook";
 import { useDispatch } from "react-redux";
 import { login } from "../reducers/user";
 
+SplashScreen.preventAutoHideAsync();
+
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const dispatch = useDispatch();
 
-  let [fontsLoaded] = useFonts({
+  const [loaded, error] = useFonts({
     Commissioner_400Regular,
     Commissioner_500Medium,
     Commissioner_600SemiBold,
@@ -45,12 +48,33 @@ export default function SignInScreen({ navigation }) {
     Poppins_700Bold,
   });
 
-  if (!fontsLoaded) {
-    return <AppLoading />;
+  /* let [fontsLoaded] = useFonts({
+    Commissioner_400Regular,
+    Commissioner_500Medium,
+    Commissioner_600SemiBold,
+    Commissioner_700Bold,
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+  }); */
+
+  useEffect(() => {
+    if (loaded || error) {
+      SplashScreen.hideAsync();
+    }
+  }, [loaded, error]);
+
+  if (!loaded && !error) {
+    return null;
   }
 
+  /* if (!fontsLoaded) {
+    return <AppLoading />;
+  } */
+
   const handleConnection = () => {
-    fetch("http://192.168.1.73:3000/users/signin", {
+    fetch("http://192.168.1.70:3000/users/signin", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
