@@ -25,6 +25,7 @@ const store = configureStore({
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
+//Configuration tab navigation
 const TabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={({ route }) => ({
@@ -56,6 +57,7 @@ const TabNavigator = () => {
 export default function App() {
   return (
     <Provider store={store}>
+      //Configuration stack navigation
       <NavigationContainer>
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="SignIn" component={SignInScreen} />
