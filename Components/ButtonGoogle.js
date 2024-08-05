@@ -11,7 +11,7 @@ import {
 } from "@expo-google-fonts/poppins";
 import AppLoading from "expo-app-loading";
 
-export default function ButtonGoogle() {
+export default function ButtonGoogle(onPress) {
   let [fontsLoaded] = useFonts({
     Poppins_400Regular,
     Poppins_500Medium,
@@ -24,12 +24,12 @@ export default function ButtonGoogle() {
   } else {
     return (
       <View style={styles.container}>
-        <TouchableOpacity style={styles.btn}>
+        <TouchableOpacity style={styles.btn} onPress={onPress}>
           <Image
             source={require("../assets/logo/logo-google.png")}
             style={styles.logo}
           />
-          <Text style={styles.text}>Connection avec Google</Text>
+          <Text style={styles.text}>Google</Text>
         </TouchableOpacity>
       </View>
     );
@@ -43,16 +43,15 @@ const styles = StyleSheet.create({
   },
   btn: {
     maxWidth: 320,
-    width: 250,
+    width: 130,
     padding: 10,
     fontSize: 14,
     textAlign: "center",
     alignItems: "center",
     borderRadius: 8,
     backgroundColor: "#fff",
-    flexDirection:'row',
-    justifyContent:'space-between'
-
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   text: {
     fontFamily: "Poppins_700Bold",
@@ -60,6 +59,5 @@ const styles = StyleSheet.create({
   logo: {
     width: 24,
     height: 24,
-    marginRight: 10,
   },
 });

@@ -5,6 +5,7 @@ import {
   Keyboard,
   View,
   Text,
+  Alert,
 } from "react-native";
 import AppLoading from "expo-app-loading";
 import Btn from "../Components/Button";
@@ -45,15 +46,17 @@ export default function SignInScreen({ navigation }) {
   }
 
   const handleSubmitConnection = () => {
+    if (!email || !password) {
+      Alert.alert("Validation Error", "Please fill in all fields.");
+      return;
+    }
+
     fetch("http://:3000/user/signin", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
       },
-      body: JSON.stringify({
-        email,
-        password,
-      }),
+      body: JSON.stringify({ email, password }),
     })
       .then((response) => {
         if (!response.ok) {
@@ -65,6 +68,10 @@ export default function SignInScreen({ navigation }) {
         console.log(data);
         navigation.navigate("TabNavigator", { screen: "Map" });
       })
+      .catch((error) => {
+        console.error("There was a problem with the fetch operation:", error);
+        Alert.alert("Error", "Failed to sign in. Please try again.");
+      });
   };
 
   const handleClick = () => {
@@ -89,6 +96,7 @@ export default function SignInScreen({ navigation }) {
             onChangeText={setEmail}
             placeholder="E-mail"
             accessibilityLabel="Email Input"
+            keyboardType="email-address"
           />
           <Input
             value={password}
@@ -99,7 +107,7 @@ export default function SignInScreen({ navigation }) {
           />
           <Btn
             style={styles.connection}
-            title="Connection"
+            title="Se connecter"
             onPress={handleSubmitConnection}
           />
         </View>
@@ -118,7 +126,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     width: "100%",
-    height: "100%",
     justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "#E8E9ED",
@@ -134,9 +141,10 @@ const styles = StyleSheet.create({
     color: "#BB7E5D",
   },
   buttonContainer: {
-    width: "100%",
-    gap: 10,
-    alignItems: "center",
+    width: "90%",
+    flexDirection: "row",
+    justifyContent: "space-around",
+    marginBottom: 20,
   },
   connection: {
     marginTop: 20,
