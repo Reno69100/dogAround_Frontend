@@ -1,53 +1,108 @@
 import React from "react";
 import { TextInput, TouchableOpacity, View, Text, StyleSheet } from "react-native";
 import FontAwesome from 'react-native-vector-icons/FontAwesome';
-import { faDirections, faPaw } from "@fortawesome/free-solid-svg-icons";
 
-
-import { text } from "@fortawesome/fontawesome-svg-core";
 
   export default function Filter() {
-    let filterClick = false;
-    let color;
-    let iconName= '';
-
-    const filterArr = ['MA POSITION', 'PARCS ET FORÊT', 'AIR CANINE', 'VETERINAIRE', 'ANIMALERIE', "POINT D'EAU", 'BAR/RESTAURANT', 'FAVORIS', 'AUTRES']
-
+    let filterColor = false;
+    let color = '#7DBA84';
+    let iconName= 'paw';
    
 
-    const handleIcon = () => {
-        if(filterClick){
-            return filterClick = false
+    const handleIcon = (filterColor) => {
+      filterColor ? color = '#416165' : color = '#7DBA84' 
+        if(filterColor){
+            filterColor = false
         } else {
-            return filterClick = true
+            filterColor = true
         }
     }
 
-    if(filterClick){
-        color = '#7DBA84'
+    if(filterColor){
+        return  color = '#7DBA84'
     } else {
         color = '#416165'
     }
-
-    const filters = filterArr.map((data, i) => {
-      iconName = 'paw'
-      return (
-         <View style={styles.container}>
-         <FontAwesome  name= {iconName}
-              style = {{marginRight:'5%', color : color}}
-              onPress = {() => handleIcon()}
-             /> 
-       <Text style={{color : '#416165'}} >{data}</Text>
-       </View>
-      )
-             
-   })
-    
+    console.log(filterColor)
     
     return(
         <View style={styles.mainContainer}>
-          {filters}
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >MA POSITION</Text>
+
+          </TouchableOpacity>
             
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >PARCS ET FORÊT</Text>
+
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >AIR CANINE</Text>
+
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >VETERINAIRE</Text>
+
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >ANIMALERIE</Text>
+
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >POINT D'EAU</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >BAR/RESTAURANT</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >FAVORIS</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
+            <FontAwesome  name= {iconName}
+               style = {{marginRight:'5%', color : color}}
+               onPress = {() => handleIcon()}
+            /> 
+            <Text style={{color : '#416165'}} >AUTRES</Text>
+          </TouchableOpacity>
 
             
         </View>
