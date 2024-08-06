@@ -4,7 +4,7 @@ const initialState = {
   value: {
     token: "",
     email: "",
-    avatar: "./assets/avatars/chien_1.png",
+    avatar: "../assets/avatars/chien_1.png",
     pseudo: "",
     city: "",
     radius: 20000,

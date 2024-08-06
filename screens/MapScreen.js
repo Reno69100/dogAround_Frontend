@@ -6,6 +6,8 @@ import {
     Image,
 } from "react-native";
 
+import FontAwesome from 'react-native-vector-icons/FontAwesome6'
+
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
@@ -54,8 +56,54 @@ export default function MapScreen({ navigation }) {
 
     //Affichage des markers
     const markers = places.map((e, i) => {
-        /* console.log(e) */
-        return <Marker key={i + 1} coordinate={e.location} title={e.Id} />
+        console.log(e);
+        let iconName = '';
+        let iconColor = '#000000';
+
+        if (e.type === 'event') {
+            iconName = 'calendar';
+        }
+        else if (e.type === 'favori') {
+            iconName = 'heart';
+        }
+        else if (e.type === 'parc') {
+            iconName = 'tree';
+            iconColor = '#00AA00';
+        }
+        else if (e.type === 'animalerie') {
+            iconName = 'bone';
+            iconColor = '#f2f473';
+        }
+        else if (e.type === 'veterinaire') {
+            iconName = 'house-medical';
+            iconColor = '#FF0000';
+        }
+        else if (e.type === 'eau') {
+            iconName = 'faucet';
+            iconColor = '#0000FF';
+        }
+        else if (e.type === 'air') {
+            iconName = 'paw';
+            iconColor = '#795C5F';
+        }
+        else if (e.type === 'restaurant') {
+            iconName = 'location-dot';
+            iconColor = '#FF0000';
+        }
+        else if (e.type === 'like') {
+            iconName = 'location-dot';
+            iconColor = '#FF0000';
+        }
+        else {
+            iconName = 'location-dot';
+            iconColor = '#FF0000';
+        }
+
+        return (
+            <Marker key={i + 1} coordinate={e.location} title={e.Id}>
+                <FontAwesome name={iconName} size={40} color={iconColor}/>
+            </Marker>
+        )
     })
 
     return (
