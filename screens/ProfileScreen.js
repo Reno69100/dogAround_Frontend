@@ -6,17 +6,35 @@ import Input from "../Components/Input";
 import { useSelector } from "react-redux";
 
 export default function ProfileScreen({ navigation }) {
-
   const user = useSelector((state) => state.user.value);
+
+  const handleClickCloseScreen = () => {
+    navigation.navigate("TabNavigator", { screen: "Map" });
+  };
+
+  const handleClickOpenPreference = () => {
+    navigation.navigate('Preference');
+  };
+
 
   return (
     <View style={styles.container}>
       <View style={styles.iconsContainer}>
         <TouchableOpacity>
-          <FontAwesome name="gear" size={25} color="#000" />
+          <FontAwesome
+            name="gear"
+            size={25}
+            color="#000"
+            onPress={handleClickOpenPreference}
+          />
         </TouchableOpacity>
         <TouchableOpacity>
-          <FontAwesome name="times" size={25} color="#000" />
+          <FontAwesome
+            name="times"
+            size={25}
+            color="#000"
+            onPress={handleClickCloseScreen}
+          />
         </TouchableOpacity>
       </View>
       <Text style={styles.welcomeText}>
@@ -29,8 +47,18 @@ export default function ProfileScreen({ navigation }) {
             style={styles.avatar}
           />
         </View>
-        <Input placeholder="pseudo" value={user.pseudo} style={styles.input} />
-        <Input placeholder="email" value={user.email} style={styles.input} />
+        <Input
+          placeholder="pseudo"
+          value={user.pseudo}
+          style={styles.input}
+          editable={false}
+        />
+        <Input
+          placeholder="email"
+          value={user.email}
+          style={styles.input}
+          editable={false}
+        />
         <Btn title="Modifier" style={styles.connection} />
       </View>
       <View style={styles.compagnonContainer}>

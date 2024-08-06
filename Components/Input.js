@@ -2,7 +2,7 @@ import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 
 // Input Component
-export default function Input({ value, onChangeText, placeholder, secureTextEntry }) {
+export default function Input({ value, onChangeText, placeholder, secureTextEntry, editable }) {
   return (
     <View style={styles.container}>
       <TextInput
@@ -11,6 +11,7 @@ export default function Input({ value, onChangeText, placeholder, secureTextEntr
         placeholder={placeholder}
         style={styles.input}
         secureTextEntry={secureTextEntry}
+        editable={editable}
       />
     </View>
   );
@@ -28,5 +29,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     padding: 10,
     borderRadius: 8,
+    color: "#000",
   },
 });
