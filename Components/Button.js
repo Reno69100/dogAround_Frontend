@@ -10,6 +10,8 @@ import {
 /* import AppLoading from "expo-app-loading"; */
 import * as SplashScreen from 'expo-splash-screen';
 
+
+//Button component 
 export default function Btn({ title, style, onPress }) {
   const [loaded, error] = useFonts({
     Poppins_400Regular,
