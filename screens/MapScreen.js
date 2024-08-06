@@ -11,6 +11,8 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome6'
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
 
+import Filter from '../Components/Filter'
+
 import { useSelector, useDispatch } from 'react-redux';
 import { importPlaces } from '../reducers/places'
 
@@ -19,44 +21,51 @@ export default function MapScreen({ navigation }) {
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
     const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
     const [currentPosition, setCurrentPosition] = useState({ "latitude": 48.866667, "longitude": 2.333333 }); //Déclaration état contenant la position de l'utisateur
+    const [showModal, setShowModal] = useState(false); //Affiche la modal Filter
+
+    //Fonction mise à jour des filtres
+    const validFilters = () => {
+        setShowModal(false);
+    }
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
-        (async () => {
-            const result = await Location.requestForegroundPermissionsAsync();
-            const status = result.status;
+        if (user.city === '') {
+            (async () => {
+                const result = await Location.requestForegroundPermissionsAsync();
+                const status = result.status;
 
-            if (status === 'granted') {
-                //Récupération location du téléphone
-                Location.watchPositionAsync({ distanceInterval: 10 },
-                    (location) => {
-                        const params = {
-                            longitude: location.coords.longitude,
-                            latitude: location.coords.latitude,
-                            radius: user.radius,
-                        };
+                if (status === 'granted') {
+                    //Récupération location du téléphone
+                    Location.watchPositionAsync({ distanceInterval: 10 },
+                        (location) => {
+                            const params = {
+                                longitude: location.coords.longitude,
+                                latitude: location.coords.latitude,
+                                radius: user.radius,
+                            };
 
-                        //Récupération des points d'intérêts autour de l'utilisateur
-                        fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params.latitude}/${params.longitude}/${params.radius}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                        })
-                            .then((response) => response.json())
-                            .then((data) => {
-                                data.result && dispatch(importPlaces(data.places));
-                            });
+                            //Récupération des points d'intérêts autour de l'utilisateur
+                            fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params.latitude}/${params.longitude}/${params.radius}`, {
+                                method: 'POST',
+                                headers: {
+                                    'Content-Type': 'application/json',
+                                },
+                            })
+                                .then((response) => response.json())
+                                .then((data) => {
+                                    data.result && dispatch(importPlaces(data.places));
+                                });
 
-                        setCurrentPosition(location.coords);
-                    });
-            }
-        })();
+                            setCurrentPosition(location.coords);
+                        });
+                }
+            })();
+        }
     }, []);
 
     //Affichage des markers
     const markers = places.map((e, i) => {
-        console.log(e);
         let iconName = '';
         let iconColor = '#000000';
 
@@ -99,11 +108,14 @@ export default function MapScreen({ navigation }) {
             iconColor = '#FF0000';
         }
 
-        return (
-            <Marker key={i + 1} coordinate={e.location} title={e.Id}>
-                <FontAwesome name={iconName} size={40} color={iconColor}/>
-            </Marker>
-        )
+        const showMarker = !user.filtres.some(filter => e.type === filter);
+        if (showMarker) {
+            return (
+                <Marker key={i + 1} coordinate={e.location} title={e.Id}>
+                    <FontAwesome name={iconName} size={40} color={iconColor} />
+                </Marker>
+            )
+        }
     })
 
     return (
@@ -126,14 +138,17 @@ export default function MapScreen({ navigation }) {
                     </Marker>}
                 {markers}
             </MapView>
+            <FontAwesome name="filter" size={40} style={styles.filter} onPress={() => setShowModal(true)} />
+            {showModal && <Filter userInfo={user} validFilters={validFilters} />}
         </View>
     );
 }
 
-
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center'
     },
     map: {
         width: Dimensions.get('window').width,
@@ -141,5 +156,10 @@ const styles = StyleSheet.create({
     },
     maposition: {
 
+    },
+    filter: {
+        position: "absolute",
+        top: Dimensions.get('window').height * 0.05,
+        left: Dimensions.get('window').width * 0.85,
     },
 });

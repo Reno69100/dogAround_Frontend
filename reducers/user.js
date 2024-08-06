@@ -25,6 +25,15 @@ export const userSlice = createSlice({
     addToken: (state, action) => {
       state.value.token = action.payload;
     },
+    storeFilters: (state, action) => {
+      state.value.filtres = [];
+      for (const element of action.payload) {
+        state.value.filtres.push(element);
+      }
+    },
+    storeCity: (state, action) => {
+      state.value.city = action.payload;
+    },
     logout: (state) => {
       state.value.token = null;
       state.value.email = null;
@@ -33,5 +42,5 @@ export const userSlice = createSlice({
   },
 });
 
-export const { login, addToken, logout } = userSlice.actions;
+export const { login, addToken, storeFilters, storeCity, logout } = userSlice.actions;
 export default userSlice.reducer;

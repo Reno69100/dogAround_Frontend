@@ -1,129 +1,213 @@
-import React from "react";
-import { TextInput, TouchableOpacity, View, Text, StyleSheet } from "react-native";
-import FontAwesome from 'react-native-vector-icons/FontAwesome';
+import React, { useState } from "react";
+import { TouchableOpacity, View, Text, TextInput, StyleSheet } from "react-native";
+import FontAwesome from 'react-native-vector-icons/FontAwesome6';
 
+import Btn from "../Components/Button"
 
-  export default function Filter() {
-    let filterColor = false;
-    let color = '#7DBA84';
-    let iconName= 'paw';
-   
+import { useDispatch } from 'react-redux';
+import { storeFilters, storeCity } from '../reducers/user'
 
-    const handleIcon = (filterColor) => {
-      filterColor ? color = '#416165' : color = '#7DBA84' 
-        if(filterColor){
-            filterColor = false
-        } else {
-            filterColor = true
-        }
+export default function Filter({ userInfo, validFilters }) {
+  const dispatch = useDispatch();
+  const [city, setCity] = useState(userInfo.city); //Etat champ Ville
+  const [filters, setFilters] = useState(userInfo.filtres); //Etat filtres sélectionnés
+  const [optionCity, setOptionCity] = useState(userInfo.city); //Sélection Ma position/Ville
+
+  //Fonction sélection filtres
+  const selectFilter = (filter) => {
+    const newDataFilters = filters.filter(e => e !== filter);
+
+    if (newDataFilters.length < filters.length) {
+      //Retire le filtre
+      setFilters(newDataFilters);
     }
-
-    if(filterColor){
-        return  color = '#7DBA84'
-    } else {
-        color = '#416165'
+    else {
+      //Ajout nouveau filtre
+      setFilters([...filters, filter]);
     }
-    console.log(filterColor)
-    
-    return(
-        <View style={styles.mainContainer}>
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >MA POSITION</Text>
-
-          </TouchableOpacity>
-            
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >PARCS ET FORÊT</Text>
-
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >AIR CANINE</Text>
-
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >VETERINAIRE</Text>
-
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >ANIMALERIE</Text>
-
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >POINT D'EAU</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >BAR/RESTAURANT</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >FAVORIS</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity style={{flexDirection: 'row', justifyContent: 'space-evenly',}}>
-            <FontAwesome  name= {iconName}
-               style = {{marginRight:'5%', color : color}}
-               onPress = {() => handleIcon()}
-            /> 
-            <Text style={{color : '#416165'}} >AUTRES</Text>
-          </TouchableOpacity>
-
-            
-        </View>
-    )
   }
 
-  const styles = StyleSheet.create({
-    mainContainer: {
-      justifyContent: 'space-evenly',
-      alignItems: 'flex-start',
+  //Confirmation filtres
+  const confirmation = () => {
+    dispatch(storeFilters(filters));
+    if (optionCity) {
+      dispatch(storeCity(city));
+    }
+    else {
+      dispatch(storeCity(''));
+    }
+    validFilters();
+  }
 
-      height: '50%'
+return (
+  <View style={styles.container}>
+    <Text style={styles.title}>Filtres</Text>
+    <View style={styles.selection}>
+      <TextInput
+        style={styles.cityInput}
+        placeholder="Ville"
+        accessibilityLabel="City Input"
+        value={city}
+        onChangeText={setCity}
+        editable={optionCity}
+      />
+      <TouchableOpacity style={styles.button} onPress={() => setOptionCity(!optionCity)}>
+        {!optionCity && <Text style={styles.buttontext}>Ma Position</Text>}
+        {optionCity && <Text style={styles.buttontext}>Ville</Text>}
+      </TouchableOpacity>
+    </View>
+    <View style={styles.containerfilters}>
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'parc')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('parc')}
+        />
+        <Text style={styles.text}>Parcs et forêts</Text>
 
-    },
+      </View>
 
-    container: {
-      flexDirection: 'row',
-      justifyContent: 'space-evenly',
-    },
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'air')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('air')}
+        />
+        <Text style={styles.text}>Air canine</Text>
 
-    // text:{
-    //   color: '#416165'
-    // }
-  })
+      </View>
+
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'veterinaire')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('veterinaire')}
+        />
+        <Text style={styles.text}>Veterinaire</Text>
+
+      </View>
+
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'animalerie')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('animalerie')}
+        />
+        <Text style={styles.text}>Animalerie</Text>
+
+      </View>
+
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'eau')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('eau')}
+        />
+        <Text style={styles.text}>Point d'eau</Text>
+      </View>
+
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'restaurant')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('restaurant')}
+        />
+        <Text style={styles.text}>Bar/Restaurant</Text>
+      </View>
+
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'favori')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('favori')}
+        />
+        <Text style={styles.text}>Favoris</Text>
+      </View>
+
+      <View style={styles.row}>
+        <FontAwesome name='paw'
+          size={40}
+          style={{ marginRight: 15, color: (filters.some(e => e === 'autre')) ? '#D9D9D9' : '#416165' }}
+          onPress={() => selectFilter('autre')}
+        />
+        <Text style={styles.text}>Autres</Text>
+      </View>
+    </View>
+    <Btn title="Confirmer" onPress={() => confirmation()}/>
+  </View>
+)
+}
+
+const styles = StyleSheet.create({
+  container: {
+    position: "absolute",
+    padding: 15,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+    width: '90%',
+    borderRadius: 20,
+  },
+
+  containerfilters: {
+    padding: 15,
+    backgroundColor: '#FFFFFF',
+    justifyContent: 'space-evenly',
+    alignItems: 'flex-start',
+    width: '100%',
+  },
+
+  selection: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+
+  row: {
+    flexDirection: 'row',
+    justifyContent: 'space-evenly',
+    alignItems: 'center',
+  },
+
+  title: {
+    fontFamily: "Poppins_600Regular",
+    fontSize: 20,
+    color: '#416165',
+    padding: 10,
+  },
+
+  text: {
+    fontFamily: "Poppins_600Regular",
+    fontSize: 20,
+    color: '#416165'
+  },
+
+  cityInput: {
+    width: '50%',
+    borderWidth: 1,
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 16,
+    padding: 10,
+    borderRadius: 8,
+    marginRight: 10,
+  },
+
+  button: {
+    backgroundColor: '#BB7E5D',
+    padding: 11,
+    width: '50%',
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
+  buttontext: {
+    color: "white",
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 16,
+  },
+
+  // text:{
+  //   color: '#416165'
+  // }
+})
