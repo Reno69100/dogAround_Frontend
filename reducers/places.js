@@ -13,6 +13,7 @@ export const placesSlice = createSlice({
             state.value.push(action.payload);
         },
         importPlaces: (state, action) => {
+            state.value = [];
             for (const element of action.payload) {
                 state.value.push(element);
             }
