@@ -36,6 +36,7 @@ export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("dada@gmail.com");
   const [password, setPassword] = useState("dada");
   const dispatch = useDispatch();
+  
 
   const [loaded, error] = useFonts({
     Commissioner_400Regular,
@@ -99,6 +100,7 @@ export default function SignInScreen({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      
       <KeyboardAvoidingView
         style={styles.container}
         behavior="padding"
@@ -108,10 +110,10 @@ export default function SignInScreen({ navigation }) {
           <Text style={styles.welcomeText}>
             Bienvenue sur <Text style={styles.text}>DOG AROUND</Text>
           </Text>
-
           <View style={styles.buttonContainer}>
             <ButtonGoogle />
             <ButtonFacebook />
+            
           </View>
 
           <View style={styles.inputContainer}>
