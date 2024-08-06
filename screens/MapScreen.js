@@ -15,50 +15,47 @@ import { importPlaces } from '../reducers/places'
 export default function MapScreen({ navigation }) {
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
-    const places = useSelector((state) => state.places.value); //Recuperation des places dasn le STORE
-    const [currentPosition, setCurrentPosition] = useState({ "latitude": 50, "longitude": 2 }); //Déclaration état contenant la posittion de l'utisateur
-
-    /* console.log(places) */
+    const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
+    const [currentPosition, setCurrentPosition] = useState({ "latitude": 48.866667, "longitude": 2.333333 }); //Déclaration état contenant la position de l'utisateur
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
         (async () => {
             const result = await Location.requestForegroundPermissionsAsync();
-            const status = result?.status;
+            const status = result.status;
 
             if (status === 'granted') {
                 //Récupération location du téléphone
                 Location.watchPositionAsync({ distanceInterval: 10 },
                     (location) => {
+                        const params = {
+                            longitude: location.coords.longitude,
+                            latitude: location.coords.latitude,
+                            radius: user.radius,
+                        };
+
+                        //Récupération des points d'intérêts autour de l'utilisateur
+                        fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params.latitude}/${params.longitude}/${params.radius}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                        })
+                            .then((response) => response.json())
+                            .then((data) => {
+                                data.result && dispatch(importPlaces(data.places));
+                            });
+
                         setCurrentPosition(location.coords);
                     });
             }
         })();
-
-
-        //Récupération des points d'intérêts autour de l'utilisateur
-        const params = {
-            longitude: currentPosition.longitude,
-            latitude: currentPosition.latitude,
-            radius: user.radius,
-        };
-
-        fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params.latitude}/${params.longitude}/${params.radius}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-        })
-            .then((response) => response.json())
-            .then((data) => {
-                /* console.log(data.places) */
-                data.result && dispatch(importPlaces(data.places));
-            });
     }, []);
 
-    const markers = places.map((e,i)=> {
+    //Affichage des markers
+    const markers = places.map((e, i) => {
         /* console.log(e) */
-        return <Marker key={i+1} coordinate={e.location} title={e.Id}/>
+        return <Marker key={i + 1} coordinate={e.location} title={e.Id} />
     })
 
     return (
