@@ -30,7 +30,7 @@ export default function MapScreen({ navigation }) {
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
-        if (user.city === '') {
+        if (!user.city) {
             (async () => {
                 const result = await Location.requestForegroundPermissionsAsync();
                 const status = result.status;
