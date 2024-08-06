@@ -2,7 +2,7 @@ import React from "react";
 import { View, TextInput, StyleSheet } from "react-native";
 
 // Input Component
-export default function Input({ value, onChangeText, placeholder }) {
+export default function Input({ value, onChangeText, placeholder, secureTextEntry }) {
   return (
     <View style={styles.container}>
       <TextInput
@@ -10,6 +10,7 @@ export default function Input({ value, onChangeText, placeholder }) {
         onChangeText={onChangeText}
         placeholder={placeholder}
         style={styles.input}
+        secureTextEntry={secureTextEntry}
       />
     </View>
   );
