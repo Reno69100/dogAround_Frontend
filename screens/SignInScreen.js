@@ -71,7 +71,7 @@ export default function SignInScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          dispatch(login({ email: email, token: data.token }));
+          dispatch(login({ email: email, pseudo: data.pseudo, token: data.token }));
           setEmail("");
           setPassword("");
           setErrorMessage(""); 
