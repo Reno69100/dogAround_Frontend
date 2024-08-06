@@ -9,7 +9,7 @@ import {
   ScrollView,
 } from "react-native";
 /* import AppLoading from "expo-app-loading"; */
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
 import {
@@ -33,8 +33,9 @@ import { login } from "../reducers/user";
 SplashScreen.preventAutoHideAsync();
 
 export default function SignInScreen({ navigation }) {
-  const [email, setEmail] = useState("dada@gmail.com");
-  const [password, setPassword] = useState("dada");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   
 
@@ -49,17 +50,6 @@ export default function SignInScreen({ navigation }) {
     Poppins_700Bold,
   });
 
-  /* let [fontsLoaded] = useFonts({
-    Commissioner_400Regular,
-    Commissioner_500Medium,
-    Commissioner_600SemiBold,
-    Commissioner_700Bold,
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-  }); */
-
   useEffect(() => {
     if (loaded || error) {
       SplashScreen.hideAsync();
@@ -70,17 +60,13 @@ export default function SignInScreen({ navigation }) {
     return null;
   }
 
-  /* if (!fontsLoaded) {
-    return <AppLoading />;
-  } */
-
   const handleConnection = () => {
     fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/signin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        email,
-        password,
+        email: email,
+        password: password,
       }),
     })
       .then((response) => response.json())
@@ -89,7 +75,10 @@ export default function SignInScreen({ navigation }) {
           dispatch(login({ email: email, token: data.token }));
           setEmail("");
           setPassword("");
+          setErrorMessage(""); 
           navigation.navigate("TabNavigator", { screen: "Map" });
+        } else {
+          setErrorMessage("Email ou Mot de passe incorrect");// affiche un message d'error si le mdp ou email pas bon ou manquant
         }
       });
   };
@@ -117,6 +106,9 @@ export default function SignInScreen({ navigation }) {
           </View>
 
           <View style={styles.inputContainer}>
+            {errorMessage ? (
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            ) : null}
             <Input
               value={email}
               onChangeText={setEmail}
@@ -130,6 +122,7 @@ export default function SignInScreen({ navigation }) {
               placeholder="Mot de passe"
               secureTextEntry
               accessibilityLabel="Password Input"
+              type="password"
             />
             <Btn
               style={styles.connection}
@@ -183,6 +176,10 @@ const styles = StyleSheet.create({
     width: "100%",
     gap: 10,
     alignItems: "center",
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
   },
   newUserText: {
     fontFamily: "Commissioner_700Bold",

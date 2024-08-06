@@ -10,6 +10,7 @@ import {
 /* import AppLoading from "expo-app-loading"; */
 import * as SplashScreen from 'expo-splash-screen';
 
+//Button Google component 
 export default function ButtonGoogle(onPress) {
   const [loaded, error] = useFonts({
     Poppins_400Regular,

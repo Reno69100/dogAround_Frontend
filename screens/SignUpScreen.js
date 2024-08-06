@@ -23,8 +23,7 @@ import {
   Poppins_700Bold,
 } from "@expo-google-fonts/poppins";
 import { useDispatch } from "react-redux";
-/* import AppLoading from "expo-app-loading"; */
-import * as SplashScreen from 'expo-splash-screen';
+import * as SplashScreen from "expo-splash-screen";
 import Input from "../Components/Input";
 import Btn from "../Components/Button";
 import ButtonFacebook from "../Components/ButtonFacebook";
@@ -32,17 +31,6 @@ import ButtonGoogle from "../Components/ButtonGoogle";
 import { login } from "../reducers/user";
 
 export default function SignUpScreen({ navigation }) {
-  /* let [fontsLoaded] = useFonts({
-    Commissioner_400Regular,
-    Commissioner_500Medium,
-    Commissioner_600SemiBold,
-    Commissioner_700Bold,
-    Poppins_400Regular,
-    Poppins_500Medium,
-    Poppins_600SemiBold,
-    Poppins_700Bold,
-  }); */
-
   const [loaded, error] = useFonts({
     Commissioner_400Regular,
     Commissioner_500Medium,
@@ -63,10 +51,11 @@ export default function SignUpScreen({ navigation }) {
   const [surname, setSurname] = useState("");
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleRegister = () => {
     if (password !== confirmPassword) {
-      alert("Passwords do not match");
+      setErrorMessage("Les mots de passe ne correspondent pas");
       return;
     }
 
@@ -93,9 +82,12 @@ export default function SignUpScreen({ navigation }) {
           setSurname("");
           setName("");
           setCity("");
+          setErrorMessage("");
           navigation.navigate("TabNavigator", { screen: "Map" });
+        } else {
+          setErrorMessage("Une erreur est survenue. Veuillez réessayer.");
         }
-      });
+      })
   };
 
   useEffect(() => {
@@ -108,89 +100,89 @@ export default function SignUpScreen({ navigation }) {
     return null;
   }
 
-  /* if (!fontsLoaded) {
-    return <AppLoading />;
-  } else { */
-    return (
-      <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-        <KeyboardAvoidingView
-          style={styles.container}
-          behavior={Platform.OS === "ios" ? "padding" : "height"}
-          keyboardVerticalOffset={10} 
-        >
-          <ScrollView contentContainerStyle={styles.scrollContainer}>
-            <Text style={styles.newUserText}>
-              Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
-            </Text>
+  return (
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={10}
+      >
+        <ScrollView contentContainerStyle={styles.scrollContainer}>
+          <Text style={styles.newUserText}>
+            Nouveau sur <Text style={styles.text}>DOG AROUND</Text>?
+          </Text>
 
-            <View style={styles.socialContainer}>
-              <Text style={styles.textConnection}>Connectez-vous via: </Text>
-              <View style={styles.buttonContainer}>
-                <ButtonGoogle />
-                <ButtonFacebook />
-              </View>
+          <View style={styles.socialContainer}>
+            <Text style={styles.textConnection}>Connectez-vous via: </Text>
+            <View style={styles.buttonContainer}>
+              <ButtonGoogle />
+              <ButtonFacebook />
             </View>
+          </View>
 
-            <View style={styles.mailContainer}>
-              <Text style={styles.textMail}>Ou par mail: </Text>
-              <View style={styles.inputContainer}>
-                <Input
-                  placeholder="E-mail"
-                  accessibilityLabel="Email Input"
-                  value={email}
-                  onChangeText={setEmail}
-                />
-                <Input
-                  placeholder="Pseudo"
-                  accessibilityLabel="Username Input"
-                  value={pseudo}
-                  onChangeText={setPseudo}
-                />
-                <Input
-                  placeholder="Prénom"
-                  accessibilityLabel="Surname Input"
-                  value={surname}
-                  onChangeText={setSurname}
-                />
-                <Input
-                  placeholder="Nom"
-                  accessibilityLabel="Name Input"
-                  value={name}
-                  onChangeText={setName}
-                />
-                <Input
-                  placeholder="Ville"
-                  accessibilityLabel="City Input"
-                  value={city}
-                  onChangeText={setCity}
-                />
-                <Input
-                  placeholder="Mot de passe"
-                  accessibilityLabel="Password Input"
-                  secureTextEntry
-                  value={password}
-                  onChangeText={setPassword}
-                />
-                <Input
-                  placeholder="Confirmer Mot de passe"
-                  accessibilityLabel="Confirm Password Input"
-                  secureTextEntry
-                  value={confirmPassword}
-                  onChangeText={setConfirmPassword}
-                />
-                <Btn
-                  style={styles.connection}
-                  title="Valider"
-                  onPress={handleRegister}
-                />
-              </View>
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
+
+          <View style={styles.mailContainer}>
+            <Text style={styles.textMail}>Ou par mail: </Text>
+            <View style={styles.inputContainer}>
+              <Input
+                placeholder="E-mail"
+                accessibilityLabel="Email Input"
+                value={email}
+                onChangeText={setEmail}
+              />
+              <Input
+                placeholder="Pseudo"
+                accessibilityLabel="Username Input"
+                value={pseudo}
+                onChangeText={setPseudo}
+              />
+              <Input
+                placeholder="Prénom"
+                accessibilityLabel="Surname Input"
+                value={surname}
+                onChangeText={setSurname}
+              />
+              <Input
+                placeholder="Nom"
+                accessibilityLabel="Name Input"
+                value={name}
+                onChangeText={setName}
+              />
+              <Input
+                placeholder="Ville"
+                accessibilityLabel="City Input"
+                value={city}
+                onChangeText={setCity}
+              />
+              <Input
+                placeholder="Mot de passe"
+                accessibilityLabel="Password Input"
+                secureTextEntry
+                value={password}
+                onChangeText={setPassword}
+              />
+              <Input
+                placeholder="Confirmer Mot de passe"
+                accessibilityLabel="Confirm Password Input"
+                secureTextEntry
+                value={confirmPassword}
+                onChangeText={setConfirmPassword}
+              />
+              <Btn
+                style={styles.connection}
+                title="Valider"
+                onPress={handleRegister}
+              />
             </View>
-          </ScrollView>
-        </KeyboardAvoidingView>
-      </TouchableWithoutFeedback>
-    );
-  }
-/* } */
+          </View>
+        </ScrollView>
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
+  );
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -246,5 +238,10 @@ const styles = StyleSheet.create({
   },
   connection: {
     marginTop: 20,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 10,
+    textAlign: "center",
   },
 });
