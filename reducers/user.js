@@ -4,17 +4,18 @@ const initialState = {
   value: {
     token: "",
     email: "",
-    avatar: "../assets/avatars/chien_1.png",
+    avatar: "",
     pseudo: "",
     city: {
-      cityname:'',
-      latitude:0.1,
-      longitude:0.1,
+      cityname: "",
+      latitude: 0.1,
+      longitude: 0.1,
     },
     radius: 20000,
     filtres: [],
   },
 };
+
 
 export const userSlice = createSlice({
   name: "user",
@@ -24,6 +25,8 @@ export const userSlice = createSlice({
       state.value.token = action.payload.token;
       state.value.email = action.payload.email;
       state.value.pseudo = action.payload.pseudo;
+      state.value.city = action.payload.city;
+      state.value.avatar = action.payload.avatar;
     },
     addToken: (state, action) => {
       state.value.token = action.payload;
@@ -43,9 +46,16 @@ export const userSlice = createSlice({
       state.value.token = null;
       state.value.email = null;
       state.value.pseudo = null;
+      state.value.avatar = null; 
     },
   },
 });
 
-export const { login, addToken, storeFilters, storeCity, logout } = userSlice.actions;
+export const {
+  login,
+  addToken,
+  storeFilters,
+  storeCity,
+  logout,
+} = userSlice.actions;
 export default userSlice.reducer;

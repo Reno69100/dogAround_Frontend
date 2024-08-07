@@ -8,7 +8,6 @@ import {
   KeyboardAvoidingView,
   ScrollView,
 } from "react-native";
-/* import AppLoading from "expo-app-loading"; */
 import * as SplashScreen from "expo-splash-screen";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
@@ -33,8 +32,8 @@ import { login } from "../reducers/user";
 SplashScreen.preventAutoHideAsync();
 
 export default function SignInScreen({ navigation }) {
-  const [email, setEmail] = useState("toi@toi.com");
-  const [password, setPassword] = useState("toi");
+  const [email, setEmail] = useState("moi@moi.com");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   

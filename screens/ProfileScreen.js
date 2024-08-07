@@ -27,7 +27,7 @@ export default function ProfilScreen({ navigation }) {
 
   const [email, setEmail] = useState(user.email || "");
   const [pseudo, setPseudo] = useState(user.pseudo || "");
-  const [city, setCity] = useState(user.city || "");
+  const [city, setCity] = useState(user.city.cityname || "");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -44,6 +44,7 @@ export default function ProfilScreen({ navigation }) {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
+        avatar: selectedAvatar,
         email: email,
         pseudo: pseudo,
         city: city,
@@ -60,6 +61,7 @@ export default function ProfilScreen({ navigation }) {
               pseudo: data.user.pseudo,
               city: data.user.city,
               token: data.user.token,
+              avatar: data.user.avatar,
             })
           );
           setPassword("");
@@ -81,8 +83,8 @@ export default function ProfilScreen({ navigation }) {
   };
 
   const handleSelectAvatar = (avatar) => {
-    setSelectedAvatar(avatar.source);
-  };
+    setSelectedAvatar(avatar.source); 
+  }
 
   return (
     <View style={styles.container}>
@@ -101,7 +103,8 @@ export default function ProfilScreen({ navigation }) {
           <View style={styles.avatarContainer}>
             <Image
               source={
-                selectedAvatar || require("../assets/avatars/chien_1.png")
+                selectedAvatar || { uri: user.avatar } ||
+                require("../assets/avatars/chien_1.png")
               }
               style={styles.avatar}
             />
