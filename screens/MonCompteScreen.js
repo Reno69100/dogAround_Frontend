@@ -9,7 +9,7 @@ export default function MonCompteScreen({ navigation }) {
   const user = useSelector((state) => state.user.value);
 
   const handleClickCloseScreen = () => {
-    navigation.navigate("TabNavigator", { screen: "Compte" });
+    navigation.navigate("TabNavigator", { screen: "Map" });
   };
 
   const handleClickOpenPreference = () => {

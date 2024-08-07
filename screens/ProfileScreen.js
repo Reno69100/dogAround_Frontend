@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   StyleSheet,
   View,
@@ -7,22 +7,67 @@ import {
   Text,
   Switch,
 } from "react-native";
-import { useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Input from "../Components/Input";
 import Btn from "../Components/Button";
-import { useSelector } from "react-redux";
+import { login } from "../reducers/user";
 
 export default function ProfilScreen({ navigation }) {
 
-    //Switch
+  // Switch
   const [isEnabled, setIsEnabled] = useState(false);
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   const user = useSelector((state) => state.user.value);
+  console.log(user)
+  const dispatch = useDispatch();
+
+  const [email, setEmail] = useState(user.email || "");
+  const [pseudo, setPseudo] = useState(user.pseudo || "");
+  const [city, setCity] = useState(user.city || "");
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleClickCloseScreen = () => {
     navigation.navigate("TabNavigator", { screen: "MonCompte" });
+  };
+
+  const handleChangeInfos = () => {
+    if (!user.token) {
+      return;
+    }
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        pseudo: pseudo,
+        city: city,
+        password: password,
+        newPassword: newPassword,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          dispatch(
+            login({
+              email: data.user.email,
+              pseudo: data.user.pseudo,
+              city: data.user.city,
+              token: data.user.token,
+            })
+          );
+          setPassword("");
+          setNewPassword("");
+          setErrorMessage("");
+          navigation.navigate("TabNavigator", { screen: "MonCompte" });
+        } else {
+          setErrorMessage("Information invalide");
+        }
+      })
   };
 
   return (
@@ -44,14 +89,38 @@ export default function ProfilScreen({ navigation }) {
             style={styles.avatar}
           />
         </View>
-        <Input placeholder="pseudo" value={user.pseudo} style={styles.input} />
-        <Input placeholder="email" value={user.email} style={styles.input} />
-        <Input placeholder="Ville" value={user.city} style={styles.input} />
         <Input
-          placeholder="Nouveau mot de passe"
+          placeholder="pseudo"
+          value={pseudo}
+          onChangeText={(text) => setPseudo(text)}
           style={styles.input}
         />
-        <Input placeholder="Confirmer mot de passe" style={styles.input} />
+        <Input
+          placeholder="email"
+          value={email}
+          onChangeText={(text) => setEmail(text)}
+          style={styles.input}
+        />
+        <Input
+          placeholder="Ville"
+          value={city}
+          onChangeText={(text) => setCity(text)}
+          style={styles.input}
+        />
+        <Input
+          placeholder="Mot de passe"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          secureTextEntry
+          style={styles.input}
+        />
+        <Input
+          placeholder="Nouveau mot de passe"
+          value={newPassword}
+          onChangeText={(text) => setNewPassword(text)}
+          secureTextEntry
+          style={styles.input}
+        />
         <View style={styles.switchContainer}>
           <Switch
             trackColor={{ false: "#BB7E5D", true: "#7DBA84" }}
@@ -64,7 +133,14 @@ export default function ProfilScreen({ navigation }) {
             {isEnabled ? "Profil Privé" : "Profil Public"}
           </Text>
         </View>
-        <Btn title="Modifier" style={styles.connection} />
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
+        <Btn
+          title="Modifier"
+          style={styles.connection}
+          onPress={handleChangeInfos}
+        />
       </View>
     </View>
   );
@@ -96,7 +172,7 @@ const styles = StyleSheet.create({
   },
   inputContainer: {
     borderRadius: 8,
-    width: "83%",
+    width: "100%",
     gap: 10,
     alignItems: "center",
     padding: 30,
@@ -127,6 +203,10 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     fontSize: 16,
     color: "#416165",
+  },
+  errorText: {
+    color: "red",
+    marginTop: 10,
   },
   connection: {
     marginTop: 20,
