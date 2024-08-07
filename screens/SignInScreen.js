@@ -33,8 +33,8 @@ import { login } from "../reducers/user";
 SplashScreen.preventAutoHideAsync();
 
 export default function SignInScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("toi@toi.com");
+  const [password, setPassword] = useState("toi");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   
@@ -72,7 +72,7 @@ export default function SignInScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          dispatch(login({ email: email, pseudo: data.pseudo, token: data.token }));
+          dispatch(login({ email: email, pseudo: data.pseudo, city:data.city, token: data.token }));
           setEmail("");
           setPassword("");
           setErrorMessage(""); 

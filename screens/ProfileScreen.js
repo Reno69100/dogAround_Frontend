@@ -1,88 +1,176 @@
-import React from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useState } from "react";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  Text,
+  Switch,
+} from "react-native";
+import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Btn from "../Components/Button";
 import Input from "../Components/Input";
-import { useSelector } from "react-redux";
+import Btn from "../Components/Button";
+import ModalAvatar from "../Components/ModalAvatar";
+import { login } from "../reducers/user";
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfilScreen({ navigation }) {
+  // States modal visibility and switch
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isEnabled, setIsEnabled] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
   const user = useSelector((state) => state.user.value);
+  const dispatch = useDispatch();
+
+  const [email, setEmail] = useState(user.email || "");
+  const [pseudo, setPseudo] = useState(user.pseudo || "");
+  const [city, setCity] = useState(user.city || "");
+  const [password, setPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
   const handleClickCloseScreen = () => {
-    navigation.navigate("TabNavigator", { screen: "Map" });
+    navigation.navigate("TabNavigator", { screen: "MonCompte" });
   };
 
-  const handleClickOpenPreference = () => {
-    navigation.navigate('Preference');
+  const handleChangeInfos = () => {
+    if (!user.token) {
+      return;
+    }
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        email: email,
+        pseudo: pseudo,
+        city: city,
+        password: password,
+        newPassword: newPassword,
+      }),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          dispatch(
+            login({
+              email: data.user.email,
+              pseudo: data.user.pseudo,
+              city: data.user.city,
+              token: data.user.token,
+            })
+          );
+          setPassword("");
+          setNewPassword("");
+          setErrorMessage("");
+          navigation.navigate("TabNavigator", { screen: "MonCompte" });
+        } else {
+          setErrorMessage("Information invalide");
+        }
+      });
   };
 
+  const handleClickOpenModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSelectAvatar = (avatar) => {
+    setSelectedAvatar(avatar.source);
+  };
 
   return (
     <View style={styles.container}>
-      <View style={styles.iconsContainer}>
-        <TouchableOpacity>
-          <FontAwesome
-            name="gear"
-            size={25}
-            color="#000"
-            onPress={handleClickOpenPreference}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome
-            name="times"
-            size={25}
-            color="#000"
-            onPress={handleClickCloseScreen}
-          />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleClickCloseScreen}>
+          <FontAwesome name="times" size={25} color="#000" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.welcomeText}>
-        <Text style={styles.text}>MON COMPTE</Text>
-      </Text>
+      <View>
+        <Text style={styles.welcomeText}>
+          <Text style={styles.text}>PROFIL</Text>
+        </Text>
+      </View>
       <View style={styles.inputContainer}>
-        <View style={styles.avatarContainer}>
-          <Image
-            source={require("../assets/avatars/chien_1.png")}
-            style={styles.avatar}
-          />
+        <View style={styles.avatarWrapper}>
+          <View style={styles.avatarContainer}>
+            <Image
+              source={
+                selectedAvatar || require("../assets/avatars/chien_1.png")
+              }
+              style={styles.avatar}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.plusIcon}
+            onPress={handleClickOpenModal}
+          >
+            <FontAwesome name="plus" size={21} color="#BB7E5D" />
+          </TouchableOpacity>
         </View>
         <Input
           placeholder="pseudo"
-          value={user.pseudo}
+          value={pseudo}
+          onChangeText={(text) => setPseudo(text)}
           style={styles.input}
-          editable={false}
         />
         <Input
           placeholder="email"
-          value={user.email}
+          value={email}
+          onChangeText={(text) => setEmail(text)}
           style={styles.input}
-          editable={false}
         />
-        <Btn title="Modifier" style={styles.connection} />
-      </View>
-      <View style={styles.compagnonContainer}>
-        <Text style={styles.secondText}>
-          <Text style={styles.text}>MES COMPAGNONS</Text>
-        </Text>
-        <TouchableOpacity style={styles.plusButton}>
-          <FontAwesome name="plus" size={25} color="#416165" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.inputCompagnon}>
-        <View style={styles.inputRow}>
-          <Input placeholder="Nom:" style={styles.inputField} />
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editText}>EDIT</Text>
-          </TouchableOpacity>
+        <Input
+          placeholder="Ville"
+          value={city}
+          onChangeText={(text) => setCity(text)}
+          style={styles.input}
+        />
+        <Input
+          placeholder="Mot de passe"
+          value={password}
+          onChangeText={(text) => setPassword(text)}
+          secureTextEntry
+          style={styles.input}
+        />
+        <Input
+          placeholder="Nouveau mot de passe"
+          value={newPassword}
+          onChangeText={(text) => setNewPassword(text)}
+          secureTextEntry
+          style={styles.input}
+        />
+        <View style={styles.switchContainer}>
+          <Switch
+            trackColor={{ false: "#BB7E5D", true: "#7DBA84" }}
+            thumbColor={isEnabled ? "#BB7E5D" : "#7DBA84"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
+          <Text style={styles.switchText}>
+            {isEnabled ? "Profil Privé" : "Profil Public"}
+          </Text>
         </View>
-        <View style={styles.inputRow}>
-          <Input placeholder="Nom:" style={styles.inputField} />
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editText}>EDIT</Text>
-          </TouchableOpacity>
-        </View>
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
+        <Btn
+          title="Modifier"
+          style={styles.connection}
+          onPress={handleChangeInfos}
+        />
       </View>
+      <ModalAvatar
+        visible={isModalVisible}
+        onClose={handleCloseModal}
+        onSelect={handleSelectAvatar}
+      />
     </View>
   );
 }
@@ -94,6 +182,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#E8E9ED",
     paddingTop: 40,
   },
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
   welcomeText: {
     marginBottom: 30,
   },
@@ -104,20 +199,18 @@ const styles = StyleSheet.create({
     fontFamily: "Commissioner_700Bold",
     marginBottom: 30,
   },
-  iconsContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
   inputContainer: {
     borderRadius: 8,
-    backgroundColor: "#BB7E5D",
-    width: "83%",
+    width: "100%",
     gap: 10,
     alignItems: "center",
     padding: 30,
+    marginBottom: 30,
+  },
+  avatarWrapper: {
+    width: 80,
+    height: 80,
+    position: "relative",
     marginBottom: 30,
   },
   avatarContainer: {
@@ -129,56 +222,39 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
-    marginBottom: 20,
+    position: "relative",
   },
   avatar: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
   },
+  plusIcon: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    padding: 5,
+  },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  switchText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: "#416165",
+  },
+  errorText: {
+    color: "red",
+    marginTop: 10,
+  },
   connection: {
     marginTop: 20,
   },
   input: {
     marginTop: 20,
-  },
-  secondText: {
-    color: "#416165",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginRight: 10,
-  },
-  compagnonContainer: {
-    width: "75%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 8,
-  },
-  plusButton: {
-    alignItems: "center",
-  },
-  inputCompagnon: {
-    width: "80%",
-    marginTop: 30,
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  inputField: {
-    flex: 1,
-    marginRight: 10,
-  },
-  editButton: {
-    backgroundColor: "#FFF",
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-  },
-  editText: {
-    color: "#000",
-    fontWeight: "bold",
   },
 });

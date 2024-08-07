@@ -15,10 +15,6 @@ export default function PreferenceScreen({ navigation }) {
     navigation.navigate("TabNavigator", { screen: "Profile" });
   };
 
-  const handleFirstInputClick = () => {
-    console.log("click");
-  };
-
   const handleClickDeconnexion = () => {
     dispatch(logout());
     navigation.navigate("SignIn");
@@ -36,12 +32,6 @@ export default function PreferenceScreen({ navigation }) {
         <Text style={styles.text}>MES PREFERENCES</Text>
       </Text>
       <View style={styles.inputContainer}>
-        <TouchableOpacity
-          onPress={handleFirstInputClick}
-          style={styles.buttonInput}
-        >
-          <TextContainer style={styles.buttonText} title="GEOLOCALISATION" />
-        </TouchableOpacity>
         <TouchableOpacity style={styles.buttonInput}>
           <TextContainer
             style={styles.buttonText}
