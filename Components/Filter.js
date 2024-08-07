@@ -10,10 +10,10 @@ import { storeFilters, storeCity } from '../reducers/user'
 
 export default function Filter({ userInfo, validFilters }) {
   const dispatch = useDispatch();
-  const [city, setCity] = useState(userInfo.city.cityname); //Etat champ Ville
-  const [suggestionsList, setSuggestionsList] = useState([]);
+  const [city, setCity] = useState(userInfo.cityfield.cityname); //Etat champ Ville
+  const [suggestionsList, setSuggestionsList] = useState([{ id: '1', title: userInfo.cityfield.cityname }]);
   const [filters, setFilters] = useState(userInfo.filtres); //Etat filtres sélectionnés
-  const [optionCity, setOptionCity] = useState(userInfo.city.cityname); //Sélection Ma position/Ville
+  const [optionCity, setOptionCity] = useState(userInfo.cityfield.cityname); //Sélection Ma position/Ville
 
   //Fonction sélection filtres
   const selectFilter = (filter) => {
@@ -44,7 +44,7 @@ export default function Filter({ userInfo, validFilters }) {
       .then((response) => response.json())
       .then(data => {
         const suggestions = data.features.map((data, i) => {
-          return { id: i+1, title: data.properties.name };
+          return { id: i + 1, title: data.properties.name };
         });
         setSuggestionsList(suggestions);
       });
@@ -79,10 +79,10 @@ export default function Filter({ userInfo, validFilters }) {
   }
 
   return (
-      <View style={styles.container}>
-        <Text style={styles.title}>Filtres</Text>
-        <View style={styles.selection}>
-          {/* <TextInput
+    <View style={styles.container}>
+      <Text style={styles.title}>Filtres</Text>
+      <View style={styles.selection}>
+        {/* <TextInput
           style={styles.cityInput}
           placeholder="Ville"
           accessibilityLabel="City Input"
@@ -90,112 +90,112 @@ export default function Filter({ userInfo, validFilters }) {
           onChangeText={setCity}
           editable={optionCity}
         /> */}
-          <AutocompleteDropdown
-            debounce={500}
-            onChangeText={(value) => getSuggestions(value)}
-            onSelectItem={(item) => item && setCity(item.title)}
-            dataSet={suggestionsList}
-            initialValue='1'
-            textInputProps={{
-              placeholder: 'Ville',
-              style: {
-                width: Dimensions.get('window').width * 0.5,
-              },
-            }}
-            direction={Platform.select({ ios: 'down' })}
-            inputContainerStyle={styles.inputContainer}
-            containerStyle={styles.dropdownContainer}
-            suggestionsListContainerStyle={styles.suggestionListContainer}
-            suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
-            editable={optionCity}
-            clearOnFocus={false}
-            closeOnSubmit={true}
-            onClear={() => onClearPress()}
-          />
-          <TouchableOpacity style={styles.button} onPress={() => setOptionCity(!optionCity)}>
-            {!optionCity && <Text style={styles.buttontext}>Ma Position</Text>}
-            {optionCity && <Text style={styles.buttontext}>Ville</Text>}
-          </TouchableOpacity>
-        </View>
-        <View style={styles.containerfilters}>
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'parc')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('parc')}
-            />
-            <Text style={styles.text}>Parcs et forêts</Text>
-
-          </View>
-
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'air')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('air')}
-            />
-            <Text style={styles.text}>Air canine</Text>
-
-          </View>
-
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'veterinaire')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('veterinaire')}
-            />
-            <Text style={styles.text}>Veterinaire</Text>
-
-          </View>
-
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'animalerie')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('animalerie')}
-            />
-            <Text style={styles.text}>Animalerie</Text>
-
-          </View>
-
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'eau')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('eau')}
-            />
-            <Text style={styles.text}>Point d'eau</Text>
-          </View>
-
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'restaurant')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('restaurant')}
-            />
-            <Text style={styles.text}>Bar/Restaurant</Text>
-          </View>
-
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'favori')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('favori')}
-            />
-            <Text style={styles.text}>Favoris</Text>
-          </View>
-
-          <View style={styles.row}>
-            <FontAwesome name='paw'
-              size={40}
-              style={{ marginRight: 15, color: (filters.some(e => e === 'autre')) ? '#D9D9D9' : '#416165' }}
-              onPress={() => selectFilter('autre')}
-            />
-            <Text style={styles.text}>Autres</Text>
-          </View>
-        </View>
-        <Btn title="Confirmer" onPress={() => confirmation()} />
+        <AutocompleteDropdown
+          initialValue={{ id:'1' }}
+          debounce={500}
+          onChangeText={(value) => getSuggestions(value)}
+          onSelectItem={(item) => item && setCity(item.title)}
+          dataSet={suggestionsList}
+          textInputProps={{
+            placeholder: 'Ville',
+            style: {
+              width: Dimensions.get('window').width * 0.5,
+            },
+          }}
+          direction={Platform.select({ ios: 'down' })}
+          inputContainerStyle={styles.inputContainer}
+          containerStyle={styles.dropdownContainer}
+          suggestionsListContainerStyle={styles.suggestionListContainer}
+          suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
+          editable={optionCity}
+          clearOnFocus={false}
+          closeOnSubmit={true}
+          onClear={() => onClearPress()}
+        />
+        <TouchableOpacity style={styles.button} onPress={() => setOptionCity(!optionCity)}>
+          {!optionCity && <Text style={styles.buttontext}>Ma Position</Text>}
+          {optionCity && <Text style={styles.buttontext}>Ville</Text>}
+        </TouchableOpacity>
       </View>
+      <View style={styles.containerfilters}>
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'parc')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('parc')}
+          />
+          <Text style={styles.text}>Parcs et forêts</Text>
+
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'air')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('air')}
+          />
+          <Text style={styles.text}>Air canine</Text>
+
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'veterinaire')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('veterinaire')}
+          />
+          <Text style={styles.text}>Veterinaire</Text>
+
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'animalerie')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('animalerie')}
+          />
+          <Text style={styles.text}>Animalerie</Text>
+
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'eau')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('eau')}
+          />
+          <Text style={styles.text}>Point d'eau</Text>
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'restaurant')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('restaurant')}
+          />
+          <Text style={styles.text}>Bar/Restaurant</Text>
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'favori')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('favori')}
+          />
+          <Text style={styles.text}>Favoris</Text>
+        </View>
+
+        <View style={styles.row}>
+          <FontAwesome name='paw'
+            size={40}
+            style={{ marginRight: 15, color: (filters.some(e => e === 'autre')) ? '#D9D9D9' : '#416165' }}
+            onPress={() => selectFilter('autre')}
+          />
+          <Text style={styles.text}>Autres</Text>
+        </View>
+      </View>
+      <Btn title="Confirmer" onPress={() => confirmation()} />
+    </View>
   )
 }
 

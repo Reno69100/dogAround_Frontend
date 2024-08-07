@@ -45,7 +45,7 @@ export default function MapScreen({ navigation }) {
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
-        if (!user.city.cityname) {
+        if (!user.cityfield.cityname) {
 
             (async () => {
                 const result = await Location.requestForegroundPermissionsAsync();
@@ -74,15 +74,15 @@ export default function MapScreen({ navigation }) {
             })();
         }
         else {
-            getInfoMarkers(user.city.latitude, user.city.longitude, user.radius);
+            getInfoMarkers(user.cityfield.latitude, user.cityfield.longitude, user.radius);
             setRegionPosition({
-                "latitude": user.city.latitude,
-                "longitude": user.city.longitude,
+                "latitude": user.cityfield.latitude,
+                "longitude": user.cityfield.longitude,
                 "latitudeDelta": 0.05,
                 "longitudeDelta": 0.05,
             });
         };
-    }, [user.city.cityname]);
+    }, [user.cityfield.cityname]);
 
     //Affichage des markers
     const markers = places.map((e, i) => {
