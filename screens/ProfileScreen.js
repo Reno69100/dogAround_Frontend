@@ -11,16 +11,18 @@ import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Input from "../Components/Input";
 import Btn from "../Components/Button";
+import ModalAvatar from "../Components/ModalAvatar";
 import { login } from "../reducers/user";
 
 export default function ProfilScreen({ navigation }) {
-
-  // Switch
+  // States modal visibility and switch
+  const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
+  const [selectedAvatar, setSelectedAvatar] = useState(null);
+
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
   const user = useSelector((state) => state.user.value);
-  console.log(user)
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState(user.email || "");
@@ -67,7 +69,19 @@ export default function ProfilScreen({ navigation }) {
         } else {
           setErrorMessage("Information invalide");
         }
-      })
+      });
+  };
+
+  const handleClickOpenModal = () => {
+    setIsModalVisible(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleSelectAvatar = (avatar) => {
+    setSelectedAvatar(avatar.source);
   };
 
   return (
@@ -83,11 +97,21 @@ export default function ProfilScreen({ navigation }) {
         </Text>
       </View>
       <View style={styles.inputContainer}>
-        <View style={styles.avatarContainer}>
-          <Image
-            source={require("../assets/avatars/chien_1.png")}
-            style={styles.avatar}
-          />
+        <View style={styles.avatarWrapper}>
+          <View style={styles.avatarContainer}>
+            <Image
+              source={
+                selectedAvatar || require("../assets/avatars/chien_1.png")
+              }
+              style={styles.avatar}
+            />
+          </View>
+          <TouchableOpacity
+            style={styles.plusIcon}
+            onPress={handleClickOpenModal}
+          >
+            <FontAwesome name="plus" size={21} color="#BB7E5D" />
+          </TouchableOpacity>
         </View>
         <Input
           placeholder="pseudo"
@@ -142,6 +166,11 @@ export default function ProfilScreen({ navigation }) {
           onPress={handleChangeInfos}
         />
       </View>
+      <ModalAvatar
+        visible={isModalVisible}
+        onClose={handleCloseModal}
+        onSelect={handleSelectAvatar}
+      />
     </View>
   );
 }
@@ -178,6 +207,12 @@ const styles = StyleSheet.create({
     padding: 30,
     marginBottom: 30,
   },
+  avatarWrapper: {
+    width: 80,
+    height: 80,
+    position: "relative",
+    marginBottom: 30,
+  },
   avatarContainer: {
     width: 80,
     height: 80,
@@ -187,12 +222,20 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     overflow: "hidden",
-    marginBottom: 20,
+    position: "relative",
   },
   avatar: {
     width: "100%",
     height: "100%",
     resizeMode: "cover",
+  },
+  plusIcon: {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    backgroundColor: "#FFF",
+    borderRadius: 20,
+    padding: 5,
   },
   switchContainer: {
     flexDirection: "row",
