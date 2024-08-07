@@ -21,7 +21,22 @@ export default function MapScreen({ navigation }) {
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
     const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
     const [currentPosition, setCurrentPosition] = useState({ "latitude": 48.866667, "longitude": 2.333333 }); //Déclaration état contenant la position de l'utisateur
+    const [regionPosition, setRegionPosition] = useState({ "latitude": 48.866667, "longitude": 2.333333, "latitudeDelta": 0.05, "longitudeDelta": 0.05 }); //Déclaration état contenant la position de l'utisateur
     const [showModal, setShowModal] = useState(false); //Affiche la modal Filter
+
+    //Fonction Récupération des points d'intérêts autour d'une position'
+    const getInfoMarkers = (latitude, longitude, radius) => {
+        fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/position/${latitude}/${longitude}/${radius}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+        })
+            .then((response) => response.json())
+            .then((data) => {
+                data.result && dispatch(importPlaces(data.places));
+            });
+    }
 
     //Fonction mise à jour des filtres
     const validFilters = () => {
@@ -30,7 +45,8 @@ export default function MapScreen({ navigation }) {
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
-        if (!user.city) {
+        if (!user.city.cityname) {
+
             (async () => {
                 const result = await Location.requestForegroundPermissionsAsync();
                 const status = result.status;
@@ -42,27 +58,32 @@ export default function MapScreen({ navigation }) {
                             const params = {
                                 longitude: location.coords.longitude,
                                 latitude: location.coords.latitude,
-                                radius: user.radius,
                             };
 
                             //Récupération des points d'intérêts autour de l'utilisateur
-                            fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params.latitude}/${params.longitude}/${params.radius}`, {
-                                method: 'GET',
-                                headers: {
-                                    'Content-Type': 'application/json',
-                                },
-                            })
-                                .then((response) => response.json())
-                                .then((data) => {
-                                    data.result && dispatch(importPlaces(data.places));
-                                });
-
+                            console.log(params)
+                            getInfoMarkers(params.latitude, params.longitude, user.radius);
                             setCurrentPosition(location.coords);
+                            setRegionPosition({
+                                "latitude": location.coords.latitude,
+                                "longitude": location.coords.longitude,
+                                "latitudeDelta": 0.05,
+                                "longitudeDelta": 0.05,
+                            });
                         });
                 }
             })();
         }
-    }, []);
+        else {
+            getInfoMarkers(user.city.latitude, user.city.longitude, user.radius);
+            setRegionPosition({
+                "latitude": user.city.latitude,
+                "longitude": user.city.longitude,
+                "latitudeDelta": 0.05,
+                "longitudeDelta": 0.05,
+            });
+        };
+    }, [user.city.cityname]);
 
     //Affichage des markers
     const markers = places.map((e, i) => {
@@ -123,10 +144,10 @@ export default function MapScreen({ navigation }) {
             <MapView
                 style={styles.map}
                 region={{
-                    latitude: currentPosition.latitude,
-                    longitude: currentPosition.longitude,
-                    latitudeDelta: 0.05,
-                    longitudeDelta: 0.05,
+                    latitude: regionPosition.latitude,
+                    longitude: regionPosition.longitude,
+                    latitudeDelta: regionPosition.latitudeDelta,
+                    longitudeDelta: regionPosition.longitudeDelta,
                 }}
             >
                 {currentPosition &&
