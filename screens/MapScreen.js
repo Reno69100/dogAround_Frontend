@@ -61,7 +61,6 @@ export default function MapScreen({ navigation }) {
                             };
 
                             //Récupération des points d'intérêts autour de l'utilisateur
-                            console.log(params)
                             getInfoMarkers(params.latitude, params.longitude, user.radius);
                             setCurrentPosition(location.coords);
                             setRegionPosition({
