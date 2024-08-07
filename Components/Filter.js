@@ -29,6 +29,7 @@ export default function Filter({ userInfo, validFilters }) {
     }
   }
 
+  //Raz ville
   const onClearPress = () => {
     setSuggestionsList([]);
   }
@@ -43,10 +44,15 @@ export default function Filter({ userInfo, validFilters }) {
     fetch(`https://api-adresse.data.gouv.fr/search/?q=${query}&type=municipality&autocomplete=0`)
       .then((response) => response.json())
       .then(data => {
-        const suggestions = data.features.map((data, i) => {
-          return { id: i + 1, title: data.properties.name };
-        });
-        setSuggestionsList(suggestions);
+        if (data.features.length > 0) {
+          const suggestions = data.features.map((data, i) => {
+            return { id: (i + 1), title: data.properties.name };
+          });
+          setSuggestionsList(suggestions);
+        }
+        else {
+          setSuggestionsList([]);
+        }
       });
 
   };
