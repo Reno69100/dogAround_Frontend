@@ -47,7 +47,7 @@ export default function MapScreen({ navigation }) {
 
                             //Récupération des points d'intérêts autour de l'utilisateur
                             fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/${params.latitude}/${params.longitude}/${params.radius}`, {
-                                method: 'POST',
+                                method: 'GET',
                                 headers: {
                                     'Content-Type': 'application/json',
                                 },
