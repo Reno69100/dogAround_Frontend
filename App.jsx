@@ -10,7 +10,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import MapScreen from './screens/MapScreen';
 import SignInScreen from './screens/SignInScreen';
 import SignUpScreen from './screens/SignUpScreen';
-import ProfileScreen from './screens/ProfileScreen';
+import MonCompteScreen from './screens/MonCompteScreen';
 import ChatScreen from './screens/ChatScreen';
 import PreferenceScreen from './screens/PreferenceScreen'
 
@@ -18,6 +18,7 @@ import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user';
 import places from './reducers/places';
+import ProfileScreen from './screens/ProfileScreen';
 
 const store = configureStore({
   reducer: { user, places },
@@ -35,7 +36,7 @@ const TabNavigator = () => {
 
         if (route.name === 'Map') {
           iconName = 'home';
-        } else if (route.name === 'Profile') {
+        } else if (route.name === 'Compte') {
           iconName = 'user';
         } else if (route.name === 'Chat') {
           iconName = 'comment';
@@ -50,7 +51,7 @@ const TabNavigator = () => {
     })}>
       <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Map" component={MapScreen} />
-      <Tab.Screen name="Profile" component={ProfileScreen} />
+      <Tab.Screen name="Compte" component={MonCompteScreen} />
     </Tab.Navigator>
   );
 }
@@ -62,6 +63,7 @@ export default function App() {
         <Stack.Navigator screenOptions={{ headerShown: false }}>
           <Stack.Screen name="SignIn" component={SignInScreen} />
           <Stack.Screen name="SignUp" component={SignUpScreen} />
+          <Stack.Screen name="Profil" component={ProfileScreen} />
           <Stack.Screen name="Preference" component={PreferenceScreen} />
           <Stack.Screen name="TabNavigator" component={TabNavigator} />
         </Stack.Navigator>

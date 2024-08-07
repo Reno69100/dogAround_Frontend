@@ -1,45 +1,42 @@
 import React from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import {
+  StyleSheet,
+  View,
+  TouchableOpacity,
+  Image,
+  Text,
+  Switch,
+} from "react-native";
+import { useState } from "react";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import Btn from "../Components/Button";
 import Input from "../Components/Input";
+import Btn from "../Components/Button";
 import { useSelector } from "react-redux";
 
-export default function ProfileScreen({ navigation }) {
+export default function ProfilScreen({ navigation }) {
+
+    //Switch
+  const [isEnabled, setIsEnabled] = useState(false);
+  const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
+
   const user = useSelector((state) => state.user.value);
 
   const handleClickCloseScreen = () => {
-    navigation.navigate("TabNavigator", { screen: "Map" });
+    navigation.navigate("TabNavigator", { screen: "MonCompte" });
   };
-
-  const handleClickOpenPreference = () => {
-    navigation.navigate('Preference');
-  };
-
 
   return (
     <View style={styles.container}>
-      <View style={styles.iconsContainer}>
-        <TouchableOpacity>
-          <FontAwesome
-            name="gear"
-            size={25}
-            color="#000"
-            onPress={handleClickOpenPreference}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome
-            name="times"
-            size={25}
-            color="#000"
-            onPress={handleClickCloseScreen}
-          />
+      <View style={styles.header}>
+        <TouchableOpacity onPress={handleClickCloseScreen}>
+          <FontAwesome name="times" size={25} color="#000" />
         </TouchableOpacity>
       </View>
-      <Text style={styles.welcomeText}>
-        <Text style={styles.text}>MON COMPTE</Text>
-      </Text>
+      <View>
+        <Text style={styles.welcomeText}>
+          <Text style={styles.text}>PROFIL</Text>
+        </Text>
+      </View>
       <View style={styles.inputContainer}>
         <View style={styles.avatarContainer}>
           <Image
@@ -47,41 +44,27 @@ export default function ProfileScreen({ navigation }) {
             style={styles.avatar}
           />
         </View>
+        <Input placeholder="pseudo" value={user.pseudo} style={styles.input} />
+        <Input placeholder="email" value={user.email} style={styles.input} />
+        <Input placeholder="Ville" value={user.city} style={styles.input} />
         <Input
-          placeholder="pseudo"
-          value={user.pseudo}
+          placeholder="Nouveau mot de passe"
           style={styles.input}
-          editable={false}
         />
-        <Input
-          placeholder="email"
-          value={user.email}
-          style={styles.input}
-          editable={false}
-        />
+        <Input placeholder="Confirmer mot de passe" style={styles.input} />
+        <View style={styles.switchContainer}>
+          <Switch
+            trackColor={{ false: "#BB7E5D", true: "#7DBA84" }}
+            thumbColor={isEnabled ? "#BB7E5D" : "#7DBA84"}
+            ios_backgroundColor="#3e3e3e"
+            onValueChange={toggleSwitch}
+            value={isEnabled}
+          />
+          <Text style={styles.switchText}>
+            {isEnabled ? "Profil Privé" : "Profil Public"}
+          </Text>
+        </View>
         <Btn title="Modifier" style={styles.connection} />
-      </View>
-      <View style={styles.compagnonContainer}>
-        <Text style={styles.secondText}>
-          <Text style={styles.text}>MES COMPAGNONS</Text>
-        </Text>
-        <TouchableOpacity style={styles.plusButton}>
-          <FontAwesome name="plus" size={25} color="#416165" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.inputCompagnon}>
-        <View style={styles.inputRow}>
-          <Input placeholder="Nom:" style={styles.inputField} />
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editText}>EDIT</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.inputRow}>
-          <Input placeholder="Nom:" style={styles.inputField} />
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editText}>EDIT</Text>
-          </TouchableOpacity>
-        </View>
       </View>
     </View>
   );
@@ -94,6 +77,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#E8E9ED",
     paddingTop: 40,
   },
+  header: {
+    width: "100%",
+    flexDirection: "row",
+    justifyContent: "flex-end",
+    paddingHorizontal: 20,
+    marginBottom: 20,
+  },
   welcomeText: {
     marginBottom: 30,
   },
@@ -104,16 +94,8 @@ const styles = StyleSheet.create({
     fontFamily: "Commissioner_700Bold",
     marginBottom: 30,
   },
-  iconsContainer: {
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    paddingHorizontal: 20,
-    marginBottom: 20,
-  },
   inputContainer: {
     borderRadius: 8,
-    backgroundColor: "#BB7E5D",
     width: "83%",
     gap: 10,
     alignItems: "center",
@@ -136,49 +118,20 @@ const styles = StyleSheet.create({
     height: "100%",
     resizeMode: "cover",
   },
+  switchContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginTop: 20,
+  },
+  switchText: {
+    marginLeft: 10,
+    fontSize: 16,
+    color: "#416165",
+  },
   connection: {
     marginTop: 20,
   },
   input: {
     marginTop: 20,
-  },
-  secondText: {
-    color: "#416165",
-    fontSize: 18,
-    fontWeight: "bold",
-    marginRight: 10,
-  },
-  compagnonContainer: {
-    width: "75%",
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingHorizontal: 8,
-  },
-  plusButton: {
-    alignItems: "center",
-  },
-  inputCompagnon: {
-    width: "80%",
-    marginTop: 30,
-  },
-  inputRow: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 10,
-  },
-  inputField: {
-    flex: 1,
-    marginRight: 10,
-  },
-  editButton: {
-    backgroundColor: "#FFF",
-    paddingVertical: 14,
-    paddingHorizontal: 14,
-    borderRadius: 8,
-  },
-  editText: {
-    color: "#000",
-    fontWeight: "bold",
   },
 });
