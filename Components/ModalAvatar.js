@@ -11,8 +11,10 @@ import {
 import Btn from "./Button";
 
 const avatars = [
-  { id: "1", source: require("../assets/avatars/chien_1.png") },
-  { id: "2", source: require("../assets/avatars/chien_2.png") },
+  // { id: "1", source: require("../assets/avatars/chien_1.png") },
+  { id: "1", source: uri='https://asset.cloudinary.com/ddn1jozka/25656bb7d1d3f3676706cd686dc5ee21' },
+  //{ id: "2", source: require("../assets/avatars/chien_2.png") },
+  { id: "2", source: uri='https://asset.cloudinary.com/ddn1jozka/36840fe79da3506f0ae499cab194c698' },
   { id: "3", source: require("../assets/avatars/chien_3.png") },
   { id: "4", source: require("../assets/avatars/chien_4.png") },
   { id: "5", source: require("../assets/avatars/chien_5.png") },
