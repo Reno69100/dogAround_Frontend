@@ -91,7 +91,7 @@ export default function Filter({ userInfo, validFilters }) {
           editable={optionCity}
         /> */}
         <AutocompleteDropdown
-          initialValue={{ id:'1' }}
+          initialValue={{ id: '1' }}
           debounce={500}
           onChangeText={(value) => getSuggestions(value)}
           onSelectItem={(item) => item && setCity(item.title)}
@@ -107,7 +107,7 @@ export default function Filter({ userInfo, validFilters }) {
           containerStyle={styles.dropdownContainer}
           suggestionsListContainerStyle={styles.suggestionListContainer}
           suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
-          editable={optionCity}
+          /* editable={optionCity} */
           clearOnFocus={false}
           closeOnSubmit={true}
           onClear={() => onClearPress()}

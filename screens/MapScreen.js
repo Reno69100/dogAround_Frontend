@@ -16,7 +16,25 @@ import Filter from '../Components/Filter'
 import { useSelector, useDispatch } from 'react-redux';
 import { importPlaces } from '../reducers/places'
 
+import * as SplashScreen from "expo-splash-screen";
+import {
+    useFonts,
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
+
+SplashScreen.preventAutoHideAsync();
+
 export default function MapScreen({ navigation }) {
+    const [loaded, error] = useFonts({
+        Poppins_400Regular,
+        Poppins_500Medium,
+        Poppins_600SemiBold,
+        Poppins_700Bold,
+    });
+
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
     const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
