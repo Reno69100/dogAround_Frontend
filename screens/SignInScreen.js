@@ -33,7 +33,7 @@ SplashScreen.preventAutoHideAsync();
 
 export default function SignInScreen({ navigation }) {
   const [email, setEmail] = useState("moi@moi.com");
-  const [password, setPassword] = useState("");
+  const [password, setPassword] = useState("po");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
   
