@@ -57,7 +57,9 @@ export default function ProfilScreen({ navigation }) {
       Object.entries(dataToUpdate).filter(([key, value]) => value !== undefined)
     );
 
-    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}`, {
+    filteredData.token = user.token;
+    console.log(filteredData)
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/update`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(filteredData),
