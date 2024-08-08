@@ -15,6 +15,8 @@ import SignUpScreen from './screens/SignUpScreen';
 import MonCompteScreen from './screens/MonCompteScreen';
 import ChatScreen from './screens/ChatScreen';
 import PreferenceScreen from './screens/PreferenceScreen'
+import PoiScreen from './screens/PoiScreen'
+
 
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -68,6 +70,7 @@ export default function App() {
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Profil" component={ProfileScreen} />
             <Stack.Screen name="Preference" component={PreferenceScreen} />
+            <Stack.Screen name="Poi" component={PoiScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
