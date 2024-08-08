@@ -20,6 +20,10 @@ export default function MonCompteScreen({ navigation }) {
     navigation.navigate("Profil");
   }
 
+  const handleClickGoToCompagnon = () => {
+    navigation.navigate("Compagnon");
+  }
+
 
   return (
     <View style={styles.container}>
@@ -69,7 +73,7 @@ export default function MonCompteScreen({ navigation }) {
         <Text style={styles.secondText}>
           <Text style={styles.text}>MES COMPAGNONS</Text>
         </Text>
-        <TouchableOpacity style={styles.plusButton}>
+        <TouchableOpacity style={styles.plusButton} onPress={handleClickGoToCompagnon}>
           <FontAwesome name="plus" size={25} color="#416165" />
         </TouchableOpacity>
       </View>
