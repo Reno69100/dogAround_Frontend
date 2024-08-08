@@ -8,6 +8,7 @@ import {
   KeyboardAvoidingView,
   ScrollView,
   Platform,
+  Dimensions
 } from "react-native";
 import {
   useFonts,
@@ -30,6 +31,8 @@ import ButtonFacebook from "../Components/ButtonFacebook";
 import ButtonGoogle from "../Components/ButtonGoogle";
 import { login } from "../reducers/user";
 
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
+
 export default function SignUpScreen({ navigation }) {
   const [loaded, error] = useFonts({
     Commissioner_400Regular,
@@ -51,7 +54,36 @@ export default function SignUpScreen({ navigation }) {
   const [surname, setSurname] = useState("");
   const [name, setName] = useState("");
   const [city, setCity] = useState("");
+  const [suggestionsList, setSuggestionsList] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
+
+  //Raz ville
+  const onClearPress = () => {
+    setSuggestionsList([]);
+  }
+
+  //Recherche ville
+  const getSuggestions = (query) => {
+    // Prevent search with an empty query
+    if (query === '') {
+      return;
+    }
+
+    fetch(`https://api-adresse.data.gouv.fr/search/?q=${query}&type=municipality&autocomplete=0`)
+      .then((response) => response.json())
+      .then(data => {
+        if (data.features.length > 0) {
+          const suggestions = data.features.map((data, i) => {
+            return { id: (i + 1), title: data.properties.name };
+          });
+          setSuggestionsList(suggestions);
+        }
+        else {
+          setSuggestionsList([]);
+        }
+      });
+
+  };
 
   const handleRegister = () => {
     if (password !== confirmPassword) {
@@ -142,6 +174,26 @@ export default function SignUpScreen({ navigation }) {
                 value={email}
                 onChangeText={setEmail}
               />
+              <AutocompleteDropdown
+                debounce={500}
+                onChangeText={(value) => getSuggestions(value)}
+                onSelectItem={(item) => item && setCity(item.title)}
+                dataSet={suggestionsList}
+                textInputProps={{
+                  placeholder: 'Ville',
+                  style: {
+                    fontSize: 14,
+                  },
+                }}
+                direction={Platform.select({ ios: 'down' })}
+                inputContainerStyle={styles.inputdropdownContainer}
+                containerStyle={styles.dropdownContainer}
+                suggestionsListContainerStyle={styles.suggestionListContainer}
+                suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
+                clearOnFocus={false}
+                closeOnSubmit={true}
+                onClear={() => onClearPress()}
+              />
               <Input
                 placeholder="Pseudo"
                 accessibilityLabel="Username Input"
@@ -160,12 +212,12 @@ export default function SignUpScreen({ navigation }) {
                 value={name}
                 onChangeText={setName}
               />
-              <Input
+              {/* <Input
                 placeholder="Ville"
                 accessibilityLabel="City Input"
                 value={city}
                 onChangeText={setCity}
-              />
+              /> */}
               <Input
                 placeholder="Mot de passe"
                 accessibilityLabel="Password Input"
@@ -252,5 +304,19 @@ const styles = StyleSheet.create({
     color: "red",
     marginBottom: 10,
     textAlign: "center",
+  },
+
+  dropdownContainer: {
+    width: '80%',
+  },
+
+  inputdropdownContainer: {
+    backgroundColor: '#ffffff',
+  },
+
+  suggestionListContainer: {
+    borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    width: '100%',
   },
 });
