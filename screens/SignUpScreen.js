@@ -74,7 +74,15 @@ export default function SignUpScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          dispatch(login({ email, pseudo: data.pseudo, city, token: data.token }));
+          dispatch(
+            login({
+              email,
+              pseudo: data.pseudo,
+              city,
+              avatar: data.avatar,
+              token: data.token,
+            })
+          );
           setEmail("");
           setPseudo("");
           setPassword("");

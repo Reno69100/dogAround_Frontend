@@ -15,19 +15,18 @@ import ModalAvatar from "../Components/ModalAvatar";
 import { login } from "../reducers/user";
 
 export default function ProfilScreen({ navigation }) {
+  const user = useSelector((state) => state.user.value);
+  const dispatch = useDispatch();
   // States modal visibility and switch
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(user.avatar || null);
 
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
-  const user = useSelector((state) => state.user.value);
-  const dispatch = useDispatch();
-
   const [email, setEmail] = useState(user.email || "");
   const [pseudo, setPseudo] = useState(user.pseudo || "");
-  const [city, setCity] = useState(user.city.cityname || "");
+  const [city, setCity] = useState(user.city || "");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -83,8 +82,9 @@ export default function ProfilScreen({ navigation }) {
   };
 
   const handleSelectAvatar = (avatar) => {
-    setSelectedAvatar(avatar.source); 
-  }
+    console.log(avatar);
+    setSelectedAvatar(avatar.source);
+  };
 
   return (
     <View style={styles.container}>

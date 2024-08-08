@@ -10,19 +10,6 @@ import {
 } from "react-native";
 import Btn from "./Button";
 
-const avatars = [
-  { id: "1", source: require("../assets/avatars/chien_1.png") },
-  { id: "2", source: require("../assets/avatars/chien_2.png") },
-  { id: "3", source: require("../assets/avatars/chien_3.png") },
-  { id: "4", source: require("../assets/avatars/chien_4.png") },
-  { id: "5", source: require("../assets/avatars/chien_5.png") },
-  { id: "6", source: require("../assets/avatars/chien_6.png") },
-  { id: "7", source: require("../assets/avatars/chien_7.png") },
-  { id: "8", source: require("../assets/avatars/chien_8.png") },
-  { id: "9", source: require("../assets/avatars/chien_9.png") },
-  { id: "10", source: require("../assets/avatars/chien_10.png") },
-];
-
 const ModalAvatar = ({ visible, onClose, onSelect }) => {
   return (
     <Modal
