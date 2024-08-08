@@ -18,6 +18,7 @@ import { login } from "../reducers/user";
 export default function ProfilScreen({ navigation }) {
   const user = useSelector((state) => state.user.value);
   const dispatch = useDispatch();
+
   // States modal visibility and switch
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
@@ -40,17 +41,26 @@ export default function ProfilScreen({ navigation }) {
     if (!user.token) {
       return;
     }
+
+    // Crée un objet data conditionnel 
+    const dataToUpdate = {
+      avatar: selectedAvatar !== user.avatar ? selectedAvatar : undefined,
+      email: email !== user.email ? email : undefined,
+      pseudo: pseudo !== user.pseudo ? pseudo : undefined,
+      city: city !== user.city ? city : undefined,
+      password: password.length > 0 ? password : undefined,
+      newPassword: newPassword.length > 0 ? newPassword : undefined,
+    };
+
+    // Permet de filtrer 
+    const filteredData = Object.fromEntries(
+      Object.entries(dataToUpdate).filter(([key, value]) => value !== undefined)
+    );
+
     fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        avatar: selectedAvatar,
-        email: email,
-        pseudo: pseudo,
-        city: city,
-        password: password,
-        newPassword: newPassword,
-      }),
+      body: JSON.stringify(filteredData),
     })
       .then((response) => response.json())
       .then((data) => {
@@ -83,7 +93,6 @@ export default function ProfilScreen({ navigation }) {
   };
 
   const handleSelectAvatar = (avatar) => {
-    console.log(avatar);
     setSelectedAvatar(avatar.source);
   };
 
