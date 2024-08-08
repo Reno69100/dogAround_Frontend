@@ -170,7 +170,7 @@ export default function MapScreen({ navigation }) {
                 {currentPosition &&
                     <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">
                         <Image
-                            source={require("../assets/avatars/chien_1.png")}
+                            source={user.avatar}
                             style={{ width: 40, height: 40, resizeMode: "contain" }}
                         />
                     </Marker>}

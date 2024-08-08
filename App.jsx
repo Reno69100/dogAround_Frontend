@@ -15,6 +15,7 @@ import SignUpScreen from './screens/SignUpScreen';
 import MonCompteScreen from './screens/MonCompteScreen';
 import ChatScreen from './screens/ChatScreen';
 import PreferenceScreen from './screens/PreferenceScreen'
+import CompagnonScreen from './screens/CompagnonScreen';
 
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -68,6 +69,7 @@ export default function App() {
             <Stack.Screen name="SignUp" component={SignUpScreen} />
             <Stack.Screen name="Profil" component={ProfileScreen} />
             <Stack.Screen name="Preference" component={PreferenceScreen} />
+            <Stack.Screen name="Compagnon" component={CompagnonScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>

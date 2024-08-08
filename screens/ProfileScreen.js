@@ -6,6 +6,7 @@ import {
   Image,
   Text,
   Switch,
+  ScrollView,
 } from "react-native";
 import { useDispatch, useSelector } from "react-redux";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -15,19 +16,18 @@ import ModalAvatar from "../Components/ModalAvatar";
 import { login } from "../reducers/user";
 
 export default function ProfilScreen({ navigation }) {
+  const user = useSelector((state) => state.user.value);
+  const dispatch = useDispatch();
   // States modal visibility and switch
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEnabled, setIsEnabled] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(null);
+  const [selectedAvatar, setSelectedAvatar] = useState(user.avatar || null);
 
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
-  const user = useSelector((state) => state.user.value);
-  const dispatch = useDispatch();
-
   const [email, setEmail] = useState(user.email || "");
   const [pseudo, setPseudo] = useState(user.pseudo || "");
-  const [city, setCity] = useState(user.city.cityname || "");
+  const [city, setCity] = useState(user.city || "");
   const [password, setPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
@@ -83,98 +83,101 @@ export default function ProfilScreen({ navigation }) {
   };
 
   const handleSelectAvatar = (avatar) => {
-    setSelectedAvatar(avatar.source); 
-  }
+    console.log(avatar);
+    setSelectedAvatar(avatar.source);
+  };
 
   return (
-    <View style={styles.container}>
-      <View style={styles.header}>
-        <TouchableOpacity onPress={handleClickCloseScreen}>
-          <FontAwesome name="times" size={25} color="#000" />
-        </TouchableOpacity>
-      </View>
-      <View>
-        <Text style={styles.welcomeText}>
-          <Text style={styles.text}>PROFIL</Text>
-        </Text>
-      </View>
-      <View style={styles.inputContainer}>
-        <View style={styles.avatarWrapper}>
-          <View style={styles.avatarContainer}>
-            <Image
-              source={
-                selectedAvatar || { uri: user.avatar } ||
-                require("../assets/avatars/chien_1.png")
-              }
-              style={styles.avatar}
-            />
-          </View>
-          <TouchableOpacity
-            style={styles.plusIcon}
-            onPress={handleClickOpenModal}
-          >
-            <FontAwesome name="plus" size={21} color="#BB7E5D" />
+    <ScrollView contentContainerStyle={styles.scrollContainer}>
+      <View style={styles.container}>
+        <View style={styles.header}>
+          <TouchableOpacity onPress={handleClickCloseScreen}>
+            <FontAwesome name="times" size={25} color="#000" />
           </TouchableOpacity>
         </View>
-        <Input
-          placeholder="pseudo"
-          value={pseudo}
-          onChangeText={(text) => setPseudo(text)}
-          style={styles.input}
-        />
-        <Input
-          placeholder="email"
-          value={email}
-          onChangeText={(text) => setEmail(text)}
-          style={styles.input}
-        />
-        <Input
-          placeholder="Ville"
-          value={city}
-          onChangeText={(text) => setCity(text)}
-          style={styles.input}
-        />
-        <Input
-          placeholder="Mot de passe"
-          value={password}
-          onChangeText={(text) => setPassword(text)}
-          secureTextEntry
-          style={styles.input}
-        />
-        <Input
-          placeholder="Nouveau mot de passe"
-          value={newPassword}
-          onChangeText={(text) => setNewPassword(text)}
-          secureTextEntry
-          style={styles.input}
-        />
-        <View style={styles.switchContainer}>
-          <Switch
-            trackColor={{ false: "#BB7E5D", true: "#7DBA84" }}
-            thumbColor={isEnabled ? "#BB7E5D" : "#7DBA84"}
-            ios_backgroundColor="#3e3e3e"
-            onValueChange={toggleSwitch}
-            value={isEnabled}
-          />
-          <Text style={styles.switchText}>
-            {isEnabled ? "Profil Privé" : "Profil Public"}
+        <View>
+          <Text style={styles.welcomeText}>
+            <Text style={styles.text}>PROFIL</Text>
           </Text>
         </View>
-        {errorMessage ? (
-          <Text style={styles.errorText}>{errorMessage}</Text>
-        ) : null}
-        <Btn
-          title="Modifier"
-          style={styles.connection}
-          onPress={handleChangeInfos}
+        <View style={styles.inputContainer}>
+          <View style={styles.avatarWrapper}>
+            <View style={styles.avatarContainer}>
+              <Image
+                source={
+                  selectedAvatar || { uri: user.avatar } ||
+                  require("../assets/avatars/chien_1.png")
+                }
+                style={styles.avatar}
+              />
+            </View>
+            <TouchableOpacity
+              style={styles.plusIcon}
+              onPress={handleClickOpenModal}
+            >
+              <FontAwesome name="plus" size={21} color="#BB7E5D" />
+            </TouchableOpacity>
+          </View>
+          <Input
+            placeholder="pseudo"
+            value={pseudo}
+            onChangeText={(text) => setPseudo(text)}
+            style={styles.input}
+          />
+          <Input
+            placeholder="email"
+            value={email}
+            onChangeText={(text) => setEmail(text)}
+            style={styles.input}
+          />
+          <Input
+            placeholder="Ville"
+            value={city}
+            onChangeText={(text) => setCity(text)}
+            style={styles.input}
+          />
+          <Input
+            placeholder="Mot de passe"
+            value={password}
+            onChangeText={(text) => setPassword(text)}
+            secureTextEntry
+            style={styles.input}
+          />
+          <Input
+            placeholder="Nouveau mot de passe"
+            value={newPassword}
+            onChangeText={(text) => setNewPassword(text)}
+            secureTextEntry
+            style={styles.input}
+          />
+          <View style={styles.switchContainer}>
+            <Switch
+              trackColor={{ false: "#BB7E5D", true: "#7DBA84" }}
+              thumbColor={isEnabled ? "#BB7E5D" : "#7DBA84"}
+              ios_backgroundColor="#3e3e3e"
+              onValueChange={toggleSwitch}
+              value={isEnabled}
+            />
+            <Text style={styles.switchText}>
+              {isEnabled ? "Profil Privé" : "Profil Public"}
+            </Text>
+          </View>
+          {errorMessage ? (
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          ) : null}
+          <Btn
+            title="Modifier"
+            style={styles.connection}
+            onPress={handleChangeInfos}
+          />
+        </View>
+        <ModalAvatar
+          visible={isModalVisible}
+          onClose={handleCloseModal}
+          onSelect={handleSelectAvatar}
         />
       </View>
-      <ModalAvatar
-        visible={isModalVisible}
-        onClose={handleCloseModal}
-        onSelect={handleSelectAvatar}
-      />
-    </View>
+    </ScrollView>
   );
 }
 
@@ -184,6 +187,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#E8E9ED",
     paddingTop: 40,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "space-evenly",
+    alignItems: "center",
   },
   header: {
     width: "100%",

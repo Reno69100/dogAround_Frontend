@@ -13,7 +13,7 @@ export default function MonCompteScreen({ navigation }) {
   };
 
   const handleClickOpenPreference = () => {
-    navigation.navigate('Preference');
+    navigation.navigate("Preference");
   };
 
   const handleClickGoToProfil = () => {
@@ -23,7 +23,6 @@ export default function MonCompteScreen({ navigation }) {
   const handleClickGoToCompagnon = () => {
     navigation.navigate("Compagnon");
   }
-
 
   return (
     <View style={styles.container}>
@@ -50,10 +49,7 @@ export default function MonCompteScreen({ navigation }) {
       </Text>
       <View style={styles.inputContainer}>
         <View style={styles.avatarContainer}>
-          <Image
-            source={require("../assets/avatars/chien_1.png")}
-            style={styles.avatar}
-          />
+          <Image source={user.avatar} style={styles.avatar} />
         </View>
         <Input
           placeholder="pseudo"
@@ -67,7 +63,11 @@ export default function MonCompteScreen({ navigation }) {
           style={styles.input}
           editable={false}
         />
-        <Btn title="Modifier" style={styles.connection} onPress={handleClickGoToProfil} />
+        <Btn
+          title="Modifier"
+          style={styles.connection}
+          onPress={handleClickGoToProfil}
+        />
       </View>
       <View style={styles.compagnonContainer}>
         <Text style={styles.secondText}>
