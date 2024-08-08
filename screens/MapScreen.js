@@ -16,7 +16,25 @@ import Filter from '../Components/Filter'
 import { useSelector, useDispatch } from 'react-redux';
 import { importPlaces } from '../reducers/places'
 
+import * as SplashScreen from "expo-splash-screen";
+import {
+    useFonts,
+    Poppins_400Regular,
+    Poppins_500Medium,
+    Poppins_600SemiBold,
+    Poppins_700Bold,
+} from "@expo-google-fonts/poppins";
+
+SplashScreen.preventAutoHideAsync();
+
 export default function MapScreen({ navigation }) {
+    const [loaded, error] = useFonts({
+        Poppins_400Regular,
+        Poppins_500Medium,
+        Poppins_600SemiBold,
+        Poppins_700Bold,
+    });
+
     const dispatch = useDispatch();
     const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
     const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
@@ -45,7 +63,7 @@ export default function MapScreen({ navigation }) {
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
-        if (!user.city.cityname) {
+        if (!user.cityfield.cityname) {
 
             (async () => {
                 const result = await Location.requestForegroundPermissionsAsync();
@@ -74,15 +92,15 @@ export default function MapScreen({ navigation }) {
             })();
         }
         else {
-            getInfoMarkers(user.city.latitude, user.city.longitude, user.radius);
+            getInfoMarkers(user.cityfield.latitude, user.cityfield.longitude, user.radius);
             setRegionPosition({
-                "latitude": user.city.latitude,
-                "longitude": user.city.longitude,
+                "latitude": user.cityfield.latitude,
+                "longitude": user.cityfield.longitude,
                 "latitudeDelta": 0.05,
                 "longitudeDelta": 0.05,
             });
         };
-    }, [user.city.cityname]);
+    }, [user.cityfield.cityname]);
 
     //Affichage des markers
     const markers = places.map((e, i) => {
@@ -152,7 +170,7 @@ export default function MapScreen({ navigation }) {
                 {currentPosition &&
                     <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">
                         <Image
-                            source={require("../assets/avatars/chien_1.png")}
+                            source={user.avatar}
                             style={{ width: 40, height: 40, resizeMode: "contain" }}
                         />
                     </Marker>}

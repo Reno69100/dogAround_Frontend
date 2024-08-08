@@ -6,7 +6,8 @@ const initialState = {
     email: "",
     avatar: "",
     pseudo: "",
-    city: {
+    city: "",
+    cityfield: {
       cityname: "",
       latitude: 0.1,
       longitude: 0.1,
@@ -38,9 +39,9 @@ export const userSlice = createSlice({
       }
     },
     storeCity: (state, action) => {
-      state.value.city.cityname = action.payload.cityname;
-      state.value.city.latitude = action.payload.latitude;
-      state.value.city.longitude = action.payload.longitude;
+      state.value.cityfield.cityname = action.payload.cityname;
+      state.value.cityfield.latitude = action.payload.latitude;
+      state.value.cityfield.longitude = action.payload.longitude;
     },
     logout: (state) => {
       state.value.token = null;

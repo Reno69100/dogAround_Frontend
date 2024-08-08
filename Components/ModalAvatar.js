@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import Btn from "./Button";
+<<<<<<< HEAD
 
 const avatars = [
   // { id: "1", source: require("../assets/avatars/chien_1.png") },
@@ -24,6 +25,9 @@ const avatars = [
   { id: "9", source: require("../assets/avatars/chien_9.png") },
   { id: "10", source: require("../assets/avatars/chien_10.png") },
 ];
+=======
+import Correspondance from "../assets/avatars/Correspondance";
+>>>>>>> 16cdade44c4d90c77733c98fcd5b5869eb81094f
 
 const ModalAvatar = ({ visible, onClose, onSelect }) => {
   return (
@@ -37,7 +41,7 @@ const ModalAvatar = ({ visible, onClose, onSelect }) => {
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Choisir un avatar</Text>
           <FlatList
-            data={avatars}
+            data={Correspondance}
             numColumns={3}
             renderItem={({ item }) => (
               <TouchableOpacity
