@@ -12,7 +12,7 @@ export default function PreferenceScreen({ navigation }) {
   const dispatch = useDispatch();
 
   const handleClickCloseScreen = () => {
-    navigation.navigate("TabNavigator", { screen: "Profile" });
+    navigation.navigate("Compte");
   };
 
   const handleClickDeconnexion = () => {

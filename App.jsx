@@ -55,6 +55,9 @@ const TabNavigator = () => {
       <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Map" component={MapScreen} />
       <Tab.Screen name="Compte" component={MonCompteScreen} />
+      <Tab.Screen name="Profil" component={ProfileScreen} options={{ tabBarButton: (props) => {} }}/>
+      <Tab.Screen name="Preference" component={PreferenceScreen} options={{ tabBarButton: (props) => {} }}/>
+      <Tab.Screen name="Compagnon" component={CompagnonScreen} options={{ tabBarButton: (props) => {} }}/>
     </Tab.Navigator>
   );
 }

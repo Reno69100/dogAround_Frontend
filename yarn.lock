@@ -6686,6 +6686,13 @@ react-native-autocomplete-dropdown@^4.0.0-rc.5:
     react-native-feather "^1.1.2"
     react-native-size-matters "^0.4.2"
 
+react-native-element-dropdown@^2.12.1:
+  version "2.12.1"
+  resolved "https://registry.yarnpkg.com/react-native-element-dropdown/-/react-native-element-dropdown-2.12.1.tgz#a2b75b3ac6677fee401d292c10484e8e47aa1db7"
+  integrity sha512-Z3uWNFBoezDEsy9AZJxoDc9DxoAdfeprUjaInmbuzYOk6R0Y0UZ659JIalX20XNvrNRWJUfSZwbM94jWYNsIyw==
+  dependencies:
+    lodash "^4.17.21"
+
 react-native-feather@^1.1.2:
   version "1.1.2"
   resolved "https://registry.yarnpkg.com/react-native-feather/-/react-native-feather-1.1.2.tgz#da055f8bd56db74c1b5009dc470536a11ef1d5c4"

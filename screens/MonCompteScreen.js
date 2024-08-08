@@ -1,12 +1,15 @@
-import React from "react";
-import { StyleSheet, View, Text, Image, TouchableOpacity } from "react-native";
+import React, { useState, useEffect } from "react";
+import { useIsFocused } from '@react-navigation/native';
+import { StyleSheet, View, Text, Image, TouchableOpacity, ScrollView } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
 import { useSelector } from "react-redux";
 
 export default function MonCompteScreen({ navigation }) {
+  const isFocused = useIsFocused();
   const user = useSelector((state) => state.user.value);
+  const [dataCompanions, setDataCompanions] = useState([]);
 
   const handleClickCloseScreen = () => {
     navigation.navigate("TabNavigator", { screen: "Map" });
@@ -20,77 +23,100 @@ export default function MonCompteScreen({ navigation }) {
     navigation.navigate("Profil");
   }
 
-  const handleClickGoToCompagnon = () => {
-    navigation.navigate("Compagnon");
+  const handleClickGoToCompagnon = (compagnon) => {
+    navigation.navigate("Compagnon", { compagnon : compagnon });
   }
+
+  useEffect(() => {
+    //Récupération donnée compagnon
+    if (isFocused) {
+      fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/companions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          token: user.token
+        })
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.result) {
+            setDataCompanions(data.companions);
+          }
+        });
+    }
+  }, [isFocused])
+
+  const companions = dataCompanions.map((e, i) => {
+    return (
+      <View key={i} style={styles.inputRow}>
+        <Text style={styles.compagnonText}>{e.name}</Text>
+        <TouchableOpacity style={styles.editButton} onPress={()=>handleClickGoToCompagnon(e.name)}>
+          <Text style={styles.editText}>EDIT</Text>
+        </TouchableOpacity>
+      </View>
+    )
+  })
 
   return (
     <View style={styles.container}>
-      <View style={styles.iconsContainer}>
-        <TouchableOpacity>
-          <FontAwesome
-            name="gear"
-            size={25}
-            color="#000"
-            onPress={handleClickOpenPreference}
-          />
-        </TouchableOpacity>
-        <TouchableOpacity>
-          <FontAwesome
-            name="times"
-            size={25}
-            color="#000"
-            onPress={handleClickCloseScreen}
-          />
-        </TouchableOpacity>
-      </View>
-      <Text style={styles.welcomeText}>
-        <Text style={styles.text}>MON COMPTE</Text>
-      </Text>
-      <View style={styles.inputContainer}>
-        <View style={styles.avatarContainer}>
-          <Image source={user.avatar} style={styles.avatar} />
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
+        <View style={styles.iconsContainer}>
+          <TouchableOpacity>
+            <FontAwesome
+              name="gear"
+              size={25}
+              color="#000"
+              onPress={handleClickOpenPreference}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity>
+            <FontAwesome
+              name="times"
+              size={25}
+              color="#000"
+              onPress={handleClickCloseScreen}
+            />
+          </TouchableOpacity>
         </View>
-        <Input
-          placeholder="pseudo"
-          value={user.pseudo}
-          style={styles.input}
-          editable={false}
-        />
-        <Input
-          placeholder="email"
-          value={user.email}
-          style={styles.input}
-          editable={false}
-        />
-        <Btn
-          title="Modifier"
-          style={styles.connection}
-          onPress={handleClickGoToProfil}
-        />
-      </View>
-      <View style={styles.compagnonContainer}>
-        <Text style={styles.secondText}>
-          <Text style={styles.text}>MES COMPAGNONS</Text>
+        <Text style={styles.welcomeText}>
+          <Text style={styles.text}>MON COMPTE</Text>
         </Text>
-        <TouchableOpacity style={styles.plusButton} onPress={handleClickGoToCompagnon}>
-          <FontAwesome name="plus" size={25} color="#416165" />
-        </TouchableOpacity>
-      </View>
-      <View style={styles.inputCompagnon}>
-        <View style={styles.inputRow}>
-          <Input placeholder="Nom:" style={styles.inputField} />
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editText}>EDIT</Text>
+        <View style={styles.inputContainer}>
+          <View style={styles.avatarContainer}>
+            <Image source={user.avatar} style={styles.avatar} />
+          </View>
+          <Input
+            placeholder="pseudo"
+            value={user.pseudo}
+            style={styles.input}
+            editable={false}
+          />
+          <Input
+            placeholder="email"
+            value={user.email}
+            style={styles.input}
+            editable={false}
+          />
+          <Btn
+            title="Modifier"
+            style={styles.connection}
+            onPress={handleClickGoToProfil}
+          />
+        </View>
+        <View style={styles.compagnonContainer}>
+          <Text style={styles.secondText}>
+            <Text style={styles.text}>MES COMPAGNONS</Text>
+          </Text>
+          <TouchableOpacity style={styles.plusButton} onPress={()=>handleClickGoToCompagnon('')}>
+            <FontAwesome name="plus" size={25} color="#416165" />
           </TouchableOpacity>
         </View>
-        <View style={styles.inputRow}>
-          <Input placeholder="Nom:" style={styles.inputField} />
-          <TouchableOpacity style={styles.editButton}>
-            <Text style={styles.editText}>EDIT</Text>
-          </TouchableOpacity>
+        <View style={styles.inputCompagnon}>
+          {companions}
         </View>
-      </View>
+      </ScrollView>
     </View>
   );
 }
@@ -101,6 +127,11 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#E8E9ED",
     paddingTop: 40,
+  },
+  scrollContainer: {
+    flexGrow: 1,
+    justifyContent: "flex-start",
+    alignItems: "center",
   },
   welcomeText: {
     marginBottom: 30,
@@ -163,6 +194,16 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 8,
   },
+  compagnonText: {
+    width: "70%",
+    backgroundColor: "#ffffff",
+    borderWidth: 1,
+    padding: 10,
+    borderRadius: 8,
+    color: "#000",
+    fontSize: 16,
+    overflow: "hidden",
+  },
   plusButton: {
     alignItems: "center",
   },
@@ -172,6 +213,7 @@ const styles = StyleSheet.create({
   },
   inputRow: {
     flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
     marginBottom: 10,
   },
