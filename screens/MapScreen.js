@@ -149,12 +149,16 @@ export default function MapScreen({ navigation }) {
         const showMarker = !user.filtres.some(filter => e.type === filter);
         if (showMarker) {
             return (
-                <Marker key={i + 1} coordinate={e.location} title={e.Id}>
+                <Marker key={i + 1} coordinate={e.location} title={e.Id} onPress={handlePoiPress}>
                     <FontAwesome name={iconName} size={40} color={iconColor} />
                 </Marker>
             )
         }
     })
+
+    function handlePoiPress() {
+        navigation.navigate('Poi')
+    }
 
     return (
         <View style={styles.container}>

@@ -16,6 +16,8 @@ import MonCompteScreen from './screens/MonCompteScreen';
 import ChatScreen from './screens/ChatScreen';
 import PreferenceScreen from './screens/PreferenceScreen'
 import CompagnonScreen from './screens/CompagnonScreen';
+import PoiScreen from './screens/PoiScreen'
+
 
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
@@ -58,6 +60,7 @@ const TabNavigator = () => {
       <Tab.Screen name="Profil" component={ProfileScreen} options={{ tabBarButton: (props) => {} }}/>
       <Tab.Screen name="Preference" component={PreferenceScreen} options={{ tabBarButton: (props) => {} }}/>
       <Tab.Screen name="Compagnon" component={CompagnonScreen} options={{ tabBarButton: (props) => {} }}/>
+      <Tab.Screen name="Poi" component={PoiScreen} options={{ tabBarButton: (props) => {} }}/>
     </Tab.Navigator>
   );
 }
@@ -73,6 +76,7 @@ export default function App() {
             <Stack.Screen name="Profil" component={ProfileScreen} />
             <Stack.Screen name="Preference" component={PreferenceScreen} />
             <Stack.Screen name="Compagnon" component={CompagnonScreen} />
+            <Stack.Screen name="Poi" component={PoiScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
