@@ -9,6 +9,7 @@ import {
   Modal,
 } from "react-native";
 import Btn from "./Button";
+import Correspondance from "../assets/avatars/Correspondance";
 
 const ModalAvatar = ({ visible, onClose, onSelect }) => {
   return (
@@ -22,7 +23,7 @@ const ModalAvatar = ({ visible, onClose, onSelect }) => {
         <View style={styles.modalContainer}>
           <Text style={styles.modalTitle}>Choisir un avatar</Text>
           <FlatList
-            data={avatars}
+            data={Correspondance}
             numColumns={3}
             renderItem={({ item }) => (
               <TouchableOpacity
