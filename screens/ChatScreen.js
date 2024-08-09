@@ -26,6 +26,7 @@ export default function ChatScreen({ navigation }) {
 
   const handleClickOpenMessage = () =>{
     navigation.navigate('Message')
+    setIsModalVisible(false)
   }
 
   const handleOpenInvitation = (contact) => {
@@ -121,7 +122,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    padding: 10,
+    padding: 8,
     backgroundColor: "#FFF",
     borderRadius: 8,
     marginBottom: 5,

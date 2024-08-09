@@ -12,7 +12,8 @@ import Input from "../Components/Input";
 
 export default function MessageScreen({ navigation }) {
   const handleClickBack = () => {
-    navigation.navigate("Chat");
+    console.log('navigate to chat')
+    navigation.navigate("TabNavigator", { screen: "Chat" });
   };
 
   return (
@@ -33,10 +34,13 @@ export default function MessageScreen({ navigation }) {
               />
               <View style={styles.messageInfo}>
                 <Text style={styles.messageName}>Renaud</Text>
-                <Text style={styles.messageTime}>10:30 AM</Text>
+                <Text style={styles.messageTime}>10:30</Text>
               </View>
             </View>
-            <Text style={styles.messageText}>Coucou ça va ?</Text>
+            <Text style={styles.messageText}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor
+            </Text>
           </View>
         </View>
         <View style={[styles.messageWrapper, styles.messageWrapperSend]}>
@@ -48,10 +52,15 @@ export default function MessageScreen({ navigation }) {
               />
               <View style={styles.messageInfoSend}>
                 <Text style={styles.messageNameSend}>Gaspard</Text>
-                <Text style={styles.messageTimeSend}>10:31 AM</Text>
+                <Text style={styles.messageTimeSend}>10:31</Text>
               </View>
             </View>
-            <Text style={styles.messageTextSend}>Oui et toi ?</Text>
+            <Text style={styles.messageTextSend}>
+              Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do
+              eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut
+              enim ad minim veniam, quis nostrud exercitation ullamco laboris
+              nisi ut aliquip
+            </Text>
           </View>
         </View>
       </ScrollView>
@@ -81,12 +90,19 @@ const styles = StyleSheet.create({
     borderBottomColor: "#DDD",
   },
   iconButton: {
+    marginLeft:10,
     marginRight: 10,
+    marginTop:10,
+    width:50,
+    height:40,
+    alignItems:'center'
   },
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    flex: 1,
+    position: "absolute", // Position absolue pour centrer
+    left: 0, // S'étend de la gauche
+    right: 0, // à la droite
     textAlign: "center",
   },
   messageContainer: {
@@ -104,7 +120,7 @@ const styles = StyleSheet.create({
   },
   messageBubble: {
     backgroundColor: "#FFF",
-    borderRadius: 20,
+    borderRadius: 15,
     padding: 10,
     paddingBottom: 5,
     maxWidth: "80%",
@@ -127,20 +143,16 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 5,
-    justifyContent: "flex-end",
-  },
-  messageInfo: {
-    marginLeft: 10,
-    flex: 1,
+    justifyContent: "flex-start",
   },
   messageInfoSend: {
     marginRight: 10,
-    flex: 1,
   },
   avatar: {
     width: 30,
     height: 30,
     borderRadius: 15,
+    marginRight: 5,
   },
   messageName: {
     fontWeight: "bold",
@@ -158,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#888",
     marginTop: 2,
-    textAlign: "right",
+    textAlign: "left",
   },
   messageText: {
     fontSize: 16,
