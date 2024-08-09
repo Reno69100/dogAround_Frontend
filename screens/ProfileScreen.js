@@ -34,7 +34,7 @@ export default function ProfilScreen({ navigation }) {
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleClickCloseScreen = () => {
-    navigation.navigate("TabNavigator", { screen: "MonCompte" });
+    navigation.navigate("TabNavigator", { screen: "Compte" });
   };
 
   const handleChangeInfos = () => {
@@ -79,7 +79,7 @@ export default function ProfilScreen({ navigation }) {
           setPassword("");
           setNewPassword("");
           setErrorMessage("");
-          navigation.navigate("TabNavigator", { screen: "MonCompte" });
+          navigation.navigate("TabNavigator", { screen: "Compte" });
         } else {
           setErrorMessage("Information invalide");
         }

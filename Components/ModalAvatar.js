@@ -15,7 +15,7 @@ const ModalAvatar = ({ visible, onClose, onSelect }) => {
   return (
     <Modal
       transparent={true}
-      animationType="slide"
+      animationType="fade"
       visible={visible}
       onRequestClose={onClose}
     >

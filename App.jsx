@@ -17,13 +17,14 @@ import ChatScreen from './screens/ChatScreen';
 import PreferenceScreen from './screens/PreferenceScreen'
 import CompagnonScreen from './screens/CompagnonScreen';
 import PoiScreen from './screens/PoiScreen'
-
+import ProfileScreen from "./screens/ProfileScreen";
+import MessageScreen from "./screens/MessageScreen";
 
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user';
 import places from './reducers/places';
-import ProfileScreen from './screens/ProfileScreen';
+
 
 const store = configureStore({
   reducer: { user, places },
@@ -77,6 +78,7 @@ export default function App() {
             <Stack.Screen name="Preference" component={PreferenceScreen} />
             <Stack.Screen name="Compagnon" component={CompagnonScreen} />
             <Stack.Screen name="Poi" component={PoiScreen} />
+            <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
           </Stack.Navigator>
         </NavigationContainer>
