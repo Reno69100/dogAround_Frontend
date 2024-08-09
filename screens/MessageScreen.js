@@ -12,7 +12,6 @@ import Input from "../Components/Input";
 
 export default function MessageScreen({ navigation }) {
   const handleClickBack = () => {
-    console.log('navigate to chat')
     navigation.navigate("TabNavigator", { screen: "Chat" });
   };
 
@@ -100,9 +99,9 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 18,
     fontWeight: "bold",
-    position: "absolute", // Position absolue pour centrer
-    left: 0, // S'étend de la gauche
-    right: 0, // à la droite
+    position: "absolute",
+    left: 0,
+    right: 0, 
     textAlign: "center",
   },
   messageContainer: {

@@ -6,6 +6,10 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
 } from "react-native";
 import TextContainer from "../Components/TextContainer";
 import Input from "../Components/Input";
@@ -13,84 +17,98 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import ModalInvitation from "../Components/ModalInvitation";
 
 export default function ChatScreen({ navigation }) {
-
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
 
-  const contacts = ["Christine", "John", "Doe", "Gaspard", "Leo", "Mathieu", 'Reno'];
+  const contacts = [
+    "Christine",
+    "John",
+    "Doe",
+    "Gaspard",
+  ];
   const messages = ["Reno", "Leo", "Mathieu", "Gaspard", "John", "Doe"];
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
   };
 
-  const handleClickOpenMessage = () =>{
-    navigation.navigate('Message')
-    setIsModalVisible(false)
-  }
-
   const handleOpenInvitation = (contact) => {
     setSelectedContact(contact);
     setIsModalVisible(true);
   };
 
+  const handleClickOpenMessage = (message) => {
+    navigation.navigate("Message", { message });
+    setIsModalVisible(false);
+  };
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.welcomeText}>
-        <Text style={styles.text}>CONTACTS</Text>
-      </Text>
-      <View style={styles.searchAndContactContainer}>
-        <View style={styles.searchContainer}>
-          <Input placeholder="Rechercher un(e) ami(e)" />
-          <TouchableOpacity style={styles.iconButton}>
-            <FontAwesome name="search" size={25} color="#000" />
-          </TouchableOpacity>
-        </View>
-        <ScrollView style={styles.ContactScrollView}>
-          <View style={styles.Contact}>
-            {contacts.map((contact, i) => (
-              <View key={i} style={styles.contactRow}>
-                <TextContainer
-                  title={contact}
-                  style={styles.ContactContainer}
-                />
-                <TouchableOpacity
-                  onPress={() => handleOpenInvitation(contact)} // Passer le contact sélectionné
-                  style={styles.iconButton}
-                >
-                  <FontAwesome name="plus" size={20} color="#000" />
-                </TouchableOpacity>
-              </View>
-            ))}
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+      <KeyboardAvoidingView
+        style={styles.container}
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        keyboardVerticalOffset={10}
+      >
+        <Text style={styles.welcomeText}>
+          <Text style={styles.text}>CONTACTS</Text>
+        </Text>
+        <View style={styles.searchAndContactContainer}>
+          <View style={styles.searchContainer}>
+            <Input placeholder="Rechercher un(e) ami(e)" />
+            <TouchableOpacity style={styles.iconButton}>
+              <FontAwesome name="search" size={25} color="#000" />
+            </TouchableOpacity>
           </View>
-        </ScrollView>
-      </View>
-      <Text style={styles.welcomeText}>
-        <Text style={styles.text}>MESSAGERIE</Text>
-      </Text>
-      <View style={styles.NewMessage}>
-        <ScrollView style={styles.scrollView}>
-          {messages.map((message, i) => (
-            <View key={i} style={styles.messageRow}>
-              <Image
-                source={require("../assets/avatars/chien_1.png")}
-                style={styles.avatar}
-              />
-              <TextContainer
-                title={message}
-                style={styles.containerNewMessage}
-              />
+          <ScrollView style={styles.ContactScrollView}>
+            <View style={styles.Contact}>
+              {contacts.map((contact, i) => (
+                <View key={i} style={styles.contactRow}>
+                  <TextContainer
+                    title={contact}
+                    style={styles.ContactContainer}
+                  />
+                  <TouchableOpacity
+                    onPress={() => handleOpenInvitation(contact)}
+                    style={styles.iconButton}
+                  >
+                    <FontAwesome name="plus" size={20} color="#000" />
+                  </TouchableOpacity>
+                </View>
+              ))}
             </View>
-          ))}
-        </ScrollView>
-      </View>
-      <ModalInvitation
-        visible={isModalVisible}
-        onClose={handleCloseModal}
-        onSelect={handleClickOpenMessage}
-        name={selectedContact}
-      />
-    </View>
+          </ScrollView>
+        </View>
+        <Text style={styles.welcomeText}>
+          <Text style={styles.text}>MESSAGERIE</Text>
+        </Text>
+        <View style={styles.NewMessage}>
+          <ScrollView style={styles.scrollView}>
+            {messages.map((message, i) => (
+              <TouchableOpacity
+                key={i}
+                style={styles.messageRow}
+                onPress={() => handleClickOpenMessage(message)}
+              >
+                <Image
+                  source={require("../assets/avatars/chien_1.png")}
+                  style={styles.avatar}
+                />
+                <TextContainer
+                  title={message}
+                  style={styles.containerNewMessage}
+                />
+              </TouchableOpacity>
+            ))}
+          </ScrollView>
+        </View>
+        <ModalInvitation
+          visible={isModalVisible}
+          onClose={handleCloseModal}
+          onSelect={() => handleClickOpenMessage(selectedContact)}
+          name={selectedContact}
+        />
+      </KeyboardAvoidingView>
+    </TouchableWithoutFeedback>
   );
 }
 
