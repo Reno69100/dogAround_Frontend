@@ -10,7 +10,6 @@ import FontAwesome from 'react-native-vector-icons/FontAwesome6'
 
 import MapView, { Marker } from 'react-native-maps';
 import * as Location from 'expo-location';
-
 import Filter from '../Components/Filter'
 
 import { useSelector, useDispatch } from 'react-redux';
