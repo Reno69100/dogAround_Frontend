@@ -30,7 +30,7 @@ export default function CompagnonScreen({ navigation, route }) {
 
   const [name, setName] = useState('');
   const [dogBreed, setDogBreed] = useState('');
-  const [weigth, setWeigth] = useState('');
+  const [weight, setWeight] = useState(0);
   const [sex, setSex] = useState(0);
   const [comment, setComment] = useState('');
   const [errorMessage, setErrorMessage] = useState("");
@@ -42,6 +42,8 @@ export default function CompagnonScreen({ navigation, route }) {
     { label: 'Male', value: '1' },
     { label: 'Femelle', value: '2' },
   ];
+
+  const editCompagnon = route.params.compagnon;
 
   const handleClickCloseScreen = () => {
     navigation.navigate("TabNavigator", { screen: "Compte" });
@@ -67,7 +69,7 @@ export default function CompagnonScreen({ navigation, route }) {
         token:user.token,
         avatar: selectedAvatar,
         name: name,
-        weigth: weigth,
+        weight: weight,
         dogBreed: dogBreed,
         sex: sex,
         comment: comment,
@@ -83,12 +85,29 @@ export default function CompagnonScreen({ navigation, route }) {
       })
   };
 
-  const scroll = useRef();
+  const handleDelete = () => {
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/companions/delete`, {
+      method: "DELETE",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        token:user.token,
+        name: name,
+      })
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          navigation.navigate("TabNavigator", { screen: "Compte" });
+        } else {
+          setErrorMessage(data.error);
+        }
+      })
+  };
 
   useEffect(() => {
     //Récupération donnée compagnon
     if (isFocused) {
-      if (route.params.compagnon) {
+      if (editCompagnon) {
         fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/companions`, {
           method: 'POST',
           headers: {
@@ -100,11 +119,12 @@ export default function CompagnonScreen({ navigation, route }) {
         })
           .then((response) => response.json())
           .then((data) => {
-            const datacompanion = data.companions.filter(e=> e.name===route.params.compagnon)[0];
+            const datacompanion = data.companions.filter(e=> e.name===editCompagnon)[0];
+            /* console.log(data) */
             if (data.result) {
               setName(datacompanion.name);
               setDogBreed(datacompanion.dogBreed);
-              setWeigth(datacompanion.weight);
+              setWeight(datacompanion.weight);
               setSex(datacompanion.sex);
               setComment(datacompanion.comment);
               setSelectedAvatar(datacompanion.avatar);
@@ -114,7 +134,7 @@ export default function CompagnonScreen({ navigation, route }) {
       else {
         setName(null);
         setDogBreed(null);
-        setWeigth(null);
+        setWeight(null);
         setSex(null);
         setComment(null);
         setSelectedAvatar(require("../assets/avatars/chien_1.png"));
@@ -122,6 +142,8 @@ export default function CompagnonScreen({ navigation, route }) {
     }
   }, [isFocused])
 
+  const scroll = useRef();
+  
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView style={styles.container} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={10}>
@@ -136,12 +158,13 @@ export default function CompagnonScreen({ navigation, route }) {
               <FontAwesome name="times" size={25} color="#000" />
             </TouchableOpacity>
           </View>
-          <TextInput
-            style={styles.title}
+          {editCompagnon&&<Text style={styles.title}>{name}</Text>}
+          {!editCompagnon&&<TextInput
+            style={styles.titleInput}
             placeholder="Editer Nom"
             value={name}
             onChangeText={(value) => setName(value)}>
-          </TextInput>
+          </TextInput>}
           <View style={styles.avatarWrapper}>
             <View style={styles.avatarContainer}>
               <Image
@@ -164,7 +187,15 @@ export default function CompagnonScreen({ navigation, route }) {
               style={styles.input}
               placeholder="Race"
               value={dogBreed}
-              onChangeText={(value) => setDogBreed(value)}>
+              onChangeText={(value) => setDogBreed(value)}
+              autoCorrect={true}>
+            </TextInput>
+            <TextInput
+              style={styles.input}
+              placeholder="Poids en kg"
+              value={String(weight)}
+              onChangeText={(value) => setWeight(value)}
+              inputMode="numeric">
             </TextInput>
             <Dropdown
               style={styles.dropdown}
@@ -175,17 +206,11 @@ export default function CompagnonScreen({ navigation, route }) {
               labelField="label"
               valueField="value"
               placeholder='Select'
-              value={sex}
+              value={String(sex)}
               onChange={item => {
                 setSex(item.value);
               }}
             />
-            <TextInput
-              style={styles.input}
-              placeholder="Poids en kg"
-              value={weigth}
-              onChangeText={(value) => setWeigth(value)}>
-            </TextInput>
           </View>
           <TextInput
             style={styles.comment}
@@ -198,10 +223,15 @@ export default function CompagnonScreen({ navigation, route }) {
             <Text style={styles.errorText}>{errorMessage}</Text>
           ) : null}
           <Btn
-            style={styles.button}
+            style={{margin: 5}}
             title="Valider"
             onPress={handleValidation}
           />
+          {editCompagnon&&<Btn
+            style={{margin: 15,backgroundColor:"#FF0000"}}
+            title="Delete"
+            onPress={handleDelete}
+          />}
           <ModalAvatar
             visible={isModalVisible}
             onClose={handleCloseModal}
@@ -232,6 +262,13 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
   title: {
+    fontFamily: "Poppins_600SemiBold",
+    fontSize: 20,
+    color: '#416165',
+    padding: 10,
+    margin: 20,
+  },
+  titleInput: {
     fontFamily: "Poppins_600SemiBold",
     fontSize: 20,
     color: '#416165',
