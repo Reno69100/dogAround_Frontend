@@ -134,7 +134,7 @@ export default function CompagnonScreen({ navigation, route }) {
       else {
         setName(null);
         setDogBreed(null);
-        setWeight(null);
+        setWeight(0);
         setSex(null);
         setComment(null);
         setSelectedAvatar(require("../assets/avatars/chien_1.png"));
