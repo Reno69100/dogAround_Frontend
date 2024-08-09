@@ -59,13 +59,15 @@ export default function ProfilScreen({ navigation }) {
 
     filteredData.token = user.token;
     console.log(filteredData)
-    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/update`, {
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(filteredData),
     })
+
       .then((response) => response.json())
       .then((data) => {
+        console.log(data)
         if (data.result) {
           dispatch(
             login({
