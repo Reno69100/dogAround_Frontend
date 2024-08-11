@@ -156,6 +156,7 @@ export default function MapScreen({ navigation }) {
     })
 
     function handlePoiPress() {
+        // console.log(id)
         navigation.navigate('Poi')
     }
 
