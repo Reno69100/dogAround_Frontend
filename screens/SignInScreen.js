@@ -32,11 +32,10 @@ import { login } from "../reducers/user";
 SplashScreen.preventAutoHideAsync();
 
 export default function SignInScreen({ navigation }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("g@g.com");
+  const [password, setPassword] = useState("g");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
-  
 
   const [loaded, error] = useFonts({
     Commissioner_400Regular,
@@ -71,13 +70,21 @@ export default function SignInScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          dispatch(login({ email: email, pseudo: data.pseudo, city:data.city, avatar:data.avatar, token: data.token }));
+          dispatch(
+            login({
+              email: email,
+              pseudo: data.pseudo,
+              city: data.city,
+              avatar: data.avatar,
+              token: data.token,
+            })
+          );
           setEmail("");
           setPassword("");
-          setErrorMessage(""); 
+          setErrorMessage("");
           navigation.navigate("TabNavigator", { screen: "Map" });
         } else {
-          setErrorMessage("Email ou Mot de passe incorrect");// affiche un message d'error si le mdp ou email pas bon ou manquant
+          setErrorMessage("Email ou Mot de passe incorrect"); // affiche un message d'error si le mdp ou email pas bon ou manquant
         }
       });
   };
@@ -88,7 +95,6 @@ export default function SignInScreen({ navigation }) {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
-      
       <KeyboardAvoidingView
         style={styles.container}
         behavior="padding"
@@ -101,7 +107,6 @@ export default function SignInScreen({ navigation }) {
           <View style={styles.buttonContainer}>
             <ButtonGoogle />
             <ButtonFacebook />
-            
           </View>
 
           <View style={styles.inputContainer}>
