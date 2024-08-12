@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import {
   Image,
@@ -11,22 +11,78 @@ import {
   StatusBar,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useIsFocused } from "@react-navigation/native";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
 
-export default function PoiScreen({ navigation }) {
-  // tap sur croix pour retour à la map
+export default function PoiScreen({ navigation, route }) {
+  const [poiInfos,setPoiInfos] = useState([])
+  const isFocused = useIsFocused();
+  const poiData = route.params.google_id;
+  let poiArr = []
+
+  useEffect(() => {
+    if (isFocused) {
+      if (poiData) {
+        const google_id = poiData.google_id;
+        fetch(`https://places.googleapis.com/v1/places/${google_id}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Goog-Api-Key": "AIzaSyDhzwRccqMqwdLmMacjuqfOjU_YzsHWRI8", //process.env.GOOGLE_API_KEY,
+            "X-Goog-FieldMask":
+              "displayName,photos,location,regularOpeningHours,primaryType,editorialSummary",
+          },
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data) {
+              const poiObjet = {
+                name: data.name,
+                photos: data.photos? data.photos[0].photo_reference : null,
+                address: data.formatted_address,
+                openingHours: data.opening_hours,
+                type: data.types[0],
+                summary: data.editorial_summary,
+                lat: data.geometry.location.lat,
+                lng: data.geometry.location.lng,
+              }
+              setPoiInfos(poiObjet);
+            }
+          });
+      }
+    }
+  },[])
+
+  const poiInfosVisuel = poiInfos.map((e) => {
+  return (
+    <View style={styles.titleContainer}>
+      <Text style={styles.title}>{e.displayName.text}</Text>
+      <TouchableOpacity onPress={hearthHandlePress}>
+        <FontAwesome
+          name="heart"
+          style={[
+            styles.heartIcon,
+            { color: isFavorite ? "#FF0000" : "#FFFFFF" },
+          ]}
+        />
+      </TouchableOpacity>
+    </View>
+  );
+});
+
+  // press sur croix pour retour à la map
   const handleClickCloseScreen = () => {
     navigation.navigate("TabNavigator", { screen: "Map" });
   };
 
-  //tap sur icône "heart" --> changement de couleur
+  //press sur icône "heart" --> changement de couleur
   const [isFavorite, setIsFavorite] = useState(false);
   const hearthHandlePress = () => {
     setIsFavorite(!isFavorite);
   };
 
-  //tap sur icône "Like" --> changement de couleur + incrémention du compteur de like
+  //press sur icône "Like" --> changement de couleur + compteur de like
   const [isLiked, setIsLiked] = useState(false);
   const [likedCompt, setLikedCompt] = useState(14);
   const hearthLikePress = () => {
@@ -55,7 +111,8 @@ export default function PoiScreen({ navigation }) {
             }}
             style={styles.headerImage}
           />
-          <View style={styles.titleContainer}>
+          {poiInfosVisuel}
+          {/* <View style={styles.titleContainer}>
             <Text style={styles.title}>PARC DE LA LOUVIERE</Text>
             <TouchableOpacity onPress={hearthHandlePress}>
               <FontAwesome
@@ -66,7 +123,7 @@ export default function PoiScreen({ navigation }) {
                 ]}
               />
             </TouchableOpacity>
-          </View>
+          </View> */}
         </View>
 
         <View style={styles.corpModale}>
@@ -104,7 +161,7 @@ export default function PoiScreen({ navigation }) {
               <Text style={styles.KeyText}>Description : </Text>
               Ce parc accueille les chiens et leurs propriétaires dans un espace
               clôturé et équipé permettant à vos toutous de se défouler en toute
-              sécurité ! 
+              sécurité !
             </Text>
           </View>
 
@@ -121,7 +178,6 @@ export default function PoiScreen({ navigation }) {
           </View>
 
           <View style={styles.ZoneCommentaire}>
-            
             <View style={styles.commentaireContainer}>
               <View style={styles.commentTitle}>
                 <Image

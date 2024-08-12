@@ -15,7 +15,6 @@ import Input from "./Input";
 import TextContainer from "./TextContainer";
 import Correspondance from "../assets/avatars/Correspondance";
 
-
 export default function newComment(name,avatar){
   const [commentText, setCommentText] = useState('');
 

@@ -148,16 +148,16 @@ export default function MapScreen({ navigation }) {
         const showMarker = !user.filtres.some(filter => e.type === filter);
         if (showMarker) {
             return (
-                <Marker key={i + 1} coordinate={e.location} title={e.Id} onPress={handlePoiPress}>
+                <Marker key={i + 1} coordinate={e.location} title={e.Id} onPress={()=>handlePoiPress(e)}>
                     <FontAwesome name={iconName} size={40} color={iconColor} />
                 </Marker>
             )
         }
     })
 
-    function handlePoiPress() {
-        // console.log(id)
-        navigation.navigate('Poi')
+    function handlePoiPress(google_id) {
+        navigation.navigate('Poi',{google_id:google_id})
+        //console.log('ID -->', e.google_id)
     }
 
     return (
