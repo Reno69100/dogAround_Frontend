@@ -15,17 +15,16 @@ import TextContainer from "../Components/TextContainer";
 import Input from "../Components/Input";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import ModalInvitation from "../Components/ModalInvitation";
+import { useSelector } from "react-redux";
 
 export default function ChatScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
+  const [contacts, setContacts] = useState([]);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
 
-  const contacts = [
-    "Christine",
-    "John",
-    "Doe",
-    "Gaspard",
-  ];
+  const user = useSelector((state) => state.user.value);
   const messages = ["Reno", "Leo", "Mathieu", "Gaspard", "John", "Doe"];
 
   const handleCloseModal = () => {
@@ -42,6 +41,29 @@ export default function ChatScreen({ navigation }) {
     setIsModalVisible(false);
   };
 
+  const searchContact = () => {
+    setErrorMessage("");
+
+    fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}/pseudos?search=${searchQuery}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setContacts(data.pseudos);
+        } else {
+          setContacts([]);
+          setErrorMessage("Aucun utilisateur trouvé");
+        }
+      });
+  };
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
       <KeyboardAvoidingView
@@ -52,29 +74,38 @@ export default function ChatScreen({ navigation }) {
         <Text style={styles.welcomeText}>
           <Text style={styles.text}>CONTACTS</Text>
         </Text>
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
         <View style={styles.searchAndContactContainer}>
           <View style={styles.searchContainer}>
-            <Input placeholder="Rechercher un(e) ami(e)" />
-            <TouchableOpacity style={styles.iconButton}>
+            <Input
+              placeholder="Rechercher un(e) ami(e)"
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+            />
+            <TouchableOpacity style={styles.iconButton} onPress={searchContact}>
               <FontAwesome name="search" size={25} color="#000" />
             </TouchableOpacity>
           </View>
+
           <ScrollView style={styles.ContactScrollView}>
             <View style={styles.Contact}>
-              {contacts.map((contact, i) => (
-                <View key={i} style={styles.contactRow}>
-                  <TextContainer
-                    title={contact}
-                    style={styles.ContactContainer}
-                  />
-                  <TouchableOpacity
-                    onPress={() => handleOpenInvitation(contact)}
-                    style={styles.iconButton}
-                  >
-                    <FontAwesome name="plus" size={20} color="#000" />
-                  </TouchableOpacity>
-                </View>
-              ))}
+              {contacts.length > 0 &&
+                contacts.map((contact, i) => (
+                  <View key={i} style={styles.contactRow}>
+                    <TextContainer
+                      title={contact}
+                      style={styles.ContactContainer}
+                    />
+                    <TouchableOpacity
+                      onPress={() => handleOpenInvitation(contact)}
+                      style={styles.iconButton}
+                    >
+                      <FontAwesome name="plus" size={20} color="#000" />
+                    </TouchableOpacity>
+                  </View>
+                ))}
             </View>
           </ScrollView>
         </View>
@@ -122,9 +153,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "#E8E9ED",
   },
-  welcomeText: {
-    marginBottom: 10,
-  },
   text: {
     color: "#416165",
     fontSize: 24,
@@ -144,6 +172,12 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 8,
     marginBottom: 5,
+  },
+  errorText: {
+    color: "red",
+    fontSize: 14,
+    marginTop: 5,
+    textAlign: "center",
   },
   ContactScrollView: {
     maxHeight: 165,
@@ -203,5 +237,10 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     padding: 10,
     borderRadius: 8,
+  },
+  noContactsText: {
+    color: "#888",
+    fontSize: 16,
+    marginTop: 10,
   },
 });
