@@ -41,14 +41,8 @@ export default function ChatScreen({ navigation }) {
     setIsModalVisible(false);
   };
 
-  // Fonction pour chercher les contacts selon la recherche
   const searchContact = () => {
     setErrorMessage("");
-
-    if (!searchQuery.trim()) {
-      setErrorMessage("Veuillez entrer un terme de recherche.");
-      return;
-    }
 
     fetch(
       `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}/pseudos?search=${searchQuery}`,
@@ -67,7 +61,7 @@ export default function ChatScreen({ navigation }) {
           setContacts([]);
           setErrorMessage("Aucun utilisateur trouvé");
         }
-      })
+      });
   };
 
   return (
@@ -80,6 +74,9 @@ export default function ChatScreen({ navigation }) {
         <Text style={styles.welcomeText}>
           <Text style={styles.text}>CONTACTS</Text>
         </Text>
+        {errorMessage ? (
+          <Text style={styles.errorText}>{errorMessage}</Text>
+        ) : null}
         <View style={styles.searchAndContactContainer}>
           <View style={styles.searchContainer}>
             <Input
@@ -91,13 +88,10 @@ export default function ChatScreen({ navigation }) {
               <FontAwesome name="search" size={25} color="#000" />
             </TouchableOpacity>
           </View>
-          {errorMessage ? (
-            <Text style={styles.errorText}>{errorMessage}</Text>
-          ) : null}
 
           <ScrollView style={styles.ContactScrollView}>
             <View style={styles.Contact}>
-              {contacts.length > 0 ? (
+              {contacts.length > 0 &&
                 contacts.map((contact, i) => (
                   <View key={i} style={styles.contactRow}>
                     <TextContainer
@@ -111,12 +105,7 @@ export default function ChatScreen({ navigation }) {
                       <FontAwesome name="plus" size={20} color="#000" />
                     </TouchableOpacity>
                   </View>
-                ))
-              ) : (
-                <Text style={styles.noContactsText}>
-                  Aucun contact disponible
-                </Text>
-              )}
+                ))}
             </View>
           </ScrollView>
         </View>
@@ -163,9 +152,6 @@ const styles = StyleSheet.create({
     justifyContent: "space-evenly",
     alignItems: "center",
     backgroundColor: "#E8E9ED",
-  },
-  welcomeText: {
-    marginBottom: 10,
   },
   text: {
     color: "#416165",
