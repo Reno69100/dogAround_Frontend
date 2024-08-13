@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   StyleSheet,
   View,
@@ -20,12 +20,16 @@ import { useSelector } from "react-redux";
 export default function ChatScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
-  const [contacts, setContacts] = useState([]);
+  const [searchContacts, setSearchContacts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [contacts, setContacts] = useState([]);
 
   const user = useSelector((state) => state.user.value);
-  const messages = ["Reno", "Leo", "Mathieu", "Gaspard", "John", "Doe"];
+
+  useEffect(() => {
+    contactMessage();
+  }, []);
 
   const handleCloseModal = () => {
     setIsModalVisible(false);
@@ -36,8 +40,8 @@ export default function ChatScreen({ navigation }) {
     setIsModalVisible(true);
   };
 
-  const handleClickOpenMessage = (message) => {
-    navigation.navigate("Message", { message });
+  const handleClickOpenMessage = (contact) => {
+    navigation.navigate("Message", { message: contact.pseudo });
     setIsModalVisible(false);
   };
 
@@ -56,10 +60,53 @@ export default function ChatScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
-          setContacts(data.pseudos);
+          setSearchContacts(data.pseudos);
+        } else {
+          setSearchContacts([]);
+          setErrorMessage("Aucun utilisateur trouvé");
+        }
+      });
+  };
+
+  const contactMessage = () => {
+    fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/contacts/${user.token}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setContacts(
+            data.contacts.map((contact) => ({
+              pseudo: contact.pseudo,
+              avatar: contact.avatar,
+              invitation: contact.invitation,
+            }))
+          );
         } else {
           setContacts([]);
-          setErrorMessage("Aucun utilisateur trouvé");
+        }
+      });
+  };
+
+  const handleClickForInvitation = () => {
+    fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/invitation/${user.token}`,
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pseudo: selectedContact }),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setIsModalVisible(false);
         }
       });
   };
@@ -91,8 +138,8 @@ export default function ChatScreen({ navigation }) {
 
           <ScrollView style={styles.ContactScrollView}>
             <View style={styles.Contact}>
-              {contacts.length > 0 &&
-                contacts.map((contact, i) => (
+              {searchContacts.length > 0 &&
+                searchContacts.map((contact, i) => (
                   <View key={i} style={styles.contactRow}>
                     <TextContainer
                       title={contact}
@@ -109,25 +156,36 @@ export default function ChatScreen({ navigation }) {
             </View>
           </ScrollView>
         </View>
-        <Text style={styles.welcomeText}>
+        <View style={styles.messagerie}>
           <Text style={styles.text}>MESSAGERIE</Text>
-        </Text>
+          <TouchableOpacity style={styles.IconMessagerie} onPress={contactMessage}>
+            <FontAwesome name="rotate-right" size={20} color="#416165" />
+          </TouchableOpacity>
+        </View>
         <View style={styles.NewMessage}>
           <ScrollView style={styles.scrollView}>
-            {messages.map((message, i) => (
+            {contacts.map((contact, i) => (
               <TouchableOpacity
                 key={i}
                 style={styles.messageRow}
-                onPress={() => handleClickOpenMessage(message)}
+                onPress={() => handleClickOpenMessage(contact)}
               >
-                <Image
-                  source={require("../assets/avatars/chien_1.png")}
-                  style={styles.avatar}
-                />
-                <TextContainer
-                  title={message}
-                  style={styles.containerNewMessage}
-                />
+                <Image source={contact.avatar} style={styles.avatar} />
+                <View style={styles.contactInfo}>
+                  <TextContainer
+                    title={contact.pseudo}
+                    style={styles.containerNewMessage}
+                  />
+                  <Text
+                    style={styles.invitationText}
+                    numberOfLines={1}
+                    ellipsizeMode="tail"
+                  >
+                    {contact.invitation === "issued"
+                      ? "Invitation Sent"
+                      : "No Invitation"}
+                  </Text>
+                </View>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -135,7 +193,7 @@ export default function ChatScreen({ navigation }) {
         <ModalInvitation
           visible={isModalVisible}
           onClose={handleCloseModal}
-          onSelect={() => handleClickOpenMessage(selectedContact)}
+          onSelect={handleClickForInvitation}
           name={selectedContact}
         />
       </KeyboardAvoidingView>
@@ -159,6 +217,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     fontFamily: "Commissioner_700Bold",
     marginBottom: 20,
+    marginRight: 30,
   },
   searchAndContactContainer: {
     width: "80%",
@@ -224,8 +283,9 @@ const styles = StyleSheet.create({
   messageRow: {
     flexDirection: "row",
     alignItems: "center",
-    width: "100%",
     marginBottom: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
   avatar: {
     width: 40,
@@ -233,14 +293,31 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginRight: 10,
   },
-  containerNewMessage: {
-    backgroundColor: "#FFF",
-    padding: 10,
-    borderRadius: 8,
+  contactInfo: {
+    flex: 1,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
   },
-  noContactsText: {
-    color: "#888",
+  containerNewMessage: {
+    color: "#416165",
     fontSize: 16,
-    marginTop: 10,
+    fontWeight: "normal",
+    flexShrink: 1,
+  },
+  invitationText: {
+    color: "#888",
+    fontSize: 14,
+    flexShrink: 1,
+    flexGrow: 1,
+    textAlign: "right",
+  },
+  messagerie: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  IconMessagerie: {
+    paddingBottom:20
   },
 });
