@@ -53,7 +53,13 @@ export default function MonCompteScreen({ navigation }) {
       <View key={i} style={styles.inputRow}>
         <Text style={styles.compagnonText}>{e.name}</Text>
         <TouchableOpacity style={styles.editButton} onPress={()=>handleClickGoToCompagnon(e.name)}>
-          <Text style={styles.editText}>EDIT</Text>
+          {/* <Text style={styles.editText}>EDIT</Text> */}
+          <FontAwesome
+              name="pencil"
+              size={25}
+              color="#000"
+              /* onPress={handleClickCloseScreen} */
+            />
         </TouchableOpacity>
       </View>
     )

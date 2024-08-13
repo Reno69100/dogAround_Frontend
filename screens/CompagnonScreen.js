@@ -30,8 +30,8 @@ export default function CompagnonScreen({ navigation, route }) {
 
   const [name, setName] = useState('');
   const [dogBreed, setDogBreed] = useState('');
-  const [weight, setWeight] = useState(0);
-  const [sex, setSex] = useState(0);
+  const [weight, setWeight] = useState('');
+  const [sex, setSex] = useState('');
   const [comment, setComment] = useState('');
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -132,11 +132,11 @@ export default function CompagnonScreen({ navigation, route }) {
           });
       }
       else {
-        setName(null);
-        setDogBreed(null);
-        setWeight(0);
-        setSex(null);
-        setComment(null);
+        setName('');
+        setDogBreed('');
+        setWeight('');
+        setSex('');
+        setComment('');
         setSelectedAvatar(require("../assets/avatars/chien_1.png"));
       }
     }
