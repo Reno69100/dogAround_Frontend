@@ -86,7 +86,7 @@ export default function ChatScreen({ navigation }) {
               pseudo: contact.pseudo,
               avatar: contact.avatar,
               invitation: contact.invitation,
-            }))
+            })).reverse()
           );
         } else {
           setContacts([]);
@@ -110,6 +110,7 @@ export default function ChatScreen({ navigation }) {
         }
       });
   };
+
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
@@ -158,7 +159,10 @@ export default function ChatScreen({ navigation }) {
         </View>
         <View style={styles.messagerie}>
           <Text style={styles.text}>MESSAGERIE</Text>
-          <TouchableOpacity style={styles.IconMessagerie} onPress={contactMessage}>
+          <TouchableOpacity
+            style={styles.IconMessagerie}
+            onPress={contactMessage}
+          >
             <FontAwesome name="rotate-right" size={20} color="#416165" />
           </TouchableOpacity>
         </View>
@@ -176,13 +180,9 @@ export default function ChatScreen({ navigation }) {
                     title={contact.pseudo}
                     style={styles.containerNewMessage}
                   />
-                  <Text
-                    style={styles.invitationText}
-                    numberOfLines={1}
-                    ellipsizeMode="tail"
-                  >
+                  <Text style={styles.invitationText}>
                     {contact.invitation === "issued"
-                      ? "Invitation Sent"
+                      ? "Invitation Envoyée"
                       : "No Invitation"}
                   </Text>
                 </View>
@@ -240,15 +240,11 @@ const styles = StyleSheet.create({
   },
   ContactScrollView: {
     maxHeight: 165,
-    flexGrow: 0,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
   },
   Contact: {
     backgroundColor: "#FFF",
     width: "100%",
     alignItems: "center",
-    padding: 10,
     borderRadius: 8,
   },
   contactRow: {
@@ -256,7 +252,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    marginBottom: 10,
+    padding:10
   },
   ContactContainer: {
     width: "80%",
@@ -318,6 +314,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   IconMessagerie: {
-    paddingBottom:20
+    paddingBottom: 20,
   },
 });
