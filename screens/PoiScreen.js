@@ -14,65 +14,62 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useIsFocused } from "@react-navigation/native";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
-// import NewComment from "../Components/NewCommentewComment";
+import TextContainer from "../Components/TextContainer";
+import Correspondance from "../assets/avatars/Correspondance";
+
 
 export default function PoiScreen({ navigation, route }) {
-  const [poiInfos,setPoiInfos] = useState([])
+  const [poiInfos,setPoiInfos] = useState({})
+  const [newComment,setNewComment] = useState('')
   const isFocused = useIsFocused();
-  const poiData = route.params.google_id;
+  const id = route.params.google_id;
   let poiArr = [];
   let poiObjet = {};
 
-  useEffect(() => {
-    if (isFocused && poiData) {
-      // if (poiData) {
-        const google_id = poiData.google_id;
-        fetch(`https://places.googleapis.com/v1/places/${google_id}`, {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            "X-Goog-Api-Key": "AIzaSyDhzwRccqMqwdLmMacjuqfOjU_YzsHWRI8", //process.env.GOOGLE_API_KEY,
-            "X-Goog-FieldMask":
-              "displayName,photos,location,regularOpeningHours,primaryType,editorialSummary",
-          },
-        })
-          .then((response) => response.json())
-          .then((data) => {
-           console.log(data.photo[0].name)
-            if (data) {
-              poiObjet = {
-                name: data.displayName.text,
-                //photos: data.photos[0].photo_reference,
-                address: data.formatted_address,
-                openingHours: data.opening_hours,
-                type: data.types[0],
-                summary: data.editorial_summary,
-                lat: data.geometry.location.lat,
-                lng: data.geometry.location.lng,
-              }
-              setPoiInfos(poiObjet);
-            }
-          });
-      // } end if poiData
-    }
-  },[])
+  const user = useSelector((state) => state.user.value);
+  console.log('user :', user)
 
-  const poiInfosVisuel = poiInfos.map((e) => {
-  return (
-    <View style={styles.titleContainer}>
-      <Text style={styles.title}>{e.displayName.text}</Text>
-      <TouchableOpacity onPress={hearthHandlePress}>
-        <FontAwesome
-          name="heart"
-          style={[
-            styles.heartIcon,
-            { color: isFavorite ? "#FF0000" : "#FFFFFF" },
-          ]}
-        />
-      </TouchableOpacity>
-    </View>
-  );
-});
+    useEffect(() => {
+      if (id) {
+          fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/id/${id}`)
+            .then((response) => response.json())
+            .then((data) => {
+              if (data.place) {
+
+                poiObjet = {
+                  _id: data.place._id,
+                  image:data.place.image,
+                  nom: data.place.nom,
+                  adresse: data.place.adresse,
+                  horaires: data.place.horaires,
+                  description: data.place.description,
+                  categorie:data.place.categorie,
+                  location: data.place.location ,
+                }
+                setPoiInfos(poiObjet);
+              }
+            });
+          }
+        }
+        ,[isFocused])
+
+
+  // const poiInfosVisuel = poiInfos.map((e) => {
+//   return (
+//     <View style={styles.titleContainer}>
+//       <Text style={styles.title}>{e.displayName.text}</Text>
+//       <TouchableOpacity onPress={hearthHandlePress}>
+//         <FontAwesome
+//           name="heart"
+//           style={[
+//             styles.heartIcon,
+//             { color: isFavorite ? "#FF0000" : "#FFFFFF" },
+//           ]}
+//         />
+//       </TouchableOpacity>
+//     </View>
+//   );
+// });
 
   // press sur croix pour retour à la map
   const handleClickCloseScreen = () => {
@@ -110,13 +107,12 @@ export default function PoiScreen({ navigation, route }) {
           </TouchableOpacity>
           <Image
             source={{
-              uri: "https://streetviewpixels-pa.googleapis.com/v1/thumbnail?panoid=WwAMMy6BG-Ih6iAok6dDhQ&cb_client=search.gws-prod.gps&w=408&h=240&yaw=255.01967&pitch=0&thumbfov=100",
+              uri: poiInfos.image,
             }}
             style={styles.headerImage}
           />
-          {poiInfosVisuel}
-          {/* <View style={styles.titleContainer}>
-            <Text style={styles.title}>PARC DE LA LOUVIERE</Text>
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{poiInfos.nom}</Text>
             <TouchableOpacity onPress={hearthHandlePress}>
               <FontAwesome
                 name="heart"
@@ -126,7 +122,7 @@ export default function PoiScreen({ navigation, route }) {
                 ]}
               />
             </TouchableOpacity>
-          </View> */}
+          </View>
         </View>
 
         <View style={styles.corpModale}>
@@ -152,19 +148,17 @@ export default function PoiScreen({ navigation, route }) {
         <View style={styles.detailContainer}>
           <View style={styles.detail}>
             <Text style={styles.KeyText}>Adresse:</Text>
-            <Text style={styles.infoText}>2 rue la louviere</Text>
+            <Text style={styles.infoText}>{poiInfos.adresse}</Text>
           </View>
           <View style={styles.detail}>
             <Text style={styles.KeyText}>Horaires:</Text>
-            <Text style={styles.infoText}>06H - 23H</Text>
+            <Text style={styles.infoText}>{poiInfos.horaires}</Text>
           </View>
 
           <View style={styles.DescriptionContainer}>
             <Text style={styles.descriptionText}>
               <Text style={styles.KeyText}>Description : </Text>
-              Ce parc accueille les chiens et leurs propriétaires dans un espace
-              clôturé et équipé permettant à vos toutous de se défouler en toute
-              sécurité !
+                {poiInfos.description}
             </Text>
           </View>
 
@@ -182,27 +176,18 @@ export default function PoiScreen({ navigation, route }) {
 
           <View style={styles.ZoneCommentaire}>
 
-            <View style={styles.newComment}>
-              {/* <NewComment name='Reno'/> */}
-            </View>
-
             <View style={styles.commentaireContainer}>
               <View style={styles.commentTitle}>
-                <Image
-                  style={styles.userAvatar}
-                  source={require("../assets/avatars/chien_1.png")}
-                />
+                <View style={styles.avatarContainer}>
+                  <Image source={require("../assets/avatars/chien_1.png")} style={styles.userAvatar} />
+                </View>
                 <View style={styles.commentTextContainer}>
                   <Text style={styles.commentPseudo}>LULU</Text>
                   <Text style={styles.commentTime}>il y a 1h :</Text>
                 </View>
               </View>
               <View style={styles.commentParent}>
-                <Text style={styles.commentText}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  non risus. Suspendisse lectus tortor, dignissim sit amet,
-                  adipiscing nec, ultricies sed, dolor.
-                </Text>
+                <Input placeholder='nouveau commentaire' style={styles.commentInput}/>
               </View>
             </View>
 
@@ -249,10 +234,10 @@ export default function PoiScreen({ navigation, route }) {
 
             <View style={styles.commentaireContainer}>
               <View style={styles.commentTitle}>
-                <Image
+                {/* <Image
                   style={styles.userAvatar}
                   source={require("../assets/avatars/chien_25.png")}
-                />
+                /> */}
                 <View style={styles.commentTextContainer}>
                   <Text style={styles.commentPseudo}>BALOU</Text>
                   <Text style={styles.commentTime}>il y a 4h :</Text>

@@ -116,13 +116,7 @@ export default function ProfilScreen({ navigation }) {
         <View style={styles.inputContainer}>
           <View style={styles.avatarWrapper}>
             <View style={styles.avatarContainer}>
-              <Image
-                source={
-                  selectedAvatar || { uri: user.avatar } ||
-                  require("../assets/avatars/chien_1.png")
-                }
-                style={styles.avatar}
-              />
+              <Image source={require("../assets/avatars/chien_1.png")}style={styles.avatar}/>
             </View>
             <TouchableOpacity
               style={styles.plusIcon}
