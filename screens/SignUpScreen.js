@@ -169,7 +169,7 @@ export default function SignUpScreen({ navigation }) {
             <Text style={styles.textMail}>Ou par mail: </Text>
             <View style={styles.inputContainer}>
               <Input
-                placeholder="E-mail"
+                placeholder="E-mail *"
                 accessibilityLabel="Email Input"
                 value={email}
                 onChangeText={setEmail}
@@ -195,7 +195,7 @@ export default function SignUpScreen({ navigation }) {
                 onClear={() => onClearPress()}
               />
               <Input
-                placeholder="Pseudo"
+                placeholder="Pseudo *"
                 accessibilityLabel="Username Input"
                 value={pseudo}
                 onChangeText={setPseudo}
@@ -219,14 +219,14 @@ export default function SignUpScreen({ navigation }) {
                 onChangeText={setCity}
               /> */}
               <Input
-                placeholder="Mot de passe"
+                placeholder="Mot de passe *"
                 accessibilityLabel="Password Input"
                 secureTextEntry
                 value={password}
                 onChangeText={setPassword}
               />
               <Input
-                placeholder="Confirmer Mot de passe"
+                placeholder="Confirmer Mot de passe *"
                 accessibilityLabel="Confirm Password Input"
                 secureTextEntry
                 value={confirmPassword}
