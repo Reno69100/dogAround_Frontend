@@ -157,7 +157,7 @@ export default function MapScreen({ navigation }) {
 
     function handlePoiPress(google_id) {
         navigation.navigate('Poi',{google_id:google_id})
-        //console.log('ID -->', e.google_id)
+        //console.log('ID -->', google_id.google_id)
     }
 
     return (

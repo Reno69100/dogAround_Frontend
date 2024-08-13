@@ -14,16 +14,18 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useIsFocused } from "@react-navigation/native";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
+// import NewComment from "../Components/NewCommentewComment";
 
 export default function PoiScreen({ navigation, route }) {
   const [poiInfos,setPoiInfos] = useState([])
   const isFocused = useIsFocused();
   const poiData = route.params.google_id;
-  let poiArr = []
+  let poiArr = [];
+  let poiObjet = {};
 
   useEffect(() => {
-    if (isFocused) {
-      if (poiData) {
+    if (isFocused && poiData) {
+      // if (poiData) {
         const google_id = poiData.google_id;
         fetch(`https://places.googleapis.com/v1/places/${google_id}`, {
           method: "GET",
@@ -36,10 +38,11 @@ export default function PoiScreen({ navigation, route }) {
         })
           .then((response) => response.json())
           .then((data) => {
+           console.log(data.photo[0].name)
             if (data) {
-              const poiObjet = {
-                name: data.name,
-                photos: data.photos? data.photos[0].photo_reference : null,
+              poiObjet = {
+                name: data.displayName.text,
+                //photos: data.photos[0].photo_reference,
                 address: data.formatted_address,
                 openingHours: data.opening_hours,
                 type: data.types[0],
@@ -50,7 +53,7 @@ export default function PoiScreen({ navigation, route }) {
               setPoiInfos(poiObjet);
             }
           });
-      }
+      // } end if poiData
     }
   },[])
 
@@ -165,10 +168,10 @@ export default function PoiScreen({ navigation, route }) {
             </Text>
           </View>
 
-          <Btn
+          {/* <Btn
             title="Itineraire vers ce lieu"
             style={styles.boutonItineraire}
-          ></Btn>
+          ></Btn> */}
 
           <Btn title="Créer un événement" style={styles.boutonItineraire}></Btn>
 
@@ -178,6 +181,11 @@ export default function PoiScreen({ navigation, route }) {
           </View>
 
           <View style={styles.ZoneCommentaire}>
+
+            <View style={styles.newComment}>
+              {/* <NewComment name='Reno'/> */}
+            </View>
+
             <View style={styles.commentaireContainer}>
               <View style={styles.commentTitle}>
                 <Image
@@ -286,6 +294,7 @@ export default function PoiScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
+  
   container: {
     paddingtop: 15,
     height: "100%",
@@ -425,15 +434,6 @@ const styles = StyleSheet.create({
   eventButtonText: {
     fontSize: 8,
     textAlign: "center",
-  },
-
-  btnPublier: {
-    marginLeft: 1,
-    paddingHorizontal: 5,
-    paddingVertical: 1,
-    height: 25,
-    width: 30,
-    justifyContent: "center",
   },
 
   detailContainer: {
