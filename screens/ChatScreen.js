@@ -63,6 +63,7 @@ export default function ChatScreen({ navigation }) {
           setSearchContacts(data.pseudos);
         } else {
           setSearchContacts([]);
+          setSearchQuery("")
           setErrorMessage("Aucun utilisateur trouvé");
         }
       });
@@ -107,10 +108,12 @@ export default function ChatScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           setIsModalVisible(false);
+          setSearchQuery("");
+          setSearchContacts([]);
+          contactMessage()
         }
       });
   };
-
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
