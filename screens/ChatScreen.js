@@ -15,10 +15,15 @@ import TextContainer from "../Components/TextContainer";
 import Input from "../Components/Input";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import ModalInvitation from "../Components/ModalInvitation";
+import ModalInvitationAnswer from "../Components/ModalInvitationAnswer";
 import { useSelector } from "react-redux";
+import { useIsFocused } from '@react-navigation/native';
+
+import { AutocompleteDropdown } from 'react-native-autocomplete-dropdown';
 
 export default function ChatScreen({ navigation }) {
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isModalAnswerVisible, setIsModalAnswerVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   const [searchContacts, setSearchContacts] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -26,25 +31,9 @@ export default function ChatScreen({ navigation }) {
   const [contacts, setContacts] = useState([]);
 
   const user = useSelector((state) => state.user.value);
+  const isFocused = useIsFocused();
 
-  useEffect(() => {
-    contactMessage();
-  }, []);
-
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleOpenInvitation = (contact) => {
-    setSelectedContact(contact);
-    setIsModalVisible(true);
-  };
-
-  const handleClickOpenMessage = (contact) => {
-    navigation.navigate("Message", { message: contact.pseudo });
-    setIsModalVisible(false);
-  };
-
+  //Fonction recherche d'un contact
   const searchContact = () => {
     setErrorMessage("");
 
@@ -59,8 +48,20 @@ export default function ChatScreen({ navigation }) {
     )
       .then((response) => response.json())
       .then((data) => {
+        /* console.log(data) */
         if (data.result) {
-          setSearchContacts(data.pseudos);
+          const pseudoFilter = data.pseudos.filter(e => {
+            return ((e !== user.pseudo) && (!contacts.some((contact) => { return (e === contact.pseudo) })))
+          })
+          /* setSearchContacts(data.pseudos); */
+          if (pseudoFilter.length > 0) {
+            setSearchContacts(pseudoFilter);
+          }
+          else {
+            setSearchContacts([]);
+            setSearchQuery("")
+            setErrorMessage("Aucun utilisateur trouvé");
+          }
         } else {
           setSearchContacts([]);
           setSearchQuery("")
@@ -69,6 +70,7 @@ export default function ChatScreen({ navigation }) {
       });
   };
 
+  //Fonction récupération liste des contacts
   const contactMessage = () => {
     fetch(
       `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/contacts/${user.token}`,
@@ -87,6 +89,7 @@ export default function ChatScreen({ navigation }) {
               pseudo: contact.pseudo,
               avatar: contact.avatar,
               invitation: contact.invitation,
+              discussion_id: contact.discussion_id,
             })).reverse()
           );
         } else {
@@ -95,6 +98,29 @@ export default function ChatScreen({ navigation }) {
       });
   };
 
+  //Fonction Fermeture Modal invitation
+  const handleCloseModal = () => {
+    setIsModalVisible(false);
+  };
+
+  //Fonction ouverture Modal invitation
+  const handleOpenInvitation = (contact) => {
+    setSelectedContact(contact);
+    setIsModalVisible(true);
+  };
+
+  //Fonction Fermeture Modal réponse invitationn
+  const handleCloseModalAnswer = () => {
+    setIsModalAnswerVisible(false);
+  };
+
+  //Fonction ouverture Modal réponse invitation
+  const handleOpenInvitationAnswer = (contact) => {
+    setSelectedContact(contact);
+    setIsModalAnswerVisible(true);
+  };
+
+  //Fonction envoi invitation
   const handleClickForInvitation = () => {
     fetch(
       `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/invitation/${user.token}`,
@@ -110,13 +136,81 @@ export default function ChatScreen({ navigation }) {
           setIsModalVisible(false);
           setSearchQuery("");
           setSearchContacts([]);
-          contactMessage()
+          contactMessage();
         }
       });
   };
 
+  //Fonction réponse invitation
+  const handleClickForInvitationAnswer = (answer) => {
+    fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/invitation/${user.token}`,
+      {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ pseudo: selectedContact, answer: answer }),
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          setIsModalAnswerVisible(false);
+          contactMessage();
+        }
+      });
+  };
+
+  //Fonction ouverture MessageScreen avec props
+  const handleClickOpenMessage = (contact) => {
+    setIsModalVisible(false);
+    setIsModalAnswerVisible(false);
+    if (contact.invitation === 'accepted') {
+      navigation.navigate("Message", { discussion_pseudo: contact.pseudo, discussion_id: contact.discussion_id });
+    }
+    else if (contact.invitation === 'received') {
+      handleOpenInvitationAnswer(contact.pseudo);
+    }
+  };
+
+  useEffect(() => {
+    if (isFocused) {
+      contactMessage();
+    }
+  }, []);
+
+  //Rendu de la liste de contacts affichés
+  const listContacts = contacts.map((contact, i) => {
+    return (
+      <TouchableOpacity
+        key={i}
+        style={styles.contactRow}
+        onPress={() => handleClickOpenMessage(contact)}
+      >
+        <Image source={contact.avatar} style={styles.avatar} />
+        <View style={styles.contactInfo}>
+          <TextContainer
+            title={contact.pseudo}
+            style={styles.containerNewMessage}
+          />
+          {/* <Text style={styles.invitationText}>
+          {contact.invitation === "issued"
+            ? "Invitation Envoyée"
+            : "No Invitation"}
+        </Text> */}
+          {(contact.invitation === "issued") && <Text style={[styles.invitationText]}>Attente</Text>}
+          {(contact.invitation === "received") && <Text style={[styles.invitationText, { color: "#00CC00" }]}>Invitation ?</Text>}
+          {(contact.invitation === "denied") && <Text style={[styles.invitationText, { color: "#FF0000" }]}>Refusée</Text>}
+        </View>
+      </TouchableOpacity>
+    )
+  });
+
   return (
-    <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+    <TouchableWithoutFeedback onPress={() => {
+      Keyboard.dismiss();
+      setIsModalVisible(false);
+      setIsModalAnswerVisible(false);
+    }} accessible={false}>
       <KeyboardAvoidingView
         style={styles.container}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
@@ -160,43 +254,34 @@ export default function ChatScreen({ navigation }) {
             </View>
           </ScrollView>
         </View>
+
         <View style={styles.messagerie}>
           <Text style={styles.text}>MESSAGERIE</Text>
           <TouchableOpacity
             style={styles.IconMessagerie}
             onPress={contactMessage}
           >
-            <FontAwesome name="rotate-right" size={20} color="#416165" />
+            <FontAwesome name="rotate-right" size={40} color="#416165" />
           </TouchableOpacity>
         </View>
-        <View style={styles.NewMessage}>
+
+        <View style={styles.contactlist}>
           <ScrollView style={styles.scrollView}>
-            {contacts.map((contact, i) => (
-              <TouchableOpacity
-                key={i}
-                style={styles.messageRow}
-                onPress={() => handleClickOpenMessage(contact)}
-              >
-                <Image source={contact.avatar} style={styles.avatar} />
-                <View style={styles.contactInfo}>
-                  <TextContainer
-                    title={contact.pseudo}
-                    style={styles.containerNewMessage}
-                  />
-                  <Text style={styles.invitationText}>
-                    {contact.invitation === "issued"
-                      ? "Invitation Envoyée"
-                      : "No Invitation"}
-                  </Text>
-                </View>
-              </TouchableOpacity>
-            ))}
+            {listContacts}
           </ScrollView>
         </View>
+
         <ModalInvitation
           visible={isModalVisible}
           onClose={handleCloseModal}
           onSelect={handleClickForInvitation}
+          name={selectedContact}
+        />
+
+        <ModalInvitationAnswer
+          visible={isModalAnswerVisible}
+          onClose={handleCloseModalAnswer}
+          onSelect={handleClickForInvitationAnswer}
           name={selectedContact}
         />
       </KeyboardAvoidingView>
@@ -219,7 +304,6 @@ const styles = StyleSheet.create({
     fontSize: 24,
     fontWeight: "bold",
     fontFamily: "Commissioner_700Bold",
-    marginBottom: 20,
     marginRight: 30,
   },
   searchAndContactContainer: {
@@ -255,7 +339,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
-    padding:10
+    padding: 10
   },
   ContactContainer: {
     width: "80%",
@@ -266,20 +350,20 @@ const styles = StyleSheet.create({
   iconButton: {
     padding: 5,
   },
-  NewMessage: {
+  contactlist: {
     backgroundColor: "#FFF",
     width: "80%",
     padding: 10,
     borderRadius: 8,
     marginTop: 0,
-    maxHeight: 215,
+    maxHeight: 300,
   },
   scrollView: {
     flexGrow: 0,
     borderBottomWidth: 1,
     borderBottomColor: "#ddd",
   },
-  messageRow: {
+  contactRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
@@ -293,23 +377,26 @@ const styles = StyleSheet.create({
     marginRight: 10,
   },
   contactInfo: {
-    flex: 1,
+    /* flex: 1,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "center", */
+    justifyContent: "flex-start",
+    alignItems: "flex-start",
   },
   containerNewMessage: {
     color: "#416165",
     fontSize: 16,
     fontWeight: "normal",
-    flexShrink: 1,
+    /* flexShrink: 1, */
   },
   invitationText: {
     color: "#888",
-    fontSize: 14,
-    flexShrink: 1,
-    flexGrow: 1,
-    textAlign: "right",
+    fontSize: 16,
+    fontWeight: "bold",
+    /* flexGrow: 1, */
+    /* textAlign: "right", */
+    /* width:10, */
   },
   messagerie: {
     flexDirection: "row",

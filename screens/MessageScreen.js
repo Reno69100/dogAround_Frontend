@@ -23,34 +23,18 @@ export default function MessageScreen({ navigation, route }) {
   const [update, setUpdate] = useState(false);
   const [dataMessage, setDataMessage] = useState([]);
 
-  //Récuparation props
+  //Récupération props
   const discussion_id = route.params.discussion_id;
-  const discussion_pseudo = route.params.pseudo;
+  const discussion_pseudo = route.params.discussion_pseudo;
 
-  //Retour au ChatScreen
+  //Fonction Retour au screen précédent
   const handleClickBack = () => {
-    navigation.navigate("TabNavigator", { screen: "Chat" });
+    navigation.goBack();
   };
 
-  //Nouveau message
-  const newMessage = (message) => {
-    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/discussions/messages/${user.token}?id=66bb175a54cedf833219949f`, {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        message: message
-      })
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        data.result && setUpdate(!update);
-      })
-  };
-
-  useEffect(() => {
-    //Initialisation
-    //Récupération de tous les messages
-    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/discussions/messages/${user.token}?id=66bb175a54cedf833219949f`, {
+  //Fonction Récupération de tous les messages
+  const getMessages = () => {
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/discussions/messages/${user.token}?id=${discussion_id}`, {
       method: 'GET',
       headers: {
         'Content-Type': 'application/json',
@@ -60,9 +44,41 @@ export default function MessageScreen({ navigation, route }) {
       .then((data) => {
         data.result && setDataMessage(data.messages);
       });
+  }
+
+  //Fonction Nouveau message
+  const newMessage = (message) => {
+    fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/discussions/messages/${user.token}?id=${discussion_id}`, {
+      method: "PUT",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        message: message
+      })
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        data.result && setUpdate(!update);
+        setMessage('');
+        Keyboard.dismiss();
+      })
+  };
+
+  useEffect(() => {
+    //Rafraichissement message
+    const interval = setInterval(() => {
+      getMessages();
+    }, 20000);
+
+    //Raz Interval
+    return () => clearInterval(interval);
   }, [])
 
-  //Mise à jour de l'affichage
+  useEffect(() => {
+    //Mise à jour de l'affichage des messages à l'initialisation ou qu'un nouveau message est émi
+    getMessages();
+  }, [update])
+
+  //Rendu de la liste de messages affichés
   const listMessage = dataMessage.map((e, i) => {
     const hours = new Date(e.date).toLocaleTimeString().slice(0, 5);
     //Message envoyé
@@ -126,13 +142,13 @@ export default function MessageScreen({ navigation, route }) {
           }}>
           {listMessage}
         </ScrollView>
+        <View style={styles.footer}>
+          <Input style={styles.input} placeholder="Message..." value={message} onChangeText={(value) => setMessage(value)} />
+          <TouchableOpacity style={styles.sendButton} activeOpacity={0.8} onPress={() => newMessage(message)}>
+            <FontAwesome name="paper-plane" size={25} color="#7DBA84" />
+          </TouchableOpacity>
+        </View>
       </KeyboardAvoidingView>
-      <View style={styles.footer}>
-        <Input style={styles.input} placeholder="Message..." value={message} onChangeText={(value) => setMessage(value)} />
-        <TouchableOpacity style={styles.sendButton} activeOpacity={0.8} onPress={() => newMessage(message)}>
-          <FontAwesome name="paper-plane" size={25} color="#7DBA84" />
-        </TouchableOpacity>
-      </View>
     </View>
   );
 }
@@ -156,7 +172,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     height: 60,
     width: 60,
-    backgroundColor: 'blue'
   },
   headerTitle: {
     fontSize: 18,
