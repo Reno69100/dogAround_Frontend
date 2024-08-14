@@ -1,4 +1,5 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useSelector, useDispatch } from "react-redux";
 import {
   Image,
   ScrollView,
@@ -7,146 +8,328 @@ import {
   View,
   TouchableOpacity,
   SafeAreaView,
+  StatusBar,
+  Modal,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
+import { useIsFocused } from "@react-navigation/native";
 import Btn from "../Components/Button";
 import Input from "../Components/Input";
 
-export default function PoiScreen({ navigation }) {
+export default function PoiScreen({ navigation, route }) {
+  const [poiInfos, setPoiInfos] = useState({});
+  const [newComment, setNewComment] = useState("");
+  const isFocused = useIsFocused();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const horaires = poiInfos.horaires || [];
+  const id = route.params.google_id;
+  let poiArr = [];
+  let poiObjet = {};
+
+  const user = useSelector((state) => state.user.value);
+
+  useEffect(() => {
+    if (id) {
+      fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/id/${id}`)
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.place) {
+            poiObjet = {
+              _id: data.place._id,
+              image: data.place.image,
+              nom: data.place.nom,
+              adresse: data.place.adresse,
+              horaires: data.place.horaires,
+              description: data.place.description,
+              categorie: data.place.categorie,
+              location: data.place.location,
+            };
+            setPoiInfos(poiObjet);
+          }
+        });
+    }
+  }, [isFocused]);
+
+  // const poiInfosVisuel = poiInfos.map((e) => {
+  //   return (
+  //     <View style={styles.titleContainer}>
+  //       <Text style={styles.title}>{e.displayName.text}</Text>
+  //       <TouchableOpacity onPress={hearthHandlePress}>
+  //         <FontAwesome
+  //           name="heart"
+  //           style={[
+  //             styles.heartIcon,
+  //             { color: isFavorite ? "#FF0000" : "#FFFFFF" },
+  //           ]}
+  //         />
+  //       </TouchableOpacity>
+  //     </View>
+  //   );
+  // });
+
+  // press sur croix pour retour à la map
   const handleClickCloseScreen = () => {
     navigation.navigate("TabNavigator", { screen: "Map" });
   };
 
+  //press sur icône "heart" --> changement de couleur
+  const [isFavorite, setIsFavorite] = useState(false);
+  const hearthHandlePress = () => {
+    setIsFavorite(!isFavorite);
+  };
+
+  //press sur icône "Like" --> changement de couleur + compteur de like
+  const [isLiked, setIsLiked] = useState(false);
+  const [likedCompt, setLikedCompt] = useState(14);
+  const hearthLikePress = () => {
+    if (!isLiked) {
+      setLikedCompt(likedCompt + 1);
+    } else {
+      setLikedCompt(likedCompt - 1);
+    }
+    setIsLiked(!isLiked);
+  };
+
+  const handleClickGoToEvent = () => {
+    navigation.navigate("Event", { nom: poiInfos.nom, image: poiInfos.image });
+  };
+
+  const handleClickGoToNewEvent = () => {
+    navigation.navigate("NewEvent", {
+      nom: poiInfos.nom,
+      image: poiInfos.image,
+    });
+  };
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
+  };
+
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <TouchableOpacity
-          onPress={handleClickCloseScreen}
-          style={styles.closeIcon}
-        >
-          <FontAwesome name="times" size={25} color="#FFF" />
-        </TouchableOpacity>
-        <Image
-          source={{
-            uri: "https://lh5.googleusercontent.com/p/AF1QipO3NhYksSKZecYUztsgOASA9WehHxchCJg0nSaX=w408-h240-k-no-pi-0-ya144.16565-ro-0-fo100",
-          }}
-          style={styles.headerImage}
-        />
-        <View style={styles.titleContainer}>
-          <Text style={styles.title}>PARC DE LA LOUVIERE</Text>
-          <FontAwesome name="heart" style={styles.heartIcon} />
-        </View>
-      </View>
-
-      <View style={styles.corpModale}>
-        <View style={styles.likeLine}>
-          <View style={styles.likeZone}>
-            <FontAwesome name="thumbs-o-up" size={25} />
-            <Text style={styles.likeText}>630</Text>
+      <StatusBar barStyle="light-content" backgroundColor="#7DBA84" />
+      <ScrollView contentContainerStyle={styles.scrollView}>
+        <View style={styles.headerContainer}>
+          <TouchableOpacity
+            onPress={handleClickCloseScreen}
+            style={styles.closeIcon}
+          >
+            <FontAwesome name="times" size={25} color="#FFF" />
+          </TouchableOpacity>
+          <Image
+            source={{
+              uri: poiInfos.image,
+            }}
+            style={styles.headerImage}
+          />
+          <View style={styles.titleContainer}>
+            <Text style={styles.title}>{poiInfos.nom}</Text>
+            <TouchableOpacity onPress={hearthHandlePress}>
+              <FontAwesome
+                name="heart"
+                style={[
+                  styles.heartIcon,
+                  { color: isFavorite ? "#FF0000" : "#FFFFFF" },
+                ]}
+              />
+            </TouchableOpacity>
           </View>
-          <View style={styles.btnContainer}>
-            <Btn title="Evénement !" style={styles.eventButton} />
+        </View>
+
+        <View style={styles.corpModale}>
+          <View style={styles.likeLine}>
+            <View style={styles.likeZone}>
+              <FontAwesome
+                name="thumbs-up"
+                size={25}
+                style={[
+                  styles.likedIcon,
+                  { color: isLiked ? "#0074e0" : "#000000" },
+                ]}
+                onPress={hearthLikePress}
+              />
+              <Text style={styles.likeText}>{likedCompt}</Text>
             </View>
-        </View>
-      </View>
-
-      <View style={styles.detailContainer}>
-        <View style={styles.detail}>
-          <Text style={styles.detailText}>Adresse:</Text>
-          <Text style={styles.infoText}>2 rue la louviere</Text>
-        </View>
-        <View style={styles.detail}>
-          <Text style={styles.detailText}>Horaires:</Text>
-          <Text style={styles.infoText}>06H - 23H</Text>
+            <View>
+              <Btn
+                title="Evénement !"
+                style={styles.eventButton}
+                onPress={handleClickGoToEvent}
+              />
+            </View>
+          </View>
         </View>
 
-        <Text style={styles.detailText}>Description</Text>
-        <ScrollView style={styles.scrollDescription}>
+        <View style={styles.detailContainer}>
+          <View style={styles.detail}>
+            <Text style={styles.KeyText}>Adresse:</Text>
+            <Text style={styles.infoText}>{poiInfos.adresse}</Text>
+          </View>
+          <View style={styles.HorairesModale}>
+            <Text style={styles.horaires}>Horaires:</Text>
+            <FontAwesome
+              onPress={toggleModal}
+              name="caret-down"
+              size={25}
+              color="#000"
+            />
+          </View>
+          <View style={styles.DescriptionContainer}>
+            <Text style={styles.KeyText}>Description:</Text>
+            <Text style={styles.infoText}>{poiInfos.description}</Text>
+          </View>
+
+          {/* <Btn
+            title="Itineraire vers ce lieu"
+            style={styles.boutonItineraire}
+          ></Btn> */}
+
+          <Btn
+            title="Créer un événement"
+            style={styles.boutonItineraire}
+            onPress={handleClickGoToNewEvent}
+          ></Btn>
+
+          <View style={styles.commentaireHeader}>
+            <Text style={styles.KeyText}>Commentaires:</Text>
+            <FontAwesome name="plus" style={styles.plusIcon} />
+          </View>
+
+          <View style={styles.ZoneCommentaire}>
+            <View style={styles.commentaireContainer}>
+              <View style={styles.commentTitle}>
+                <View style={styles.avatarContainer}>
+                  <Image
+                    source={require("../assets/avatars/chien_1.png")}
+                    style={styles.userAvatar}
+                  />
+                </View>
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.commentPseudo}>LULU</Text>
+                  <Text>il y a 1h :</Text>
+                </View>
+              </View>
+              <View style={styles.commentParent}>
+                <Input
+                  placeholder="nouveau commentaire"
+                  style={styles.commentInput}
+                />
+              </View>
+            </View>
+
+            <View style={styles.commentaireContainer}>
+              <View style={styles.commentTitle}>
+                <Image
+                  style={styles.userAvatar}
+                  source={require("../assets/avatars/chien_2.png")}
+                />
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.commentPseudo}>MOMO</Text>
+                  <Text>il y a 2h :</Text>
+                </View>
+              </View>
+              <View style={styles.commentParent}>
                 <Text style={styles.commentText}>
-                description text ...... description text ...... description text
-                ...... description text ...... description text ...... description
-                text ...... description text ...... description text ......
+                  Cras elementum ultrices diam. Maecenas ligula massa, varius a,
+                  semper congue, euismod non, mi. Proin porttitor, orci nec
+                  nonummy molestie, enim est eleifend mi, non fermentum diam
+                  nisl sit amet erat. Duis semper.
                 </Text>
-        </ScrollView>
+              </View>
+            </View>
 
-        <Btn
-          title="Itineraire vers ce lieu"
-          style={styles.boutonItineraire}
-        ></Btn>
+            <View style={styles.commentaireContainer}>
+              <View style={styles.commentTitle}>
+                <Image
+                  style={styles.userAvatar}
+                  source={require("../assets/avatars/chien_3.png")}
+                />
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.commentPseudo}>REX</Text>
+                  <Text>il y a 3h :</Text>
+                </View>
+              </View>
+              <View style={styles.commentParent}>
+                <Text style={styles.commentText}>
+                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
+                  non risus. Suspendisse lectus tortor, dignissim sit amet,
+                  adipiscing nec, ultricies sed, dolor.
+                </Text>
+              </View>
+            </View>
 
-        <Btn
-          title="Ajouter un événement"
-          style={styles.boutonItineraire}
-        ></Btn>
+            <View style={styles.commentaireContainer}>
+              <View style={styles.commentTitle}>
+                {/* <Image
+                  style={styles.userAvatar}
+                  source={require("../assets/avatars/chien_25.png")}
+                /> */}
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.commentPseudo}>BALOU</Text>
+                  <Text>il y a 4h :</Text>
+                </View>
+              </View>
+              <View style={styles.commentParent}>
+                <Text style={styles.commentText}>
+                  Cras elementum ultrices diam. Maecenas ligula massa, varius a,
+                  semper congue, euismod non, mi. Proin porttitor, orci nec
+                  nonummy molestie, enim est eleifend mi, non fermentum diam
+                  nisl sit amet erat. Duis semper.
+                </Text>
+              </View>
+            </View>
 
-
-        <View style={styles.commentaireHeader}>
-          <Text style={styles.detailText}>Commentaires:</Text>
-          <FontAwesome name="plus" style={styles.plusIcon} />
+            <View style={styles.commentaireContainer}>
+              <View style={styles.commentTitle}>
+                <Image
+                  style={styles.userAvatar}
+                  source={require("../assets/avatars/chien_19.png")}
+                />
+                <View style={styles.commentTextContainer}>
+                  <Text style={styles.commentPseudo}>NANA</Text>
+                  <Text style={styles.commentTime}>il y a 4h30 :</Text>
+                </View>
+              </View>
+              <View style={styles.commentParent}>
+                <Text style={styles.commentText}>
+                  commentaire ......commentaire ......commentaire
+                  ......commentaire ......commentaire
+                </Text>
+              </View>
+            </View>
+          </View>
         </View>
-
-        <ScrollView style={styles.scrollCommentaire}>
-
-            <View style={styles.commentaireContainer}>
-                <View style={styles.commentTitle}>
-                    <Image
-                        style={styles.userAvatar}
-                        source={require("../assets/avatars/chien_1.png")}
-                    />
-                    <View style={styles.commentTextContainer}>
-                        <Text style={styles.commentPseudo}>LULU</Text>
-                        <Text style={styles.commentTime}>il y a 1h :</Text>
+        <Modal
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={toggleModal}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Horaires Complet</Text>
+              <ScrollView>
+                {horaires.length > 0 ? (
+                  horaires.map((horaire, index) => (
+                    <View key={index} style={styles.horaireItem}>
+                      <Text style={styles.horaireText}>{horaire}</Text>
                     </View>
-                </View>
-                <View style={styles.commentParent}>
-                    <Text style={styles.commentText}>
-                        commentaire ......commentaire ......commentaire
-                        ......commentaire ......commentaire
-                    </Text>
-                </View>         
+                  ))
+                ) : (
+                  <Text style={styles.horaireText}>
+                    Aucun horaire disponible
+                  </Text>
+                )}
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={toggleModal}
+              >
+                <Text style={styles.closeButtonText}>Fermer</Text>
+              </TouchableOpacity>
             </View>
-
-            <View style={styles.commentaireContainer}>
-                <View style={styles.commentTitle}>
-                    <Image
-                        style={styles.userAvatar}
-                        source={require("../assets/avatars/chien_2.png")}
-                    />
-                    <View style={styles.commentTextContainer}>
-                        <Text style={styles.commentPseudo}>MOMO</Text>
-                        <Text style={styles.commentTime}>il y a 2h :</Text>
-                    </View>
-                </View>
-                <View style={styles.commentParent}>
-                    <Text style={styles.commentText}>
-                        commentaire ......commentaire ......commentaire
-                        ......commentaire ......commentaire
-                    </Text>
-                </View>         
-            </View>
-
-            <View style={styles.commentaireContainer}>
-                <View style={styles.commentTitle}>
-                    <Image
-                        style={styles.userAvatar}
-                        source={require("../assets/avatars/chien_3.png")}
-                    />
-                    <View style={styles.commentTextContainer}>
-                        <Text style={styles.commentPseudo}>REX</Text>
-                        <Text style={styles.commentTime}>il y a 3h :</Text>
-                    </View>
-                </View>
-                <View style={styles.commentParent}>
-                    <Text style={styles.commentText}>
-                        commentaire ......commentaire ......commentaire
-                        ......commentaire ......commentaire
-                    </Text>
-                </View>         
-            </View>
-                     
-        </ScrollView>
-
-      </View>
+          </View>
+        </Modal>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -163,66 +346,18 @@ const styles = StyleSheet.create({
 
   headerContainer: {
     position: "relative",
-    marginTop: 30,
   },
 
   titleContainer: {
+    top: 104,
     position: "absolute",
-    zIndex: 2,
-    top: 110,
-    left: 0,
+    width: "100%",
+    padding: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingLeft: 5,
-    paddingRight: 2,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
   },
-
-  headerImage: {
-    zIndex: 0,
-    width: "100%",
-    height: 150,
-    resizeMode: "cover",
-  },
-
-  title: {
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    color: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  heartIcon: {
-    position: "absolute",
-    bottom: 10,
-    right: 10,
-    fontSize: 24,
-    color: "#fff",
-    marginRight: 8,
-  },
-
-  closeIcon: {
-    padding: 10,
-    position: "absolute",
-    top: 1,
-    right: 10,
-    padding: 10,
-    zIndex: 2,
-  },
-
-  corpModale: {
-    marginTop: 5,
-  },
-
   likeLine: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -230,22 +365,28 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
-
   likeZone: {
     flexDirection: "row",
     alignItems: "flex-end",
     marginBottom: 10,
   },
-
   likeText: {
     marginLeft: 8,
     fontSize: 20,
-    color:'#416165',
-    fontWeight: 'bold',
+    color: "#416165",
+    fontWeight: "bold",
   },
-
-  btnContainer: {
-    flexDirection: "row",
+  eventButton: {
+    paddingHorizontal: 5,
+    paddingVertical: 1,
+    height: 30,
+    width: 125,
+    justifyContent: "center",
+    marginBottom: 5,
+    marginLeft: 20,
+    marginRight: 15,
+    fontSize: "12",
+    paddingVertical: 1,
   },
 
   boutonItineraire: {
@@ -259,12 +400,13 @@ const styles = StyleSheet.create({
   },
 
   eventButton: {
+    fontSize: 8,
     paddingHorizontal: 10,
     paddingVertical: 1,
-    height: 25,
+    height: 30,
     width: 125,
     justifyContent: "center",
-    marginRight: 5,
+    marginRight: 15,
   },
 
   addEventBtn: {
@@ -282,6 +424,7 @@ const styles = StyleSheet.create({
   },
 
   detailContainer: {
+    zIndex: 3,
     paddingHorizontal: 16,
     borderRadius: 10,
     margin: 1,
@@ -294,15 +437,18 @@ const styles = StyleSheet.create({
   },
 
   detail: {
-    flexDirection: "row",
-    alignItems: "baseline",
+    textAlign: "justify",
+    flexWrap: "nowrap",
+    fontSize: 14,
+    color: "#416165",
+    paddingLeft: 10,
+    paddingRight: 15,
   },
 
-  detailText: {
+  KeyText: {
     flexWrap: "nowrap",
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 1,
     color: "#416165",
     paddingLeft: 10,
     marginRight: 16,
@@ -312,43 +458,42 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 1,
     color: "#666",
+    paddingLeft: 10,
   },
 
-  scrollDescription: {
-    flexWrap: "nowrap",
-    textAlign:'center',
-    maxHeight: 200,
-    width: "100%",
-    borderRadius: 10,
-    backgroundColor: "#FFF",
-    paddingHorizontal: 16,
-    paddingVertical: 5,
+  DescriptionContainer: {
+    alignContent: "flex-start",
     marginBottom: 15,
+    paddingLeft: 10,
+    marginRight: 16,
   },
 
   descriptionText: {
+    textAlign: "justify",
     flexWrap: "nowrap",
     fontSize: 14,
-    color: "#333",
+    color: "#416165",
+    paddingLeft: 10,
+    paddingRight: 15,
   },
 
   commentaireContainer: {
-    backgroundColor: "#FFF",
-    marginbottom: 10,
+    marginbottom: 5,
   },
 
   commentaireHeader: {
-    marginTop: 5,
+    marginTop: 25,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
   },
 
-  scrollCommentaire:{
-    marginBottom: 5,
-    maxHeight: 180,
-    borderRadius:10,
-},
+  ZoneCommentaire: {
+    padding: 10,
+    borderRadius: 8,
+    backgroundColor: "#FFF",
+    marginBottom:30
+  },
 
   userAvatar: {
     height: 20,
@@ -364,7 +509,7 @@ const styles = StyleSheet.create({
   commentTextContainer: {
     flexDirection: "row",
     alignItems: "baseline",
-},
+  },
 
   commentPseudo: {
     fontSize: 14,
@@ -389,5 +534,82 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingHorizontal: 16,
   },
-
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 16,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#7DBA84",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  HorairesModale: {
+    flexDirection: "row",
+    margin: 20,
+  },
+  horaires: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#416165",
+    marginRight: 10,
+  },
+  horaireItem: {
+    marginVertical: 5,
+    padding: 4,
+  },
+  titleContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+  },
+  headerImage: {
+    width: "100%",
+    height: 150,
+    resizeMode: "cover",
+  },
+  title: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  heartIcon: {
+    fontSize: 24,
+    right: 2,
+  },
+  closeIcon: {
+    padding: 10,
+    position: "absolute",
+    top: 1,
+    right: 10,
+    zIndex: 2,
+  },
 });
