@@ -17,7 +17,7 @@ export default function NewEventScreen({ navigation, route }) {
   const { image, nom } = route.params;
   const [name, setName] = useState("");
   const [date, setDate] = useState("");
-  const [time, setTime] = useState("");
+  const [horaires, setHoraires] = useState("");
   const [description, setDescription] = useState("");
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -28,11 +28,11 @@ export default function NewEventScreen({ navigation, route }) {
   };
 
   const handleClickToCreate = () => {
-    dispatch(addEvent({ nom: name, date, time, description }));
+    dispatch(addEvent({ nom: name, date, horaires, description }));
     navigation.goBack();
   };
 
-  //Function pour avoir la modal date
+  //Function pour ouvrir la modal date
   const handleDateChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
     setShowDatePicker(false);
@@ -86,8 +86,8 @@ export default function NewEventScreen({ navigation, route }) {
             <TextInput
               style={styles.input}
               placeholder="Ecrivez-ici"
-              value={time}
-              onChangeText={setTime}
+              value={horaires}
+              onChangeText={setHoraires}
             />
           </View>
         </View>
@@ -189,7 +189,8 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     marginBottom: 30,
     paddingHorizontal: 10,
-    borderRadius:8
+    borderRadius:8,
+    padding:13
   },
   inputName: {
     width: "100%",

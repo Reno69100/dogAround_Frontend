@@ -5,11 +5,10 @@ import { useSelector } from "react-redux";
 
 export default function EventScreen({ navigation, route }) {
   const { image, nom } = route.params;
-
-  const event = useSelector((store) => store.event.value)
+  const event = useSelector((store) => store.event.value);
 
   const handleClickCloseScreen = () => {
-    navigation.goBack(); 
+    navigation.goBack();
   };
 
   return (
@@ -24,7 +23,23 @@ export default function EventScreen({ navigation, route }) {
       <View style={styles.titleContainer}>
         <Text style={styles.title}>{nom}</Text>
       </View>
-      <Text>{event.nom}</Text>
+      <View style={styles.eventDetailsContainer}>
+        <Text style={styles.name}>{event.nom}</Text>
+        <View style={styles.eventDetailContainer}>
+          <Text style={styles.label}>Date:</Text>
+          <Text style={styles.eventDetail}>{event.date}</Text>
+        </View>
+        <View style={styles.eventDetailContainer}>
+          <Text style={styles.label}>Horaires:</Text>
+          <Text style={styles.eventDetail}>
+            {event.horaires || "Pas d'horaires définis"}
+          </Text>
+        </View>
+        <Text style={styles.label}>Description:</Text>
+        <View style={styles.eventDetailContainer}>
+          <Text style={styles.eventDescription}>{event.description}</Text>
+        </View>
+      </View>
     </View>
   );
 }
@@ -33,6 +48,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E8E9ED",
+    alignItems: "center",
   },
   closeIcon: {
     position: "absolute",
@@ -60,7 +76,43 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: "bold",
   },
-  heartIcon: {
+  eventDetailsContainer: {
+    width: "80%",
+    marginTop: 60,
+  },
+  eventDetailContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 40,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    marginRight: 10,
+    color: "#416165",
+  },
+  eventDetail: {
+    flex: 1,
+    fontSize: 16,
+    paddingBottom: 5,
+  },
+  name: {
+    color: "#416165",
     fontSize: 24,
+    fontWeight: "bold",
+    fontFamily: "Commissioner_700Bold",
+    marginBottom: 60,
+    textAlign: "center",
+  },
+  eventDescription: {
+    fontSize: 16,
+    color: "#000",
+    backgroundColor: "#FFF",
+    padding: 13,
+    borderRadius: 8,
+    textAlignVertical: "top",
+    minHeight: 200,
+    flex: 1,
+    marginTop:5
   },
 });
