@@ -14,6 +14,7 @@ import Filter from '../Components/Filter'
 
 import { useSelector, useDispatch } from 'react-redux';
 import { importPlaces } from '../reducers/places'
+import { setPastilleMessage } from '../reducers/user'
 
 import * as SplashScreen from "expo-splash-screen";
 import {
@@ -41,6 +42,42 @@ export default function MapScreen({ navigation }) {
     const [regionPosition, setRegionPosition] = useState({ "latitude": 48.866667, "longitude": 2.333333, "latitudeDelta": 0.05, "longitudeDelta": 0.05 }); //Déclaration état contenant la position de l'utisateur
     const [showModal, setShowModal] = useState(false); //Affiche la modal Filter
 
+    /* console.log(user.pastilleMessage); */
+
+    //Fonction vérification si un nouveau message est arrivé. Chargé la 1ère fois que MapScreen s'ouvre
+    const notificationMessage = () => {
+        fetch(
+            `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/contacts/${user.token}`,
+            {
+                method: "GET",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            }
+        )
+            .then((response) => response.json())
+            .then((data) => {
+                let pastille = false;
+                if (data.result) {
+                    //Récupération si un nouveau message existe sur une discussion
+                    for (const element of data.contacts) {
+                        if ((element.invitation === "accepted") && (element.discussion.newMessage !== null)) {
+                            //nouveau IF car element.discussion.newMessage.pseudo n'existe pas toujours
+                            if (element.discussion.newMessage.pseudo !== user.pseudo) {
+                                /* console.log(element.discussion.newMessage.pseudo) */
+                                pastille = true;
+                                break;
+                            }
+                        }
+                    }
+                    dispatch(setPastilleMessage(pastille))
+                }
+                else {
+                    dispatch(setPastilleMessage(false))
+                }
+            });
+    };
+
     //Fonction Récupération des points d'intérêts autour d'une position'
     const getInfoMarkers = (latitude, longitude, radius) => {
         fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/position/${latitude}/${longitude}/${radius}`, {
@@ -59,6 +96,18 @@ export default function MapScreen({ navigation }) {
     const validFilters = () => {
         setShowModal(false);
     }
+
+    //Execution une seul fois
+    useEffect(() => {
+        notificationMessage();
+        //Rafraichissement notification des messages
+        const interval = setInterval(() => {
+            notificationMessage();
+        }, 10000);
+
+        //Raz Interval
+        return () => clearInterval(interval);
+    }, [])
 
     useEffect(() => {
         //Demande autorisation partage location du téléphone
@@ -148,7 +197,7 @@ export default function MapScreen({ navigation }) {
         const showMarker = !user.filtres.some(filter => e.type === filter);
         if (showMarker) {
             return (
-                <Marker key={i + 1} coordinate={e.location} title={e.google_id} onPress={()=>handlePoiPress(e.google_id)}>
+                <Marker key={i + 1} coordinate={e.location} title={e.google_id} onPress={() => handlePoiPress(e.google_id)}>
                     <FontAwesome name={iconName} size={40} color={iconColor} />
                 </Marker>
             )
@@ -157,7 +206,7 @@ export default function MapScreen({ navigation }) {
 
     function handlePoiPress(google_id) {
         console.log('ID -->', google_id)
-        navigation.navigate('Poi',{google_id:google_id})
+        navigation.navigate('Poi', { google_id: google_id })
     }
 
     return (

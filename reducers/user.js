@@ -14,6 +14,8 @@ const initialState = {
     },
     radius: 20000,
     filtres: [],
+    
+    pastilleMessage:false,
   },
 };
 
@@ -49,6 +51,9 @@ export const userSlice = createSlice({
       state.value.pseudo = null;
       state.value.avatar = null; 
     },
+    setPastilleMessage: (state, action) => {
+      state.value.pastilleMessage = action.payload;
+    },
   },
 });
 
@@ -58,5 +63,6 @@ export const {
   storeFilters,
   storeCity,
   logout,
+  setPastilleMessage,
 } = userSlice.actions;
 export default userSlice.reducer;

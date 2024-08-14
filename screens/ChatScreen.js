@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   StyleSheet,
   View,
@@ -10,6 +10,7 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
   Platform,
+  Dimensions
 } from "react-native";
 import TextContainer from "../Components/TextContainer";
 import Input from "../Components/Input";
@@ -26,15 +27,22 @@ export default function ChatScreen({ navigation }) {
   const [isModalAnswerVisible, setIsModalAnswerVisible] = useState(false);
   const [selectedContact, setSelectedContact] = useState(null);
   const [searchContacts, setSearchContacts] = useState([]);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [errorMessage, setErrorMessage] = useState("");
+  /* const [searchQuery, setSearchQuery] = useState("");
+  const [errorMessage, setErrorMessage] = useState(""); */
   const [contacts, setContacts] = useState([]);
 
   const user = useSelector((state) => state.user.value);
   const isFocused = useIsFocused();
 
+  /* console.log(contacts) */
+
+  //Raz recherche d'un contact
+  const onClearPress = () => {
+    setSearchContacts([]);
+  }
+
   //Fonction recherche d'un contact
-  const searchContact = () => {
+  /* const searchContact = () => {
     setErrorMessage("");
 
     fetch(
@@ -48,12 +56,10 @@ export default function ChatScreen({ navigation }) {
     )
       .then((response) => response.json())
       .then((data) => {
-        /* console.log(data) */
         if (data.result) {
           const pseudoFilter = data.pseudos.filter(e => {
             return ((e !== user.pseudo) && (!contacts.some((contact) => { return (e === contact.pseudo) })))
           })
-          /* setSearchContacts(data.pseudos); */
           if (pseudoFilter.length > 0) {
             setSearchContacts(pseudoFilter);
           }
@@ -66,6 +72,38 @@ export default function ChatScreen({ navigation }) {
           setSearchContacts([]);
           setSearchQuery("")
           setErrorMessage("Aucun utilisateur trouvé");
+        }
+      });
+  }; */
+
+  const searchContact = (query) => {
+    // Prevent search with an empty query
+    if (query === '') {
+      return;
+    }
+
+    fetch(
+      `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}/pseudos?search=${query}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    )
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.result) {
+          const pseudoFilter = data.pseudos.filter(e => {
+            return ((e !== user.pseudo) && (!contacts.some((contact) => { return (e === contact.pseudo) })))
+          })
+          const suggestions = pseudoFilter.map((data, i) => {
+            return { id: (i + 1), title: data };
+          });
+          setSearchContacts(suggestions);
+
+        } else {
+          setSearchContacts([]);
         }
       });
   };
@@ -84,12 +122,13 @@ export default function ChatScreen({ navigation }) {
       .then((response) => response.json())
       .then((data) => {
         if (data.result) {
+          /* console.log(data.contacts) */
           setContacts(
             data.contacts.map((contact) => ({
               pseudo: contact.pseudo,
               avatar: contact.avatar,
               invitation: contact.invitation,
-              discussion_id: contact.discussion_id,
+              discussion: contact.discussion,
             })).reverse()
           );
         } else {
@@ -101,11 +140,13 @@ export default function ChatScreen({ navigation }) {
   //Fonction Fermeture Modal invitation
   const handleCloseModal = () => {
     setIsModalVisible(false);
+    setSearchContacts([]);
   };
 
   //Fonction ouverture Modal invitation
   const handleOpenInvitation = (contact) => {
     setSelectedContact(contact);
+    setSearchContacts([]);
     setIsModalVisible(true);
   };
 
@@ -134,7 +175,7 @@ export default function ChatScreen({ navigation }) {
       .then((data) => {
         if (data.result) {
           setIsModalVisible(false);
-          setSearchQuery("");
+          /* setSearchQuery(""); */
           setSearchContacts([]);
           contactMessage();
         }
@@ -165,21 +206,34 @@ export default function ChatScreen({ navigation }) {
     setIsModalVisible(false);
     setIsModalAnswerVisible(false);
     if (contact.invitation === 'accepted') {
-      navigation.navigate("Message", { discussion_pseudo: contact.pseudo, discussion_id: contact.discussion_id });
+      navigation.navigate("Message", { discussion_pseudo: contact.pseudo, discussion_id: contact.discussion._id });
     }
     else if (contact.invitation === 'received') {
       handleOpenInvitationAnswer(contact.pseudo);
     }
   };
 
+  //Affichage nouveau message
+  const showNewMessage = (contact) => {
+    try {
+      if ((contact.invitation === "accepted")
+        && (contact.discussion.newMessage.pseudo !== null)
+        && (contact.discussion.newMessage.pseudo !== user.pseudo)) {
+        return (<Text style={[styles.invitationText, { color: "#0000CC" }]}>Nouveau message</Text>)
+      }
+    }
+    catch {
+    }
+  }
+
   useEffect(() => {
     if (isFocused) {
       contactMessage();
     }
-  }, []);
+  }, [isFocused]);
 
   //Rendu de la liste de contacts affichés
-  const listContacts = contacts.map((contact, i) => {
+  const listContacts = contacts.sort((a, b) => a.pseudo.localeCompare(b.pseudo)).map((contact, i) => {
     return (
       <TouchableOpacity
         key={i}
@@ -197,13 +251,17 @@ export default function ChatScreen({ navigation }) {
             ? "Invitation Envoyée"
             : "No Invitation"}
         </Text> */}
-          {(contact.invitation === "issued") && <Text style={[styles.invitationText]}>Attente</Text>}
+          {(contact.invitation === "issued") && <Text style={[styles.invitationText]}>Attente réponse</Text>}
           {(contact.invitation === "received") && <Text style={[styles.invitationText, { color: "#00CC00" }]}>Invitation ?</Text>}
           {(contact.invitation === "denied") && <Text style={[styles.invitationText, { color: "#FF0000" }]}>Refusée</Text>}
+          {showNewMessage(contact)}
+
         </View>
       </TouchableOpacity>
     )
   });
+
+  const scroll = useRef();
 
   return (
     <TouchableWithoutFeedback onPress={() => {
@@ -212,78 +270,113 @@ export default function ChatScreen({ navigation }) {
       setIsModalAnswerVisible(false);
     }} accessible={false}>
       <KeyboardAvoidingView
-        style={styles.container}
+        style={{ flex: 1 }}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={10}
       >
-        <Text style={styles.welcomeText}>
-          <Text style={styles.text}>CONTACTS</Text>
-        </Text>
-        {errorMessage ? (
-          <Text style={styles.errorText}>{errorMessage}</Text>
-        ) : null}
-        <View style={styles.searchAndContactContainer}>
-          <View style={styles.searchContainer}>
-            <Input
-              placeholder="Rechercher un(e) ami(e)"
-              value={searchQuery}
-              onChangeText={setSearchQuery}
+        {/* <ScrollView contentContainerStyle={styles.container}
+          keyboardDismissMode='on-drag'
+          ref={scroll}
+          onContentSizeChange={() => {
+            scroll.current.scrollTo({ x: 0, y: 0, animated: true });
+          }}> */}
+        <View style={styles.container}>
+          <View style={styles.searchAndContactContainer}>
+            <Text style={styles.text}>CONTACTS</Text>
+            {/* {errorMessage ? (
+              <Text style={styles.errorText}>{errorMessage}</Text>
+            ) : null} */}
+
+            {/* <View style={styles.searchContainer}>
+              <Input
+                placeholder="Rechercher un(e) ami(e)"
+                value={searchQuery}
+                onChangeText={setSearchQuery}
+              />
+              <TouchableOpacity style={styles.iconButton} onPress={searchContact}>
+                <FontAwesome name="search" size={25} color="#000" />
+              </TouchableOpacity>
+            </View>
+
+            <ScrollView style={styles.ContactScrollView}>
+              <View style={styles.Contact}>
+                {searchContacts.length > 0 &&
+                  searchContacts.map((contact, i) => (
+                    <View key={i} style={styles.contactRow}>
+                      <TextContainer
+                        title={contact}
+                        style={styles.ContactContainer}
+                      />
+                      <TouchableOpacity
+                        onPress={() => handleOpenInvitation(contact)}
+                        style={styles.iconButton}
+                      >
+                        <FontAwesome name="plus" size={20} color="#000" />
+                      </TouchableOpacity>
+                    </View>
+                  ))}
+              </View>
+            </ScrollView> */}
+
+            <AutocompleteDropdown
+              debounce={500}
+              onChangeText={(value) => searchContact(value)}
+              onSelectItem={(item) => item && handleOpenInvitation(item.title)}
+              dataSet={searchContacts}
+              textInputProps={{
+                placeholder: 'Rechercher un(e) ami(e)',
+                style: {
+                  fontSize: 16,
+                },
+              }}
+              direction={Platform.select({ ios: 'down' })}
+              inputContainerStyle={styles.inputdropdownContainer}
+              containerStyle={styles.dropdownContainer}
+              suggestionsListContainerStyle={styles.suggestionListContainer}
+              suggestionsListMaxHeight={Dimensions.get('window').height * 0.4}
+              clearOnFocus={false}
+              closeOnSubmit={true}
+              onClear={() => onClearPress()}
             />
-            <TouchableOpacity style={styles.iconButton} onPress={searchContact}>
-              <FontAwesome name="search" size={25} color="#000" />
-            </TouchableOpacity>
           </View>
 
-          <ScrollView style={styles.ContactScrollView}>
-            <View style={styles.Contact}>
-              {searchContacts.length > 0 &&
-                searchContacts.map((contact, i) => (
-                  <View key={i} style={styles.contactRow}>
-                    <TextContainer
-                      title={contact}
-                      style={styles.ContactContainer}
-                    />
-                    <TouchableOpacity
-                      onPress={() => handleOpenInvitation(contact)}
-                      style={styles.iconButton}
-                    >
-                      <FontAwesome name="plus" size={20} color="#000" />
-                    </TouchableOpacity>
-                  </View>
-                ))}
+          <View style={styles.messagerieContainer}>
+            <View style={styles.messagerie}>
+              <Text style={styles.text}>MESSAGERIE</Text>
+              <TouchableOpacity
+                style={styles.IconMessagerie}
+                onPress={contactMessage}
+              >
+                <FontAwesome name="rotate-right" size={30} color="#416165" />
+              </TouchableOpacity>
             </View>
-          </ScrollView>
+
+            <ScrollView style={styles.scrollView}
+              showsVerticalScrollIndicator={false}>
+              {listContacts}
+            </ScrollView>
+            {/* <View style={styles.contactlist}>
+            <ScrollView style={styles.scrollView}>
+              {listContacts}
+            </ScrollView>
+          </View> */}
+          </View>
+
+          <ModalInvitation
+            visible={isModalVisible}
+            onClose={handleCloseModal}
+            onSelect={handleClickForInvitation}
+            name={selectedContact}
+          />
+
+          <ModalInvitationAnswer
+            visible={isModalAnswerVisible}
+            onClose={handleCloseModalAnswer}
+            onSelect={handleClickForInvitationAnswer}
+            name={selectedContact}
+          />
+          {/* </ScrollView> */}
         </View>
-
-        <View style={styles.messagerie}>
-          <Text style={styles.text}>MESSAGERIE</Text>
-          <TouchableOpacity
-            style={styles.IconMessagerie}
-            onPress={contactMessage}
-          >
-            <FontAwesome name="rotate-right" size={40} color="#416165" />
-          </TouchableOpacity>
-        </View>
-
-        <View style={styles.contactlist}>
-          <ScrollView style={styles.scrollView}>
-            {listContacts}
-          </ScrollView>
-        </View>
-
-        <ModalInvitation
-          visible={isModalVisible}
-          onClose={handleCloseModal}
-          onSelect={handleClickForInvitation}
-          name={selectedContact}
-        />
-
-        <ModalInvitationAnswer
-          visible={isModalAnswerVisible}
-          onClose={handleCloseModalAnswer}
-          onSelect={handleClickForInvitationAnswer}
-          name={selectedContact}
-        />
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -291,29 +384,36 @@ export default function ChatScreen({ navigation }) {
 
 const styles = StyleSheet.create({
   container: {
-    height: "100%",
     width: "100%",
     flex: 1,
-    flexDirection: "column",
-    justifyContent: "space-evenly",
+    justifyContent: "flex-start",
     alignItems: "center",
     backgroundColor: "#E8E9ED",
+    paddingTop: 40,
   },
   text: {
     color: "#416165",
     fontSize: 24,
     fontWeight: "bold",
     fontFamily: "Commissioner_700Bold",
-    marginRight: 30,
+    padding: 10,
   },
   searchAndContactContainer: {
-    width: "80%",
+    marginTop: 20,
+    alignItems: "center",
+    width: "80%"
+  },
+  messagerieContainer: {
+    width: "100%",
+    justifyContent: "flex-start",
+    alignItems: "center",
+    marginTop: 15,
   },
   searchContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    width: "100%",
+    width: "80%",
     padding: 8,
     backgroundColor: "#FFF",
     borderRadius: 8,
@@ -326,6 +426,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
   ContactScrollView: {
+    width: "80%",
     maxHeight: 165,
   },
   Contact: {
@@ -334,15 +435,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 8,
   },
-  contactRow: {
+  /* contactRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     width: "100%",
     padding: 10
-  },
+  }, */
   ContactContainer: {
-    width: "80%",
+    width: "90%",
     color: "#416165",
     fontSize: 16,
     fontWeight: "normal",
@@ -360,15 +461,19 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flexGrow: 0,
-    borderBottomWidth: 1,
+    width: "80%",
+    height: Dimensions.get('window').height * 0.6,
+    /* borderBottomWidth: 1, */
     borderBottomColor: "#ddd",
   },
   contactRow: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 10,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
+    padding: 10,
+    /* borderWidth:1, */
+    borderRadius: 8,
+    backgroundColor: '#FFF'
   },
   avatar: {
     width: 40,
@@ -402,8 +507,20 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
+    padding: 10
   },
   IconMessagerie: {
-    paddingBottom: 20,
+
+  },
+  dropdownContainer: {
+    width: '100%',
+  },
+  inputdropdownContainer: {
+    backgroundColor: '#ffffff',
+  },
+  suggestionListContainer: {
+    borderRadius: 3,
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    width: '100%',
   },
 });

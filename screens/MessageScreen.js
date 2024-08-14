@@ -1,6 +1,8 @@
 import React from "react";
 import { useState, useEffect, useRef } from "react";
 import { useSelector } from "react-redux";
+import moment from 'moment';
+import 'moment/locale/fr'
 import {
   View,
   StyleSheet,
@@ -12,8 +14,11 @@ import {
   ScrollView,
   Image,
   Platform,
-  FlatList,
 } from "react-native";
+import {
+  SafeAreaView,
+} from 'react-native-safe-area-context';
+
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Input from "../Components/Input";
 
@@ -26,6 +31,8 @@ export default function MessageScreen({ navigation, route }) {
   //Récupération props
   const discussion_id = route.params.discussion_id;
   const discussion_pseudo = route.params.discussion_pseudo;
+
+  /* console.log(discussion_id) */
 
   //Fonction Retour au screen précédent
   const handleClickBack = () => {
@@ -64,10 +71,10 @@ export default function MessageScreen({ navigation, route }) {
   };
 
   useEffect(() => {
-    //Rafraichissement message
+    //Rafraichissement des messages
     const interval = setInterval(() => {
       getMessages();
-    }, 20000);
+    }, 10000);
 
     //Raz Interval
     return () => clearInterval(interval);
@@ -80,8 +87,8 @@ export default function MessageScreen({ navigation, route }) {
 
   //Rendu de la liste de messages affichés
   const listMessage = dataMessage.map((e, i) => {
-    const hours = new Date(e.date).toLocaleTimeString().slice(0, 5);
-    //Message envoyé
+    /* const hours = new Date(e.date).toLocaleTimeString().slice(0, 5); */
+    const date = moment(e.date).locale('fr').format('lll');
     if (user.pseudo !== e.pseudo) {
       return (
         <View key={i} style={styles.messageWrapper}>
@@ -93,7 +100,7 @@ export default function MessageScreen({ navigation, route }) {
               />
               <View style={styles.messageInfo}>
                 <Text style={styles.messageName}>{e.pseudo}</Text>
-                <Text style={styles.messageTime}>{hours}</Text>
+                <Text style={styles.messageTime}>{date}</Text>
               </View>
             </View>
             <Text style={styles.messageText}>{e.message}</Text>
@@ -113,7 +120,7 @@ export default function MessageScreen({ navigation, route }) {
               />
               <View style={styles.messageInfoSend}>
                 <Text style={styles.messageNameSend}>{e.pseudo}</Text>
-                <Text style={styles.messageTimeSend}>{hours}</Text>
+                <Text style={styles.messageTimeSend}>{date}</Text>
               </View>
             </View>
             <Text style={styles.messageTextSend}>{e.message}</Text>
@@ -127,9 +134,10 @@ export default function MessageScreen({ navigation, route }) {
 
   return (
     <View style={styles.container}>
+      {/* <SafeAreaView/> */}
       <View style={styles.headerMessage}>
-        <TouchableOpacity style={styles.iconButton} activeOpacity={0.8} onPressOut={handleClickBack}>
-          <FontAwesome name="arrow-left" size={40} color="#000" />
+        <TouchableOpacity style={styles.iconButton} activeOpacity={0.8} onPress={handleClickBack}>
+          <FontAwesome name="arrow-left" size={40} color="#000" style={{ zIndex:1}}/>
         </TouchableOpacity>
         <Text style={styles.headerTitle}>{discussion_pseudo}</Text>
       </View>
@@ -165,13 +173,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     flexDirection: "row",
     alignItems: "center",
-    paddingHorizontal: 15,
   },
   iconButton: {
     alignItems: 'center',
     justifyContent: "center",
     height: 60,
     width: 60,
+    zIndex:10,
   },
   headerTitle: {
     fontSize: 18,

@@ -25,6 +25,8 @@ import { configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user';
 import places from './reducers/places';
 
+import { useSelector } from 'react-redux';
+
 
 const store = configureStore({
   reducer: { user, places },
@@ -35,6 +37,8 @@ const Tab = createBottomTabNavigator();
 
 //Configuration tab navigation
 const TabNavigator = () => {
+  const user = useSelector((state) => state.user.value); //Recuperation paramètres de l'utilsateur stocké dans le STORE
+  
   return (
     <Tab.Navigator screenOptions={({ route }) => ({
       tabBarIcon: ({ color, size }) => {
@@ -42,13 +46,19 @@ const TabNavigator = () => {
 
         if (route.name === 'Map') {
           iconName = 'home';
+          return <FontAwesome name={iconName} size={size} color={color} />;
         } else if (route.name === 'Compte') {
           iconName = 'user';
+          return <FontAwesome name={iconName} size={size} color={color} />;
         } else if (route.name === 'Chat') {
           iconName = 'comment';
+          return (
+            <View style={{ flexDirection:"row" }}>
+              <FontAwesome name={iconName} size={size} color={color} />
+              {(user.pastilleMessage)&&<View style={{ width: 10, height: 10, backgroundColor: '#F00', borderRadius: "50%" }}></View>}
+            </View>
+          );
         }
-
-        return <FontAwesome name={iconName} size={size} color={color} />;
       },
       tabBarActiveTintColor: '#FFFFFF',
       tabBarInactiveTintColor: '#000000',
@@ -58,10 +68,10 @@ const TabNavigator = () => {
       <Tab.Screen name="Chat" component={ChatScreen} />
       <Tab.Screen name="Map" component={MapScreen} />
       <Tab.Screen name="Compte" component={MonCompteScreen} />
-      <Tab.Screen name="Profil" component={ProfileScreen} options={{ tabBarButton: (props) => {} }}/>
-      <Tab.Screen name="Preference" component={PreferenceScreen} options={{ tabBarButton: (props) => {} }}/>
-      <Tab.Screen name="Compagnon" component={CompagnonScreen} options={{ tabBarButton: (props) => {} }}/>
-      <Tab.Screen name="Poi" component={PoiScreen} options={{ tabBarButton: (props) => {} }}/>
+      <Tab.Screen name="Profil" component={ProfileScreen} options={{ tabBarButton: (props) => { } }} />
+      <Tab.Screen name="Preference" component={PreferenceScreen} options={{ tabBarButton: (props) => { } }} />
+      <Tab.Screen name="Compagnon" component={CompagnonScreen} options={{ tabBarButton: (props) => { } }} />
+      <Tab.Screen name="Poi" component={PoiScreen} options={{ tabBarButton: (props) => { } }} />
     </Tab.Navigator>
   );
 }
