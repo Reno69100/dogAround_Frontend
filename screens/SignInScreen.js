@@ -32,8 +32,8 @@ import { login } from "../reducers/user";
 SplashScreen.preventAutoHideAsync();
 
 export default function SignInScreen({ navigation }) {
-  const [email, setEmail] = useState("reno@lacapsule.fr");
-  const [password, setPassword] = useState("reno");
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
   const dispatch = useDispatch();
 
@@ -77,6 +77,7 @@ export default function SignInScreen({ navigation }) {
               city: data.city,
               avatar: data.avatar,
               token: data.token,
+              favorites: data.favorites,
             })
           );
           setEmail("");

@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   SafeAreaView,
   StatusBar,
+  Modal,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useIsFocused } from "@react-navigation/native";
@@ -16,60 +17,65 @@ import Btn from "../Components/Button";
 import Input from "../Components/Input";
 import TextContainer from "../Components/TextContainer";
 import Correspondance from "../assets/avatars/Correspondance";
-
+import { addFavorite, removeFavorite } from "../reducers/user";
+import { importPlaces, updateLike } from "../reducers/places";
 
 export default function PoiScreen({ navigation, route }) {
-  const [poiInfos,setPoiInfos] = useState({})
-  const [newComment,setNewComment] = useState('')
+  const dispatch = useDispatch();
+  const [poiInfos, setPoiInfos] = useState({});
+  const [newComment, setNewComment] = useState("");
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [likedCompt, setLikedCompt] = useState(14);
+
+  const [showNewComment, setShowNewComment] = useState(false);
+
   const isFocused = useIsFocused();
+  const [isModalVisible, setModalVisible] = useState(false);
+  const horaires = poiInfos.horaires || [];
   const id = route.params.google_id;
   let poiArr = [];
   let poiObjet = {};
+  const now = new Date();
 
   const user = useSelector((state) => state.user.value);
-  console.log('user :', user)
+  const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
+  const pseudo = user.pseudo;
+  // console.log("user :", user.pseudo);
+  // console.log("id :", id);
+  // console.log(
+  //   "places:",
+  //   places.filter((element) => element.google_id === id)
+  // );
 
-    useEffect(() => {
+  useEffect(() => {
+    if (isFocused) {
+      console.log('TEST')
+
       if (id) {
-          fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/id/${id}`)
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.place) {
-
-                poiObjet = {
-                  _id: data.place._id,
-                  image:data.place.image,
-                  nom: data.place.nom,
-                  adresse: data.place.adresse,
-                  horaires: data.place.horaires,
-                  description: data.place.description,
-                  categorie:data.place.categorie,
-                  location: data.place.location ,
-                }
-                setPoiInfos(poiObjet);
-              }
-            });
-          }
-        }
-        ,[isFocused])
-
-
-  // const poiInfosVisuel = poiInfos.map((e) => {
-//   return (
-//     <View style={styles.titleContainer}>
-//       <Text style={styles.title}>{e.displayName.text}</Text>
-//       <TouchableOpacity onPress={hearthHandlePress}>
-//         <FontAwesome
-//           name="heart"
-//           style={[
-//             styles.heartIcon,
-//             { color: isFavorite ? "#FF0000" : "#FFFFFF" },
-//           ]}
-//         />
-//       </TouchableOpacity>
-//     </View>
-//   );
-// });
+        // Fetch du détail du POI
+        fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/id/${id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.place) {
+              poiObjet = {
+                _id: data.place._id,
+                image: data.place.image,
+                nom: data.place.nom,
+                adresse: data.place.adresse,
+                horaires: data.place.horaires,
+                description: data.place.description,
+                categorie: data.place.categorie,
+                location: data.place.location,
+              };
+              setPoiInfos(poiObjet);
+            }
+          });
+      }
+    }
+  }, [isFocused]);
 
   // press sur croix pour retour à la map
   const handleClickCloseScreen = () => {
@@ -77,21 +83,64 @@ export default function PoiScreen({ navigation, route }) {
   };
 
   //press sur icône "heart" --> changement de couleur
-  const [isFavorite, setIsFavorite] = useState(false);
-  const hearthHandlePress = () => {
-    setIsFavorite(!isFavorite);
+
+  function hearthHandlePress() {
+    // const google_id = poiInfos.google_id
+    //ajout d'un Place_ID dans le tableau favorites du user
+    // 1 - vérification de l'existance du Place_ID dans la bdd
+    // fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/place/id/${google_id}`)
+    // .then((response) => response.json())
+    // .then((placeData) => {
+    //   const placeId = placeData._id
+    // })
+    // if(user.favorites)
+    // setIsFavorite(!isFavorite);
+    // const userFavorites = user.favorites
+    // const idToAdd = JSON.stringify(id)
+    if (!user.favorites.includes(id)) {
+      console.log("true");
+      dispatch(addFavorite(id));
+      setIsFavorite(true);
+    } else {
+      console.log("false");
+      dispatch(removeFavorite(id));
+      setIsFavorite(false);
+    }
+  }
+
+  //press sur icône "Like" --> changement de couleur + maj de likes dans le store
+  function likePress() {
+    dispatch(updateLike({ pseudo: pseudo, id: id }));
+  }
+
+  // const hearthLikePress = () => {
+  //   if (!isLiked) {
+  //     setLikedCompt(likedCompt + 1);
+  //   } else {
+  //     setLikedCompt(likedCompt - 1);
+  //   }
+  //   setIsLiked(!isLiked);
+  //  }
+  // };
+
+  //press sur + pour newComment
+  const handlePressNewComment = () => {
+    setShowNewComment(!showNewComment);
   };
 
-  //press sur icône "Like" --> changement de couleur + compteur de like
-  const [isLiked, setIsLiked] = useState(false);
-  const [likedCompt, setLikedCompt] = useState(14);
-  const hearthLikePress = () => {
-    if (!isLiked) {
-      setLikedCompt(likedCompt + 1);
-    } else {
-      setLikedCompt(likedCompt - 1);
-    }
-    setIsLiked(!isLiked);
+  const handleClickGoToEvent = () => {
+    navigation.navigate("Event", { nom: poiInfos.nom, image: poiInfos.image });
+  };
+
+  const handleClickGoToNewEvent = () => {
+    navigation.navigate("NewEvent", {
+      nom: poiInfos.nom,
+      image: poiInfos.image,
+    });
+  };
+
+  const toggleModal = () => {
+    setModalVisible(!isModalVisible);
   };
 
   return (
@@ -128,19 +177,24 @@ export default function PoiScreen({ navigation, route }) {
         <View style={styles.corpModale}>
           <View style={styles.likeLine}>
             <View style={styles.likeZone}>
-              <FontAwesome
-                name="thumbs-o-up"
-                size={25}
-                style={[
-                  styles.likedIcon,
-                  { color: isLiked ? "#FF0000" : "#000000" },
-                ]}
-                onPress={hearthLikePress}
-              />
+              <TouchableOpacity onPress={likePress}>
+                <FontAwesome
+                  name="thumbs-o-up"
+                  size={25}
+                  style={[
+                    styles.likedIcon,
+                    { color: isLiked ? "#0074e0" : "#000000" },
+                  ]}
+                />
+              </TouchableOpacity>
               <Text style={styles.likeText}>{likedCompt}</Text>
             </View>
-            <View style={styles.btnContainer}>
-              <Btn title="Evénement !" style={styles.eventButton} />
+            <View>
+              <Btn
+                title="Evénement !"
+                style={styles.eventButton}
+                onPress={handleClickGoToEvent}
+              />
             </View>
           </View>
         </View>
@@ -150,16 +204,18 @@ export default function PoiScreen({ navigation, route }) {
             <Text style={styles.KeyText}>Adresse:</Text>
             <Text style={styles.infoText}>{poiInfos.adresse}</Text>
           </View>
-          <View style={styles.detail}>
-            <Text style={styles.KeyText}>Horaires:</Text>
-            <Text style={styles.infoText}>{poiInfos.horaires}</Text>
+          <View style={styles.HorairesModale}>
+            <Text style={styles.horaires}>Horaires:</Text>
+            <FontAwesome
+              onPress={toggleModal}
+              name="caret-down"
+              size={25}
+              color="#000"
+            />
           </View>
-
           <View style={styles.DescriptionContainer}>
-            <Text style={styles.descriptionText}>
-              <Text style={styles.KeyText}>Description : </Text>
-                {poiInfos.description}
-            </Text>
+            <Text style={styles.KeyText}>Description:</Text>
+            <Text style={styles.infoText}>{poiInfos.description}</Text>
           </View>
 
           {/* <Btn
@@ -167,7 +223,11 @@ export default function PoiScreen({ navigation, route }) {
             style={styles.boutonItineraire}
           ></Btn> */}
 
-          <Btn title="Créer un événement" style={styles.boutonItineraire}></Btn>
+          <Btn
+            title="Créer un événement"
+            style={styles.boutonItineraire}
+            onPress={handleClickGoToNewEvent}
+          ></Btn>
 
           <View style={styles.commentaireHeader}>
             <Text style={styles.KeyText}>Commentaires:</Text>
@@ -175,34 +235,47 @@ export default function PoiScreen({ navigation, route }) {
           </View>
 
           <View style={styles.ZoneCommentaire}>
-
-            <View style={styles.commentaireContainer}>
-              <View style={styles.commentTitle}>
-                <View style={styles.avatarContainer}>
-                  <Image source={require("../assets/avatars/chien_1.png")} style={styles.userAvatar} />
+            <View style={styles.newCommentContainer}>
+              <View style={styles.commentaireContainer}>
+                <View style={styles.commentTitle}>
+                  <View style={styles.avatarContainer}>
+                    <Image source={user.avatar} style={styles.userAvatar} />
+                  </View>
+                  <View style={styles.commentTextContainer}>
+                    <Text style={styles.commentPseudo}>{user.pseudo}</Text>
+                    <Text style={styles.commentTime}>xxx</Text>
+                  </View>
                 </View>
                 <View style={styles.commentTextContainer}>
-                  <Text style={styles.commentPseudo}>LULU</Text>
-                  <Text style={styles.commentTime}>il y a 1h :</Text>
+                  <Input
+                    placeholder="nouveau commentaire"
+                    style={styles.commentInput}
+                  />
+                </View>
+                <View style={styles.btnContainer}>
+                  <Btn title="Commenter" style={styles.commentButton} />
                 </View>
               </View>
               <View style={styles.commentParent}>
-                <Input placeholder='nouveau commentaire' style={styles.commentInput}/>
+                <Input
+                  placeholder="nouveau commentaire"
+                  style={styles.commentInput}
+                />
               </View>
             </View>
 
             <View style={styles.commentaireContainer}>
               <View style={styles.commentTitle}>
                 <Image
+                  source={require("../assets/avatars/chien_1.png")}
                   style={styles.userAvatar}
-                  source={require("../assets/avatars/chien_2.png")}
                 />
                 <View style={styles.commentTextContainer}>
                   <Text style={styles.commentPseudo}>MOMO</Text>
-                  <Text style={styles.commentTime}>il y a 2h :</Text>
+                  <Text>il y a 2h :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   Cras elementum ultrices diam. Maecenas ligula massa, varius a,
                   semper congue, euismod non, mi. Proin porttitor, orci nec
@@ -220,10 +293,10 @@ export default function PoiScreen({ navigation, route }) {
                 />
                 <View style={styles.commentTextContainer}>
                   <Text style={styles.commentPseudo}>REX</Text>
-                  <Text style={styles.commentTime}>il y a 3h :</Text>
+                  <Text>il y a 3h :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
                   non risus. Suspendisse lectus tortor, dignissim sit amet,
@@ -240,10 +313,10 @@ export default function PoiScreen({ navigation, route }) {
                 /> */}
                 <View style={styles.commentTextContainer}>
                   <Text style={styles.commentPseudo}>BALOU</Text>
-                  <Text style={styles.commentTime}>il y a 4h :</Text>
+                  <Text>il y a 4h :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   Cras elementum ultrices diam. Maecenas ligula massa, varius a,
                   semper congue, euismod non, mi. Proin porttitor, orci nec
@@ -264,7 +337,7 @@ export default function PoiScreen({ navigation, route }) {
                   <Text style={styles.commentTime}>il y a 4h30 :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   commentaire ......commentaire ......commentaire
                   ......commentaire ......commentaire
@@ -273,15 +346,47 @@ export default function PoiScreen({ navigation, route }) {
             </View>
           </View>
         </View>
+        <Modal
+          transparent={true}
+          visible={isModalVisible}
+          onRequestClose={toggleModal}
+        >
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContent}>
+              <Text style={styles.modalTitle}>Horaires Complet</Text>
+              <ScrollView>
+                {horaires.length > 0 ? (
+                  horaires.map((horaire, index) => (
+                    <View key={index} style={styles.horaireItem}>
+                      <Text style={styles.horaireText}>{horaire}</Text>
+                    </View>
+                  ))
+                ) : (
+                  <Text style={styles.horaireText}>
+                    Aucun horaire disponible
+                  </Text>
+                )}
+              </ScrollView>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={toggleModal}
+              >
+                <Text style={styles.closeButtonText}>Fermer</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </Modal>
       </ScrollView>
     </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
-  
+  likedIcon: {
+    zIndex: 10,
+  },
+
   container: {
-    paddingtop: 15,
     height: "100%",
     width: "100%",
     flex: 1,
@@ -292,67 +397,18 @@ const styles = StyleSheet.create({
 
   headerContainer: {
     position: "relative",
-    marginTop: 30,
   },
 
   titleContainer: {
+    top: 104,
     position: "absolute",
-    zIndex: 2,
-    top: 110,
-    left: 0,
+    width: "100%",
+    padding: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingTop: 5,
-    paddingLeft: 5,
-    paddingRight: 5,
-    backgroundColor: "#fff",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.5,
-    backgroundColor: "rgba(0, 0, 0, 0.6)",
   },
-
-  headerImage: {
-    zIndex: 0,
-    width: "100%",
-    height: 150,
-    resizeMode: "cover",
-  },
-
-  title: {
-    bottom: 0,
-    left: 0,
-    width: "100%",
-    color: "#fff",
-    paddingVertical: 10,
-    paddingHorizontal: 16,
-    fontSize: 16,
-    fontWeight: "bold",
-  },
-
-  heartIcon: {
-    zIndex: 10,
-    position: "absolute",
-    bottom: 0,
-    right: 10,
-    fontSize: 24,
-    marginRight: 8,
-  },
-
-  closeIcon: {
-    padding: 10,
-    position: "absolute",
-    top: 1,
-    right: 10,
-    padding: 10,
-    zIndex: 2,
-  },
-
-  corpModale: {
-    marginTop: 5,
-  },
-
   likeLine: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -360,29 +416,36 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 8,
   },
-
   likeZone: {
     flexDirection: "row",
     alignItems: "flex-end",
     marginBottom: 10,
   },
-
   likeText: {
     marginLeft: 8,
     fontSize: 20,
     color: "#416165",
     fontWeight: "bold",
   },
-
   eventButton: {
     paddingHorizontal: 5,
     paddingVertical: 1,
-    height: 25,
+    height: 30,
     width: 125,
     justifyContent: "center",
-    marginBottom: 5,
+    marginVertical: 5,
     marginLeft: 20,
     marginRight: 15,
+    fontSize: "12",
+    paddingVertical: 1,
+  },
+
+  commentButton: {
+    width: "90%",
+    height: 30,
+    marginBottom: 15,
+    alignItems: "center",
+    marginLeft: 20,
     fontSize: "12",
     paddingVertical: 1,
   },
@@ -390,7 +453,7 @@ const styles = StyleSheet.create({
   boutonItineraire: {
     width: "90%",
     height: 30,
-    marginVertical: 5,
+    marginBottom: 5,
     alignItems: "center",
     marginLeft: 20,
     fontSize: "12",
@@ -401,7 +464,7 @@ const styles = StyleSheet.create({
     fontSize: 8,
     paddingHorizontal: 10,
     paddingVertical: 1,
-    height: 25,
+    height: 30,
     width: 125,
     justifyContent: "center",
     marginRight: 15,
@@ -435,15 +498,18 @@ const styles = StyleSheet.create({
   },
 
   detail: {
-    flexDirection: "row",
-    alignItems: "baseline",
+    textAlign: "justify",
+    flexWrap: "nowrap",
+    fontSize: 14,
+    color: "#416165",
+    paddingLeft: 10,
+    paddingRight: 15,
   },
 
   KeyText: {
     flexWrap: "nowrap",
     fontSize: 16,
     fontWeight: "bold",
-    marginBottom: 1,
     color: "#416165",
     paddingLeft: 10,
     marginRight: 16,
@@ -453,11 +519,14 @@ const styles = StyleSheet.create({
     fontSize: 14,
     marginBottom: 1,
     color: "#666",
+    paddingLeft: 10,
   },
 
   DescriptionContainer: {
     alignContent: "flex-start",
     marginBottom: 15,
+    paddingLeft: 10,
+    marginRight: 16,
   },
 
   descriptionText: {
@@ -481,9 +550,10 @@ const styles = StyleSheet.create({
   },
 
   ZoneCommentaire: {
-    paddingTop: 10,
-    borderRadius: 10,
+    padding: 10,
+    borderRadius: 8,
     backgroundColor: "#FFF",
+    marginBottom:30
   },
 
   userAvatar: {
@@ -518,11 +588,89 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
 
-  commentParent: {
+  commentTextContainer: {
     flexWrap: "nowrap",
     alignItems: "flex-start",
     marginLeft: 30,
     marginBottom: 10,
     paddingHorizontal: 16,
+  },
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0,0,0,0.5)",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    width: "80%",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "bold",
+  },
+  modalText: {
+    marginTop: 10,
+    fontSize: 16,
+  },
+  closeButton: {
+    marginTop: 20,
+    padding: 10,
+    backgroundColor: "#7DBA84",
+    borderRadius: 5,
+    alignItems: "center",
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontSize: 16,
+  },
+  HorairesModale: {
+    flexDirection: "row",
+    margin: 20,
+  },
+  horaires: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#416165",
+    marginRight: 10,
+  },
+  horaireItem: {
+    marginVertical: 5,
+    padding: 4,
+  },
+  titleContainer: {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    right: 0,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    paddingHorizontal: 16,
+    paddingVertical: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.6)",
+  },
+  headerImage: {
+    width: "100%",
+    height: 150,
+    resizeMode: "cover",
+  },
+  title: {
+    color: "#fff",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  heartIcon: {
+    fontSize: 24,
+    right: 2,
+  },
+  closeIcon: {
+    padding: 10,
+    position: "absolute",
+    top: 1,
+    right: 10,
+    zIndex: 2,
   },
 });

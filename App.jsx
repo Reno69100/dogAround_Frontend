@@ -19,17 +19,20 @@ import CompagnonScreen from './screens/CompagnonScreen';
 import PoiScreen from './screens/PoiScreen'
 import ProfileScreen from "./screens/ProfileScreen";
 import MessageScreen from "./screens/MessageScreen";
+import EventScreen from './screens/EventScreen';
+import NewEventScreen from './screens/NewEventScreen'
 
 import { Provider } from 'react-redux';
 import { configureStore } from '@reduxjs/toolkit';
 import user from './reducers/user';
 import places from './reducers/places';
+import event from "./reducers/event";
 
 import { useSelector } from 'react-redux';
 
 
 const store = configureStore({
-  reducer: { user, places },
+  reducer: { user, places, event},
 });
 
 const Stack = createNativeStackNavigator();
@@ -90,6 +93,8 @@ export default function App() {
             <Stack.Screen name="Poi" component={PoiScreen} />
             <Stack.Screen name="Message" component={MessageScreen} />
             <Stack.Screen name="TabNavigator" component={TabNavigator} />
+            <Stack.Screen name="Event" component={EventScreen} />
+            <Stack.Screen name="NewEvent" component={NewEventScreen} />
           </Stack.Navigator>
         </NavigationContainer>
       </Provider>

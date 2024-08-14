@@ -56,7 +56,7 @@ export default function MonCompteScreen({ navigation }) {
           {/* <Text style={styles.editText}>EDIT</Text> */}
           <FontAwesome
               name="pencil"
-              size={25}
+              size={18}
               color="#000"
               /* onPress={handleClickCloseScreen} */
             />
