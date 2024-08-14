@@ -180,6 +180,11 @@ export default function MapScreen({ navigation }) {
         navigation.navigate('Poi',{google_id:google_id})
     }
 
+    const onLongPress = (e) => {
+        console.log(e)
+
+    }
+
     return (
         <View style={styles.container}>
             <MapView
@@ -190,6 +195,7 @@ export default function MapScreen({ navigation }) {
                     latitudeDelta: regionPosition.latitudeDelta,
                     longitudeDelta: regionPosition.longitudeDelta,
                 }}
+                onLongPress={(e) => handleLongPress(e)}
             >
                 {currentPosition &&
                     <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">
@@ -200,6 +206,7 @@ export default function MapScreen({ navigation }) {
                     </Marker>}
                 {markers}
             </MapView>
+            
             <FontAwesome name="filter" size={40} style={styles.filter} onPress={() => setShowModal(true)} />
             {showModal && <Filter userInfo={user} validFilters={validFilters} />}
         </View>
