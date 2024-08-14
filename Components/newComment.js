@@ -54,9 +54,6 @@ export default function NewComment({ name }) { // Correction: utilisation des ac
 }
 
 const styles = StyleSheet.create({
-  newCommentContainer: { 
-    // Ajoutez vos styles ici
-  },
 
   userAvatar: {
     height: 20,
@@ -77,13 +74,13 @@ const styles = StyleSheet.create({
   commentPseudo: {
     fontSize: 14,
     fontWeight: "bold",
-    color: "#795C5F", // Correction: une seule dièse pour les couleurs hexadécimales
+    color: "#795C5F",
     paddingLeft: 10,
     paddingRight: 10,
   },
 
   commentTime: {
-    fontSize: 12, // Ajout de styles pour la date
+    fontSize: 12,
     color: "#666",
   },
 
@@ -103,11 +100,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
   },
 
+  newCommentContainer: { 
+   
+  },
+
   newCommentInput: {
-    // Ajoutez vos styles ici
+   
   },
 
   btnPublier: {
-    // Ajoutez vos styles ici
+    
   },
 });

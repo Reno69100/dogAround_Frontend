@@ -77,6 +77,7 @@ export default function SignInScreen({ navigation }) {
               city: data.city,
               avatar: data.avatar,
               token: data.token,
+              favorites: data.favorites,
             })
           );
           setEmail("");

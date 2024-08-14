@@ -14,6 +14,7 @@ import Filter from '../Components/Filter'
 
 import { useSelector, useDispatch } from 'react-redux';
 import { importPlaces } from '../reducers/places'
+import { addFavorite } from '../reducers/user'
 
 import * as SplashScreen from "expo-splash-screen";
 import {
@@ -156,7 +157,26 @@ export default function MapScreen({ navigation }) {
     })
 
     function handlePoiPress(google_id) {
-        console.log('ID -->', google_id)
+        //fetch création POI
+        // console.log('dans le if')
+        // const location = data.place.location
+        // fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/new/${id}/${location}`,{
+        //   method: "POST",
+        //   headers: { "Content-Type": "application/json" },
+        //   body: JSON.stringify({ 
+        //     title : data.place.nom,
+        //     description: data.place.description,
+        //     hours: data.place.horaires,
+        //     categorie: data.place.categorie,
+        //     location: poidata.placeInfos.location,
+        //     image: data.place.image,
+        //     created_at: now,
+        //   })
+        // })
+        // .then((response) => response.json())
+        // .then((newPlaceData) => {
+        //  console.log('newPlace: ', newPlaceData)
+        // })
         navigation.navigate('Poi',{google_id:google_id})
     }
 

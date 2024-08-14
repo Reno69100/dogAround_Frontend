@@ -14,9 +14,9 @@ const initialState = {
     },
     radius: 20000,
     filtres: [],
+    favorites: [],
   },
 };
-
 
 export const userSlice = createSlice({
   name: "user",
@@ -49,6 +49,15 @@ export const userSlice = createSlice({
       state.value.pseudo = null;
       state.value.avatar = null; 
     },
+    addFavorite: (state, action) => {
+      state.value.favorites.push(action.payload)
+      console.log('favorites:', state.value.favorites)
+
+    },
+    removeFavorite: (state, action) => {
+      state.value.favorites = state.value.favorites.filter(x=> x.favorites !== action.payload)
+    },
+    
   },
 });
 
@@ -58,5 +67,7 @@ export const {
   storeFilters,
   storeCity,
   logout,
+  addFavorite,
+  removeFavorite,
 } = userSlice.actions;
 export default userSlice.reducer;

@@ -98,6 +98,7 @@ export default function ProfilScreen({ navigation }) {
 
   const handleSelectAvatar = (avatar) => {
     setSelectedAvatar(avatar.source);
+    setIsModalVisible(false);
   };
 
   return (
@@ -116,7 +117,7 @@ export default function ProfilScreen({ navigation }) {
         <View style={styles.inputContainer}>
           <View style={styles.avatarWrapper}>
             <View style={styles.avatarContainer}>
-              <Image source={require("../assets/avatars/chien_1.png")}style={styles.avatar}/>
+              <Image source={selectedAvatar}style={styles.avatar}/>
             </View>
             <TouchableOpacity
               style={styles.plusIcon}

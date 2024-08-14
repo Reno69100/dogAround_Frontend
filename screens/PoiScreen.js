@@ -16,60 +16,63 @@ import Btn from "../Components/Button";
 import Input from "../Components/Input";
 import TextContainer from "../Components/TextContainer";
 import Correspondance from "../assets/avatars/Correspondance";
-
+import { addFavorite, removeFavorite } from "../reducers/user";
+import { importPlaces, updateLike } from "../reducers/places";
 
 export default function PoiScreen({ navigation, route }) {
-  const [poiInfos,setPoiInfos] = useState({})
-  const [newComment,setNewComment] = useState('')
+  const dispatch = useDispatch();
+  const [poiInfos, setPoiInfos] = useState({});
+  const [newComment, setNewComment] = useState("");
+
+  const [isFavorite, setIsFavorite] = useState(false);
+
+  const [isLiked, setIsLiked] = useState(false);
+  const [likedCompt, setLikedCompt] = useState(14);
+
+  const [showNewComment, setShowNewComment] = useState(false);
+
   const isFocused = useIsFocused();
   const id = route.params.google_id;
   let poiArr = [];
   let poiObjet = {};
+  const now = new Date();
 
   const user = useSelector((state) => state.user.value);
-  console.log('user :', user)
+  const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
+  const pseudo = user.pseudo;
+  // console.log("user :", user.pseudo);
+  // console.log("id :", id);
+  // console.log(
+  //   "places:",
+  //   places.filter((element) => element.google_id === id)
+  // );
 
-    useEffect(() => {
+  useEffect(() => {
+    if (isFocused) {
+      console.log('TEST')
+
       if (id) {
-          fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/id/${id}`)
-            .then((response) => response.json())
-            .then((data) => {
-              if (data.place) {
-
-                poiObjet = {
-                  _id: data.place._id,
-                  image:data.place.image,
-                  nom: data.place.nom,
-                  adresse: data.place.adresse,
-                  horaires: data.place.horaires,
-                  description: data.place.description,
-                  categorie:data.place.categorie,
-                  location: data.place.location ,
-                }
-                setPoiInfos(poiObjet);
-              }
-            });
-          }
-        }
-        ,[isFocused])
-
-
-  // const poiInfosVisuel = poiInfos.map((e) => {
-//   return (
-//     <View style={styles.titleContainer}>
-//       <Text style={styles.title}>{e.displayName.text}</Text>
-//       <TouchableOpacity onPress={hearthHandlePress}>
-//         <FontAwesome
-//           name="heart"
-//           style={[
-//             styles.heartIcon,
-//             { color: isFavorite ? "#FF0000" : "#FFFFFF" },
-//           ]}
-//         />
-//       </TouchableOpacity>
-//     </View>
-//   );
-// });
+        // Fetch du détail du POI
+        fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/places/id/${id}`)
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.place) {
+              poiObjet = {
+                _id: data.place._id,
+                image: data.place.image,
+                nom: data.place.nom,
+                adresse: data.place.adresse,
+                horaires: data.place.horaires,
+                description: data.place.description,
+                categorie: data.place.categorie,
+                location: data.place.location,
+              };
+              setPoiInfos(poiObjet);
+            }
+          });
+      }
+    }
+  }, [isFocused]);
 
   // press sur croix pour retour à la map
   const handleClickCloseScreen = () => {
@@ -77,21 +80,49 @@ export default function PoiScreen({ navigation, route }) {
   };
 
   //press sur icône "heart" --> changement de couleur
-  const [isFavorite, setIsFavorite] = useState(false);
-  const hearthHandlePress = () => {
-    setIsFavorite(!isFavorite);
-  };
 
-  //press sur icône "Like" --> changement de couleur + compteur de like
-  const [isLiked, setIsLiked] = useState(false);
-  const [likedCompt, setLikedCompt] = useState(14);
-  const hearthLikePress = () => {
-    if (!isLiked) {
-      setLikedCompt(likedCompt + 1);
+  function hearthHandlePress() {
+    // const google_id = poiInfos.google_id
+    //ajout d'un Place_ID dans le tableau favorites du user
+    // 1 - vérification de l'existance du Place_ID dans la bdd
+    // fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/place/id/${google_id}`)
+    // .then((response) => response.json())
+    // .then((placeData) => {
+    //   const placeId = placeData._id
+    // })
+    // if(user.favorites)
+    // setIsFavorite(!isFavorite);
+    // const userFavorites = user.favorites
+    // const idToAdd = JSON.stringify(id)
+    if (!user.favorites.includes(id)) {
+      console.log("true");
+      dispatch(addFavorite(id));
+      setIsFavorite(true);
     } else {
-      setLikedCompt(likedCompt - 1);
+      console.log("false");
+      dispatch(removeFavorite(id));
+      setIsFavorite(false);
     }
-    setIsLiked(!isLiked);
+  }
+
+  //press sur icône "Like" --> changement de couleur + maj de likes dans le store
+  function likePress() {
+    dispatch(updateLike({ pseudo: pseudo, id: id }));
+  }
+
+  // const hearthLikePress = () => {
+  //   if (!isLiked) {
+  //     setLikedCompt(likedCompt + 1);
+  //   } else {
+  //     setLikedCompt(likedCompt - 1);
+  //   }
+  //   setIsLiked(!isLiked);
+  //  }
+  // };
+
+  //press sur + pour newComment
+  const handlePressNewComment = () => {
+    setShowNewComment(!showNewComment);
   };
 
   return (
@@ -128,15 +159,16 @@ export default function PoiScreen({ navigation, route }) {
         <View style={styles.corpModale}>
           <View style={styles.likeLine}>
             <View style={styles.likeZone}>
-              <FontAwesome
-                name="thumbs-o-up"
-                size={25}
-                style={[
-                  styles.likedIcon,
-                  { color: isLiked ? "#FF0000" : "#000000" },
-                ]}
-                onPress={hearthLikePress}
-              />
+              <TouchableOpacity onPress={likePress}>
+                <FontAwesome
+                  name="thumbs-o-up"
+                  size={25}
+                  style={[
+                    styles.likedIcon,
+                    { color: isLiked ? "#FF0000" : "#000000" },
+                  ]}
+                />
+              </TouchableOpacity>
               <Text style={styles.likeText}>{likedCompt}</Text>
             </View>
             <View style={styles.btnContainer}>
@@ -158,7 +190,7 @@ export default function PoiScreen({ navigation, route }) {
           <View style={styles.DescriptionContainer}>
             <Text style={styles.descriptionText}>
               <Text style={styles.KeyText}>Description : </Text>
-                {poiInfos.description}
+              {poiInfos.description}
             </Text>
           </View>
 
@@ -175,34 +207,41 @@ export default function PoiScreen({ navigation, route }) {
           </View>
 
           <View style={styles.ZoneCommentaire}>
-
-            <View style={styles.commentaireContainer}>
-              <View style={styles.commentTitle}>
-                <View style={styles.avatarContainer}>
-                  <Image source={require("../assets/avatars/chien_1.png")} style={styles.userAvatar} />
+            <View style={styles.newCommentContainer}>
+              <View style={styles.commentaireContainer}>
+                <View style={styles.commentTitle}>
+                  <View style={styles.avatarContainer}>
+                    <Image source={user.avatar} style={styles.userAvatar} />
+                  </View>
+                  <View style={styles.commentTextContainer}>
+                    <Text style={styles.commentPseudo}>{user.pseudo}</Text>
+                    <Text style={styles.commentTime}>xxx</Text>
+                  </View>
                 </View>
                 <View style={styles.commentTextContainer}>
-                  <Text style={styles.commentPseudo}>LULU</Text>
-                  <Text style={styles.commentTime}>il y a 1h :</Text>
+                  <Input
+                    placeholder="nouveau commentaire"
+                    style={styles.commentInput}
+                  />
                 </View>
-              </View>
-              <View style={styles.commentParent}>
-                <Input placeholder='nouveau commentaire' style={styles.commentInput}/>
+                <View style={styles.btnContainer}>
+                  <Btn title="Commenter" style={styles.commentButton} />
+                </View>
               </View>
             </View>
 
             <View style={styles.commentaireContainer}>
               <View style={styles.commentTitle}>
                 <Image
+                  source={require("../assets/avatars/chien_1.png")}
                   style={styles.userAvatar}
-                  source={require("../assets/avatars/chien_2.png")}
                 />
                 <View style={styles.commentTextContainer}>
                   <Text style={styles.commentPseudo}>MOMO</Text>
                   <Text style={styles.commentTime}>il y a 2h :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   Cras elementum ultrices diam. Maecenas ligula massa, varius a,
                   semper congue, euismod non, mi. Proin porttitor, orci nec
@@ -223,7 +262,7 @@ export default function PoiScreen({ navigation, route }) {
                   <Text style={styles.commentTime}>il y a 3h :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
                   non risus. Suspendisse lectus tortor, dignissim sit amet,
@@ -243,7 +282,7 @@ export default function PoiScreen({ navigation, route }) {
                   <Text style={styles.commentTime}>il y a 4h :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   Cras elementum ultrices diam. Maecenas ligula massa, varius a,
                   semper congue, euismod non, mi. Proin porttitor, orci nec
@@ -264,7 +303,7 @@ export default function PoiScreen({ navigation, route }) {
                   <Text style={styles.commentTime}>il y a 4h30 :</Text>
                 </View>
               </View>
-              <View style={styles.commentParent}>
+              <View style={styles.commentTextContainer}>
                 <Text style={styles.commentText}>
                   commentaire ......commentaire ......commentaire
                   ......commentaire ......commentaire
@@ -279,7 +318,10 @@ export default function PoiScreen({ navigation, route }) {
 }
 
 const styles = StyleSheet.create({
-  
+  likedIcon: {
+    zIndex: 10,
+  },
+
   container: {
     paddingtop: 15,
     height: "100%",
@@ -380,9 +422,19 @@ const styles = StyleSheet.create({
     height: 25,
     width: 125,
     justifyContent: "center",
-    marginBottom: 5,
+    marginVertical: 5,
     marginLeft: 20,
     marginRight: 15,
+    fontSize: "12",
+    paddingVertical: 1,
+  },
+
+  commentButton: {
+    width: "90%",
+    height: 30,
+    marginBottom: 15,
+    alignItems: "center",
+    marginLeft: 20,
     fontSize: "12",
     paddingVertical: 1,
   },
@@ -390,7 +442,7 @@ const styles = StyleSheet.create({
   boutonItineraire: {
     width: "90%",
     height: 30,
-    marginVertical: 5,
+    marginBottom: 5,
     alignItems: "center",
     marginLeft: 20,
     fontSize: "12",
@@ -518,7 +570,7 @@ const styles = StyleSheet.create({
     paddingRight: 10,
   },
 
-  commentParent: {
+  commentTextContainer: {
     flexWrap: "nowrap",
     alignItems: "flex-start",
     marginLeft: 30,
