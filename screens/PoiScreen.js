@@ -27,7 +27,6 @@ export default function PoiScreen({ navigation, route }) {
   let poiObjet = {};
 
   const user = useSelector((state) => state.user.value);
-  console.log('user :', user)
 
     useEffect(() => {
       if (id) {
@@ -94,6 +93,17 @@ export default function PoiScreen({ navigation, route }) {
     setIsLiked(!isLiked);
   };
 
+  const handleClickGoToEvent = () =>{
+    navigation.navigate('Event', {nom: poiInfos.nom, image: poiInfos.image})
+  }
+
+    const handleClickGoToNewEvent = () => {
+      navigation.navigate("NewEvent", {
+        nom: poiInfos.nom,
+        image: poiInfos.image,
+      });
+    };
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="light-content" backgroundColor="#7DBA84" />
@@ -140,7 +150,11 @@ export default function PoiScreen({ navigation, route }) {
               <Text style={styles.likeText}>{likedCompt}</Text>
             </View>
             <View style={styles.btnContainer}>
-              <Btn title="Evénement !" style={styles.eventButton} />
+              <Btn
+                title="Evénement !"
+                style={styles.eventButton}
+                onPress={handleClickGoToEvent}
+              />
             </View>
           </View>
         </View>
@@ -158,7 +172,7 @@ export default function PoiScreen({ navigation, route }) {
           <View style={styles.DescriptionContainer}>
             <Text style={styles.descriptionText}>
               <Text style={styles.KeyText}>Description : </Text>
-                {poiInfos.description}
+              {poiInfos.description}
             </Text>
           </View>
 
@@ -167,7 +181,11 @@ export default function PoiScreen({ navigation, route }) {
             style={styles.boutonItineraire}
           ></Btn> */}
 
-          <Btn title="Créer un événement" style={styles.boutonItineraire}></Btn>
+          <Btn
+            title="Créer un événement"
+            style={styles.boutonItineraire}
+            onPress={handleClickGoToNewEvent}
+          ></Btn>
 
           <View style={styles.commentaireHeader}>
             <Text style={styles.KeyText}>Commentaires:</Text>
@@ -175,11 +193,13 @@ export default function PoiScreen({ navigation, route }) {
           </View>
 
           <View style={styles.ZoneCommentaire}>
-
             <View style={styles.commentaireContainer}>
               <View style={styles.commentTitle}>
                 <View style={styles.avatarContainer}>
-                  <Image source={require("../assets/avatars/chien_1.png")} style={styles.userAvatar} />
+                  <Image
+                    source={require("../assets/avatars/chien_1.png")}
+                    style={styles.userAvatar}
+                  />
                 </View>
                 <View style={styles.commentTextContainer}>
                   <Text style={styles.commentPseudo}>LULU</Text>
@@ -187,7 +207,10 @@ export default function PoiScreen({ navigation, route }) {
                 </View>
               </View>
               <View style={styles.commentParent}>
-                <Input placeholder='nouveau commentaire' style={styles.commentInput}/>
+                <Input
+                  placeholder="nouveau commentaire"
+                  style={styles.commentInput}
+                />
               </View>
             </View>
 
@@ -281,7 +304,6 @@ export default function PoiScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   
   container: {
-    paddingtop: 15,
     height: "100%",
     width: "100%",
     flex: 1,
@@ -292,13 +314,12 @@ const styles = StyleSheet.create({
 
   headerContainer: {
     position: "relative",
-    marginTop: 30,
   },
 
   titleContainer: {
     position: "absolute",
     zIndex: 2,
-    top: 110,
+    top: 104,
     left: 0,
     flexDirection: "row",
     justifyContent: "space-between",
