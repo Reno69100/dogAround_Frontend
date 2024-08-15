@@ -165,7 +165,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#E8E9ED",
-    paddingTop: 40,
+    paddingTop: 30,
     justifyContent: "space-between"
   },
   headerMessage: {
@@ -191,7 +191,6 @@ const styles = StyleSheet.create({
   },
   messageContainer: {
     padding: 10,
-    /* flexGrow: 1, */
   },
   messageWrapper: {
     marginVertical: 5,
@@ -242,7 +241,6 @@ const styles = StyleSheet.create({
   },
   messageNameSend: {
     fontWeight: "bold",
-    textAlign: "right",
   },
   messageTime: {
     fontSize: 12,
@@ -268,7 +266,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-around",
-    marginBottom: 15,
   },
   input: {
     flex: 1,

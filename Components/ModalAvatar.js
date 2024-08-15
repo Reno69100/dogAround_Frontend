@@ -39,7 +39,6 @@ const ModalAvatar = ({ visible, onClose, onSelect }) => {
             keyExtractor={(item) => item.id}
           />
           <TouchableOpacity style={styles.modalButton}>
-            <Btn title="Valider" onPress={onClose} />
           </TouchableOpacity>
         </View>
       </View>
@@ -59,6 +58,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFF",
     borderRadius: 10,
     alignItems: "center",
+    height:'80%'
   },
   modalTitle: {
     fontSize: 18,

@@ -109,6 +109,8 @@ export default function NewEventScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: "100%",
+    width: "100%",
     backgroundColor: "#E8E9ED",
     alignItems: "center",
   },
@@ -189,8 +191,8 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     marginBottom: 30,
     paddingHorizontal: 10,
-    borderRadius:8,
-    padding:13
+    borderRadius: 8,
+    padding: 13,
   },
   inputName: {
     width: "100%",
@@ -205,7 +207,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginRight: 10,
   },
-  btn:{
-    marginTop:40
-  }
+  btn: {
+    marginTop: 40,
+  },
 });

@@ -256,7 +256,7 @@ export default function PoiScreen({ navigation, route }) {
             <View style={styles.likeZone}>
               <TouchableOpacity onPress={likePress}>
                 <FontAwesome
-                  name="thumbs-o-up"
+                  name="thumbs-up"
                   size={25}
                   style={[
                     styles.likedIcon,
@@ -367,10 +367,10 @@ export default function PoiScreen({ navigation, route }) {
             <View style={styles.modalContent}>
               <Text style={styles.modalTitle}>Horaires Complet</Text>
               <ScrollView>
-                {horaires.length > 0 ? (
+                {horaires !== "non disponible" ? (
                   horaires.map((horaire, index) => (
                     <View key={index} style={styles.horaireItem}>
-                      <Text style={styles.horaireText}>{horaire}</Text>
+                      <Text>{horaire}</Text>
                     </View>
                   ))
                 ) : (

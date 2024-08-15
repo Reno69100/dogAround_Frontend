@@ -58,7 +58,6 @@ export default function ProfilScreen({ navigation }) {
     );
 
     filteredData.token = user.token;
-    console.log(filteredData)
     fetch(`${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
@@ -67,7 +66,6 @@ export default function ProfilScreen({ navigation }) {
 
       .then((response) => response.json())
       .then((data) => {
-        console.log(data)
         if (data.result) {
           dispatch(
             login({
@@ -272,6 +270,7 @@ const styles = StyleSheet.create({
   },
   connection: {
     marginTop: 20,
+    marginBottom: 30,
   },
   input: {
     marginTop: 20,

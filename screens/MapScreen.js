@@ -58,22 +58,27 @@ export default function MapScreen({ navigation }) {
         )
             .then((response) => response.json())
             .then((data) => {
-                let pastille = false;
-                if (data.result) {
-                    //Récupération si un nouveau message existe sur une discussion
-                    for (const element of data.contacts) {
-                        if ((element.invitation === "accepted") && (element.discussion.newMessage !== null)) {
-                            //nouveau IF car element.discussion.newMessage.pseudo n'existe pas toujours
-                            if (element.discussion.newMessage.pseudo !== user.pseudo) {
-                                /* console.log(element.discussion.newMessage.pseudo) */
-                                pastille = true;
-                                break;
+                try {
+                    let pastille = false;
+                    if (data.result) {
+                        //Récupération si un nouveau message existe sur une discussion
+                        for (const element of data.contacts) {
+                            if ((element.invitation === "accepted") && (element.discussion.newMessage !== null)) {
+                                //nouveau IF car element.discussion.newMessage.pseudo n'existe pas toujours
+                                if (element.discussion.newMessage.pseudo !== user.pseudo) {
+                                    /* console.log(element.discussion.newMessage.pseudo) */
+                                    pastille = true;
+                                    break;
+                                }
                             }
                         }
+                        dispatch(setPastilleMessage(pastille))
                     }
-                    dispatch(setPastilleMessage(pastille))
+                    else {
+                        dispatch(setPastilleMessage(false))
+                    }
                 }
-                else {
+                catch {
                     dispatch(setPastilleMessage(false))
                 }
             });
@@ -195,6 +200,7 @@ export default function MapScreen({ navigation }) {
             iconColor = '#FF0000';
         }
 
+      
         const showMarker = !user.filtres.some(filter => e.type === filter);
         if (showMarker) {
             return (
@@ -229,11 +235,6 @@ export default function MapScreen({ navigation }) {
         navigation.navigate('Poi',{google_id:google_id})
     }
 
-    const onLongPress = (e) => {
-        console.log(e)
-
-    }
-
     return (
         <View style={styles.container}>
             <MapView
@@ -244,7 +245,6 @@ export default function MapScreen({ navigation }) {
                     latitudeDelta: regionPosition.latitudeDelta,
                     longitudeDelta: regionPosition.longitudeDelta,
                 }}
-                onLongPress={(e) => handleLongPress(e)}
             >
                 {currentPosition &&
                     <Marker style={styles.maposition} coordinate={currentPosition} title="you waf here !" pinColor="#fecb2d">
@@ -255,7 +255,7 @@ export default function MapScreen({ navigation }) {
                     </Marker>}
                 {markers}
             </MapView>
-            
+
             <FontAwesome name="filter" size={40} style={styles.filter} onPress={() => setShowModal(true)} />
             {showModal && <Filter userInfo={user} validFilters={validFilters} />}
         </View>

@@ -97,6 +97,7 @@ export default function Filter({ userInfo, validFilters }) {
           editable={optionCity}
         /> */}
         <AutocompleteDropdown
+          emptyResultText="Aucun résultat"
           initialValue={{ id: '1' }}
           debounce={500}
           onChangeText={(value) => getSuggestions(value)}
