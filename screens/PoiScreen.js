@@ -10,6 +10,7 @@ import {
   SafeAreaView,
   StatusBar,
   Modal,
+  TextInput,
 } from "react-native";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import { useIsFocused } from "@react-navigation/native";
@@ -19,18 +20,48 @@ import TextContainer from "../Components/TextContainer";
 import Correspondance from "../assets/avatars/Correspondance";
 import { addFavorite, removeFavorite } from "../reducers/user";
 import { importPlaces, updateLike } from "../reducers/places";
+import moment from "moment";
+import "moment/locale/fr";
 
 export default function PoiScreen({ navigation, route }) {
   const dispatch = useDispatch();
   const [poiInfos, setPoiInfos] = useState({});
-  const [newComment, setNewComment] = useState("");
 
   const [isFavorite, setIsFavorite] = useState(false);
 
   const [isLiked, setIsLiked] = useState(false);
-  const [likedCompt, setLikedCompt] = useState(14);
+  let aleat = Math.random();
+  aleat = Math.floor(aleat * 10);
+  const [likedCompt, setLikedCompt] = useState(aleat);
 
   const [showNewComment, setShowNewComment] = useState(false);
+  const [newComment, setNewComment] = useState("");
+  const [comments, setComments] = useState([
+    {
+      pseudo: "Alain",
+      avatar: require("../assets/avatars/chien_1.png"),
+      date: "le 13 août à 15:32",
+      text: "Superbe endroit pour se reposer! ",
+    },
+    {
+      pseudo: "Jessi",
+      avatar: require("../assets/avatars/chien_19.png"),
+      date: "le 13 août à 12:15",
+      text: "J'ai adoré ce coin de promenade! ",
+    },
+    {
+      pseudo: "John",
+      avatar: require("../assets/avatars/chien_21.png"),
+      date: "le 12 août à 18:42",
+      text: "J'ai vu des très beaux photos de ce lieu! ",
+    },
+    {
+      pseudo: "Momo",
+      avatar: require("../assets/avatars/chien_25.png"),
+      date: "le 11 août à 12:04",
+      text: "C'est la plus belle de la ville",
+    },
+  ]);
 
   const isFocused = useIsFocused();
   const [isModalVisible, setModalVisible] = useState(false);
@@ -39,20 +70,15 @@ export default function PoiScreen({ navigation, route }) {
   let poiArr = [];
   let poiObjet = {};
   const now = new Date();
+  const date = moment().locale("fr").format("lll");
 
   const user = useSelector((state) => state.user.value);
   const places = useSelector((state) => state.places.value); //Recuperation des places dans le STORE
   const pseudo = user.pseudo;
-  // console.log("user :", user.pseudo);
-  // console.log("id :", id);
-  // console.log(
-  //   "places:",
-  //   places.filter((element) => element.google_id === id)
-  // );
 
   useEffect(() => {
     if (isFocused) {
-      console.log('TEST')
+      console.log("TEST");
 
       if (id) {
         // Fetch du détail du POI
@@ -82,8 +108,8 @@ export default function PoiScreen({ navigation, route }) {
     navigation.navigate("TabNavigator", { screen: "Map" });
   };
 
+  // console.log(user.favorites)
   //press sur icône "heart" --> changement de couleur
-
   function hearthHandlePress() {
     // const google_id = poiInfos.google_id
     //ajout d'un Place_ID dans le tableau favorites du user
@@ -97,6 +123,7 @@ export default function PoiScreen({ navigation, route }) {
     // setIsFavorite(!isFavorite);
     // const userFavorites = user.favorites
     // const idToAdd = JSON.stringify(id)
+    // console.log(user.favorites.includes(id))
     if (!user.favorites.includes(id)) {
       console.log("true");
       dispatch(addFavorite(id));
@@ -109,19 +136,18 @@ export default function PoiScreen({ navigation, route }) {
   }
 
   //press sur icône "Like" --> changement de couleur + maj de likes dans le store
-  function likePress() {
-    dispatch(updateLike({ pseudo: pseudo, id: id }));
-  }
+  // function likePress() {
+  //   dispatch(updateLike({ pseudo: pseudo, id: id }));
+  // }
 
-  // const hearthLikePress = () => {
-  //   if (!isLiked) {
-  //     setLikedCompt(likedCompt + 1);
-  //   } else {
-  //     setLikedCompt(likedCompt - 1);
-  //   }
-  //   setIsLiked(!isLiked);
-  //  }
-  // };
+  const likePress = () => {
+    if (!isLiked) {
+      setLikedCompt(likedCompt + 1);
+    } else {
+      setLikedCompt(likedCompt - 1);
+    }
+    setIsLiked(!isLiked);
+  };
 
   //press sur + pour newComment
   const handlePressNewComment = () => {
@@ -141,6 +167,57 @@ export default function PoiScreen({ navigation, route }) {
 
   const toggleModal = () => {
     setModalVisible(!isModalVisible);
+  };
+
+  const taggleModal = () => {
+    setShowNewComment(!showNewComment);
+  };
+
+  //press btn valider de la modale "new comment"
+  function AddComment() {
+    const nouveauCommentaire = {
+      pseudo: user.pseudo,
+      avatar: user.avatar,
+      date: date,
+      text: newComment,
+    };
+    setNewComment("");
+    setComments([nouveauCommentaire, ...comments]);
+    taggleModal();
+    console.log(comments);
+  }
+
+  const formatedComments = comments.map((comment, i) => {
+    return (
+      <View style={styles.commentaireContainer} key={i}>
+       
+        <View style={styles.commentTitle}>
+          <Image style={styles.userAvatar} source={comment.avatar} />
+          <View style={styles.commentTextContainer}>
+            <Text style={styles.commentPseudo}>{comment.pseudo}</Text>
+            <Text style={styles.commentTime}>{comment.date}</Text>
+            <View style={styles.inputContainer}>
+              <Text style={styles.commentText}>{comment.text}</Text>
+            </View>
+          </View>
+        </View>
+        {/* <View style={styles.commentTextContainer}>
+          <Text style={styles.commentText}>
+            {comment.text}
+          </Text>
+        </View> */}
+      </View>
+    );
+  });
+
+  const handleNewComment = () => {
+    const CommentToAdd = {
+      pseudo: user.pseudo,
+      avatar: user.avatar,
+      date: now,
+      text: newComment,
+    };
+    setNewComment(CommentToAdd);
   };
 
   return (
@@ -231,119 +308,54 @@ export default function PoiScreen({ navigation, route }) {
 
           <View style={styles.commentaireHeader}>
             <Text style={styles.KeyText}>Commentaires:</Text>
-            <FontAwesome name="plus" style={styles.plusIcon} />
+            <FontAwesome
+              name="plus"
+              style={styles.plusIcon}
+              onPress={taggleModal}
+            />
           </View>
 
           <View style={styles.ZoneCommentaire}>
-            <View style={styles.newCommentContainer}>
-              <View style={styles.commentaireContainer}>
-                <View style={styles.commentTitle}>
-                  <View style={styles.avatarContainer}>
-                    <Image source={user.avatar} style={styles.userAvatar} />
+            <Modal
+
+              transparent={true}
+              visible={showNewComment}
+              onRequestClose={taggleModal}
+            >
+              <View style={styles.modalOverlay}>
+                <View style={styles.modalContent}>
+                  <View style={styles.commentTitle}>
+                    <View style={styles.avatarContainer}>
+                      <Image source={user.avatar} style={styles.userAvatar} />
+                    </View>
+                    <View style={styles.commentTextContainer}>
+                      <Text style={styles.commentPseudo}>{user.pseudo}</Text>
+                      <Text style={styles.commentTime}>{date}</Text>
+                    </View>
                   </View>
                   <View style={styles.commentTextContainer}>
-                    <Text style={styles.commentPseudo}>{user.pseudo}</Text>
-                    <Text style={styles.commentTime}>xxx</Text>
+                    <TextInput
+                      multiline={true}
+                      placeholder="nouveau commentaire"
+                      style={styles.commentInput}
+                      onChangeText={(text) => setNewComment(text)}
+                      value={newComment}
+                    />
+                  </View>
+                  <View style={styles.btnContainer}>
+                    <TouchableOpacity
+                      style={styles.modalBtn}
+                      onPress={handleNewComment}
+                    >
+                      <Btn title="Valider" onPress={AddComment} />
+                    </TouchableOpacity>
                   </View>
                 </View>
-                <View style={styles.commentTextContainer}>
-                  <Input
-                    placeholder="nouveau commentaire"
-                    style={styles.commentInput}
-                  />
-                </View>
-                <View style={styles.btnContainer}>
-                  <Btn title="Commenter" style={styles.commentButton} />
-                </View>
-              </View>
-              <View style={styles.commentParent}>
-                <Input
-                  placeholder="nouveau commentaire"
-                  style={styles.commentInput}
-                />
-              </View>
-            </View>
 
-            <View style={styles.commentaireContainer}>
-              <View style={styles.commentTitle}>
-                <Image
-                  source={require("../assets/avatars/chien_1.png")}
-                  style={styles.userAvatar}
-                />
-                <View style={styles.commentTextContainer}>
-                  <Text style={styles.commentPseudo}>MOMO</Text>
-                  <Text>il y a 2h :</Text>
-                </View>
+                <View style={styles.commentParent}></View>
               </View>
-              <View style={styles.commentTextContainer}>
-                <Text style={styles.commentText}>
-                  Cras elementum ultrices diam. Maecenas ligula massa, varius a,
-                  semper congue, euismod non, mi. Proin porttitor, orci nec
-                  nonummy molestie, enim est eleifend mi, non fermentum diam
-                  nisl sit amet erat. Duis semper.
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.commentaireContainer}>
-              <View style={styles.commentTitle}>
-                <Image
-                  style={styles.userAvatar}
-                  source={require("../assets/avatars/chien_3.png")}
-                />
-                <View style={styles.commentTextContainer}>
-                  <Text style={styles.commentPseudo}>REX</Text>
-                  <Text>il y a 3h :</Text>
-                </View>
-              </View>
-              <View style={styles.commentTextContainer}>
-                <Text style={styles.commentText}>
-                  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed
-                  non risus. Suspendisse lectus tortor, dignissim sit amet,
-                  adipiscing nec, ultricies sed, dolor.
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.commentaireContainer}>
-              <View style={styles.commentTitle}>
-                {/* <Image
-                  style={styles.userAvatar}
-                  source={require("../assets/avatars/chien_25.png")}
-                /> */}
-                <View style={styles.commentTextContainer}>
-                  <Text style={styles.commentPseudo}>BALOU</Text>
-                  <Text>il y a 4h :</Text>
-                </View>
-              </View>
-              <View style={styles.commentTextContainer}>
-                <Text style={styles.commentText}>
-                  Cras elementum ultrices diam. Maecenas ligula massa, varius a,
-                  semper congue, euismod non, mi. Proin porttitor, orci nec
-                  nonummy molestie, enim est eleifend mi, non fermentum diam
-                  nisl sit amet erat. Duis semper.
-                </Text>
-              </View>
-            </View>
-
-            <View style={styles.commentaireContainer}>
-              <View style={styles.commentTitle}>
-                <Image
-                  style={styles.userAvatar}
-                  source={require("../assets/avatars/chien_19.png")}
-                />
-                <View style={styles.commentTextContainer}>
-                  <Text style={styles.commentPseudo}>NANA</Text>
-                  <Text style={styles.commentTime}>il y a 4h30 :</Text>
-                </View>
-              </View>
-              <View style={styles.commentTextContainer}>
-                <Text style={styles.commentText}>
-                  commentaire ......commentaire ......commentaire
-                  ......commentaire ......commentaire
-                </Text>
-              </View>
-            </View>
+            </Modal>
+            {formatedComments}
           </View>
         </View>
         <Modal
@@ -538,8 +550,18 @@ const styles = StyleSheet.create({
     paddingRight: 15,
   },
 
+  btnContainer: {
+    alignItems: "center",
+  },
+
+  modalBtn: {
+    alignItems: "center",
+    paddingVertical: 2,
+    height: 50,
+  },
+
   commentaireContainer: {
-    marginbottom: 5,
+    margin: 10,
   },
 
   commentaireHeader: {
@@ -549,51 +571,59 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 
+  inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+
   ZoneCommentaire: {
     padding: 10,
     borderRadius: 8,
     backgroundColor: "#FFF",
-    marginBottom:30
+    marginBottom: 30,
   },
 
   userAvatar: {
-    height: 20,
-    width: 20,
+    height: 40,
+    width: 40,
   },
 
   commentTitle: {
     flexDirection: "row",
     justifyContent: "flex-start",
-    paddingHorizontal: 16,
+    alignItems: "flex-start",
+    // paddingHorizontal: 16,
   },
 
-  commentTextContainer: {
-    flexDirection: "row",
-    alignItems: "baseline",
-  },
+  // commentTextContainer: {
+  //   flexDirection: "row",
+  //   alignItems: "baseline",
+  // },
 
   commentPseudo: {
     fontSize: 14,
     fontWeight: "bold",
     color: "##795C5F",
-    paddingLeft: 10,
+    // paddingLeft: 10,
     paddingRight: 10,
   },
 
   commentText: {
-    alignItems: "center",
-    fontSize: 14,
+    width: 250,
+    flexWrap: "wrap",
+    alignItems: "flex-start",
+    fontSize: 16,
     color: "#333",
-    paddingLeft: 10,
     paddingRight: 10,
+    marginTop:2,
   },
 
   commentTextContainer: {
-    flexWrap: "nowrap",
+    // flexWrap: "nowrap",
     alignItems: "flex-start",
-    marginLeft: 30,
+    // marginLeft: 30,
     marginBottom: 10,
-    paddingHorizontal: 16,
+    paddingHorizontal: 5,
   },
   modalOverlay: {
     flex: 1,

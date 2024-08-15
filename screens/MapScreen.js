@@ -247,7 +247,7 @@ export default function MapScreen({ navigation }) {
                 }}
             >
                 {currentPosition &&
-                    <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">
+                    <Marker style={styles.maposition} coordinate={currentPosition} title="you waf here !" pinColor="#fecb2d">
                         <Image
                             source={user.avatar}
                             style={{ width: 40, height: 40, resizeMode: "contain" }}

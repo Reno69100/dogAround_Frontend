@@ -34,8 +34,11 @@ export const placesSlice = createSlice({
                 }
             }
         },
+        addComment: (state, action) =>{
+            state.value.comments.push(action.payload)
+        }
     },
 });
 
-export const { addPlace, importPlaces,updateLike } = placesSlice.actions;
+export const { addPlace, importPlaces,updateLike,addComment } = placesSlice.actions;
 export default placesSlice.reducer;
