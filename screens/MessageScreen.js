@@ -88,7 +88,8 @@ export default function MessageScreen({ navigation, route }) {
   //Rendu de la liste de messages affichés
   const listMessage = dataMessage.map((e, i) => {
     /* const hours = new Date(e.date).toLocaleTimeString().slice(0, 5); */
-    const date = moment(e.date).locale('fr').format('lll');
+    /* const date = moment(e.date).locale('fr').format('lll'); */
+    const date = moment(e.date).locale('fr').fromNow();
     if (user.pseudo !== e.pseudo) {
       return (
         <View key={i} style={styles.messageWrapper}>
