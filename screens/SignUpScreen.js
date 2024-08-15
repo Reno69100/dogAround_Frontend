@@ -72,13 +72,19 @@ export default function SignUpScreen({ navigation }) {
     fetch(`https://api-adresse.data.gouv.fr/search/?q=${query}&type=municipality&autocomplete=0`)
       .then((response) => response.json())
       .then(data => {
-        if (data.features.length > 0) {
-          const suggestions = data.features.map((data, i) => {
-            return { id: (i + 1), title: data.properties.name };
-          });
-          setSuggestionsList(suggestions);
+        /* console.log(data) */
+        try {
+          if (data.features) {
+            const suggestions = data.features.map((data, i) => {
+              return { id: (i + 1), title: data.properties.name };
+            });
+            setSuggestionsList(suggestions);
+          }
+          else {
+            setSuggestionsList([]);
+          }
         }
-        else {
+        catch {
           setSuggestionsList([]);
         }
       });
@@ -175,6 +181,7 @@ export default function SignUpScreen({ navigation }) {
                 onChangeText={setEmail}
               />
               <AutocompleteDropdown
+                emptyResultText="Aucun résultat"
                 debounce={500}
                 onChangeText={(value) => getSuggestions(value)}
                 onSelectItem={(item) => item && setCity(item.title)}

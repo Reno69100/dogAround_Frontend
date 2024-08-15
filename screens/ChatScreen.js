@@ -42,40 +42,6 @@ export default function ChatScreen({ navigation }) {
   }
 
   //Fonction recherche d'un contact
-  /* const searchContact = () => {
-    setErrorMessage("");
-
-    fetch(
-      `${process.env.EXPO_PUBLIC_BACKEND_ADDRESS}/users/${user.token}/pseudos?search=${searchQuery}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    )
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.result) {
-          const pseudoFilter = data.pseudos.filter(e => {
-            return ((e !== user.pseudo) && (!contacts.some((contact) => { return (e === contact.pseudo) })))
-          })
-          if (pseudoFilter.length > 0) {
-            setSearchContacts(pseudoFilter);
-          }
-          else {
-            setSearchContacts([]);
-            setSearchQuery("")
-            setErrorMessage("Aucun utilisateur trouvé");
-          }
-        } else {
-          setSearchContacts([]);
-          setSearchQuery("")
-          setErrorMessage("Aucun utilisateur trouvé");
-        }
-      });
-  }; */
-
   const searchContact = (query) => {
     // Prevent search with an empty query
     if (query === '') {
@@ -246,11 +212,6 @@ export default function ChatScreen({ navigation }) {
             title={contact.pseudo}
             style={styles.containerNewMessage}
           />
-          {/* <Text style={styles.invitationText}>
-          {contact.invitation === "issued"
-            ? "Invitation Envoyée"
-            : "No Invitation"}
-        </Text> */}
           {(contact.invitation === "issued") && <Text style={[styles.invitationText]}>Attente réponse</Text>}
           {(contact.invitation === "received") && <Text style={[styles.invitationText, { color: "#00CC00" }]}>Invitation ?</Text>}
           {(contact.invitation === "denied") && <Text style={[styles.invitationText, { color: "#FF0000" }]}>Refusée</Text>}
@@ -274,51 +235,12 @@ export default function ChatScreen({ navigation }) {
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         keyboardVerticalOffset={10}
       >
-        {/* <ScrollView contentContainerStyle={styles.container}
-          keyboardDismissMode='on-drag'
-          ref={scroll}
-          onContentSizeChange={() => {
-            scroll.current.scrollTo({ x: 0, y: 0, animated: true });
-          }}> */}
         <View style={styles.container}>
           <View style={styles.searchAndContactContainer}>
             <Text style={styles.text}>CONTACTS</Text>
-            {/* {errorMessage ? (
-              <Text style={styles.errorText}>{errorMessage}</Text>
-            ) : null} */}
-
-            {/* <View style={styles.searchContainer}>
-              <Input
-                placeholder="Rechercher un(e) ami(e)"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-              />
-              <TouchableOpacity style={styles.iconButton} onPress={searchContact}>
-                <FontAwesome name="search" size={25} color="#000" />
-              </TouchableOpacity>
-            </View>
-
-            <ScrollView style={styles.ContactScrollView}>
-              <View style={styles.Contact}>
-                {searchContacts.length > 0 &&
-                  searchContacts.map((contact, i) => (
-                    <View key={i} style={styles.contactRow}>
-                      <TextContainer
-                        title={contact}
-                        style={styles.ContactContainer}
-                      />
-                      <TouchableOpacity
-                        onPress={() => handleOpenInvitation(contact)}
-                        style={styles.iconButton}
-                      >
-                        <FontAwesome name="plus" size={20} color="#000" />
-                      </TouchableOpacity>
-                    </View>
-                  ))}
-              </View>
-            </ScrollView> */}
 
             <AutocompleteDropdown
+              emptyResultText="Aucun résultat"
               debounce={500}
               onChangeText={(value) => searchContact(value)}
               onSelectItem={(item) => item && handleOpenInvitation(item.title)}
@@ -355,11 +277,6 @@ export default function ChatScreen({ navigation }) {
               showsVerticalScrollIndicator={false}>
               {listContacts}
             </ScrollView>
-            {/* <View style={styles.contactlist}>
-            <ScrollView style={styles.scrollView}>
-              {listContacts}
-            </ScrollView>
-          </View> */}
           </View>
 
           <ModalInvitation
@@ -375,7 +292,6 @@ export default function ChatScreen({ navigation }) {
             onSelect={handleClickForInvitationAnswer}
             name={selectedContact}
           />
-          {/* </ScrollView> */}
         </View>
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
@@ -408,56 +324,6 @@ const styles = StyleSheet.create({
     justifyContent: "flex-start",
     alignItems: "center",
     marginTop: 15,
-  },
-  searchContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "80%",
-    padding: 8,
-    backgroundColor: "#FFF",
-    borderRadius: 8,
-    marginBottom: 5,
-  },
-  errorText: {
-    color: "red",
-    fontSize: 14,
-    marginTop: 5,
-    textAlign: "center",
-  },
-  ContactScrollView: {
-    width: "80%",
-    maxHeight: 165,
-  },
-  Contact: {
-    backgroundColor: "#FFF",
-    width: "100%",
-    alignItems: "center",
-    borderRadius: 8,
-  },
-  /* contactRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    width: "100%",
-    padding: 10
-  }, */
-  ContactContainer: {
-    width: "90%",
-    color: "#416165",
-    fontSize: 16,
-    fontWeight: "normal",
-  },
-  iconButton: {
-    padding: 5,
-  },
-  contactlist: {
-    backgroundColor: "#FFF",
-    width: "80%",
-    padding: 10,
-    borderRadius: 8,
-    marginTop: 0,
-    maxHeight: 300,
   },
   scrollView: {
     flexGrow: 0,
