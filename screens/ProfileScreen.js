@@ -270,6 +270,7 @@ const styles = StyleSheet.create({
   },
   connection: {
     marginTop: 20,
+    marginBottom: 30,
   },
   input: {
     marginTop: 20,
