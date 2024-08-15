@@ -231,12 +231,7 @@ export default function MapScreen({ navigation }) {
         // .then((newPlaceData) => {
         //  console.log('newPlace: ', newPlaceData)
         // })
-        navigation.navigate('Poi', { google_id: google_id })
-    }
-
-    const onLongPress = (e) => {
-        console.log(e)
-
+        navigation.navigate('Poi',{google_id:google_id})
     }
 
     return (
@@ -249,7 +244,6 @@ export default function MapScreen({ navigation }) {
                     latitudeDelta: regionPosition.latitudeDelta,
                     longitudeDelta: regionPosition.longitudeDelta,
                 }}
-                onLongPress={(e) => handleLongPress(e)}
             >
                 {currentPosition &&
                     <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">

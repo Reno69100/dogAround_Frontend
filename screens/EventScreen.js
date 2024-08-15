@@ -47,6 +47,8 @@ export default function EventScreen({ navigation, route }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    height: "100%",
+    width: "100%",
     backgroundColor: "#E8E9ED",
     alignItems: "center",
   },
@@ -113,6 +115,6 @@ const styles = StyleSheet.create({
     textAlignVertical: "top",
     minHeight: 200,
     flex: 1,
-    marginTop:5
+    marginTop: 5,
   },
 });

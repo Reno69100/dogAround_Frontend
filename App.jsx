@@ -58,7 +58,7 @@ const TabNavigator = () => {
           return (
             <View style={{ flexDirection:"row" }}>
               <FontAwesome name={iconName} size={size} color={color} />
-              {(user.pastilleMessage)&&<View style={{ width: 10, height: 10, backgroundColor: '#F00', borderRadius: "50%" }}></View>}
+              {(user.pastilleMessage)&&<View style={{ width: 10, height: 10, backgroundColor: '#F00', borderRadius: 50}}></View>}
             </View>
           );
         }
