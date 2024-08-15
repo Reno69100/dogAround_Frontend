@@ -15,7 +15,6 @@ const initialState = {
     radius: 20000,
     filtres: [],
     favorites: [],
-    
     pastilleMessage:false,
   },
 };
@@ -54,12 +53,10 @@ export const userSlice = createSlice({
     addFavorite: (state, action) => {
       state.value.favorites.push(action.payload)
       console.log('favorites:', state.value.favorites)
-
     },
     removeFavorite: (state, action) => {
-      state.value.favorites = state.value.favorites.filter(x=> x.favorites !== action.payload)
+      state.value.favorites = state.value.favorites.filter(x=> x !== action.payload)
     },
-    
     setPastilleMessage: (state, action) => {
       state.value.pastilleMessage = action.payload;
     },

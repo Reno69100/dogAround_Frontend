@@ -26,11 +26,11 @@ export default function ProfilScreen({ navigation }) {
 
   const toggleSwitch = () => setIsEnabled((previousState) => !previousState);
 
-  const [email, setEmail] = useState(user.email || "");
+  const [email, setEmail] = useState(user.email || "reno@reno.fr");
   const [pseudo, setPseudo] = useState(user.pseudo || "");
   const [city, setCity] = useState(user.city || "");
   const [password, setPassword] = useState("");
-  const [newPassword, setNewPassword] = useState("");
+  const [newPassword, setNewPassword] = useState("reno");
   const [errorMessage, setErrorMessage] = useState("");
 
   const handleClickCloseScreen = () => {
@@ -117,7 +117,6 @@ export default function ProfilScreen({ navigation }) {
         <View style={styles.inputContainer}>
           <View style={styles.avatarWrapper}>
             <View style={styles.avatarContainer}>
-              <Image source={selectedAvatar}style={styles.avatar}/>
               <Image source={selectedAvatar}style={styles.avatar}/>
             </View>
             <TouchableOpacity

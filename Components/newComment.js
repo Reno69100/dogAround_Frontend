@@ -54,7 +54,6 @@ export default function NewComment({ name }) { // Correction: utilisation des ac
 }
 
 const styles = StyleSheet.create({
-
   userAvatar: {
     height: 20,
     width: 20,

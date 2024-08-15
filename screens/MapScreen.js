@@ -198,7 +198,7 @@ export default function MapScreen({ navigation }) {
         const showMarker = !user.filtres.some(filter => e.type === filter);
         if (showMarker) {
             return (
-                <Marker key={i + 1} coordinate={e.location} title={e.google_id} onPress={() => handlePoiPress(e.google_id)}>
+                <Marker key={i + 1} coordinate={e.location} onPress={() => handlePoiPress(e.google_id)}>
                     <FontAwesome name={iconName} size={40} color={iconColor} />
                 </Marker>
             )
@@ -247,7 +247,7 @@ export default function MapScreen({ navigation }) {
                 onLongPress={(e) => handleLongPress(e)}
             >
                 {currentPosition &&
-                    <Marker style={styles.maposition} coordinate={currentPosition} title="Ma position" pinColor="#fecb2d">
+                    <Marker style={styles.maposition} coordinate={currentPosition} title="you waf here !" pinColor="#fecb2d">
                         <Image
                             source={user.avatar}
                             style={{ width: 40, height: 40, resizeMode: "contain" }}
