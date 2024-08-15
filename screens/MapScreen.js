@@ -200,10 +200,11 @@ export default function MapScreen({ navigation }) {
             iconColor = '#FF0000';
         }
 
+      
         const showMarker = !user.filtres.some(filter => e.type === filter);
         if (showMarker) {
             return (
-                <Marker key={i + 1} coordinate={e.location} title={e.google_id} onPress={() => handlePoiPress(e.google_id)}>
+                <Marker key={i + 1} coordinate={e.location} onPress={() => handlePoiPress(e.google_id)}>
                     <FontAwesome name={iconName} size={40} color={iconColor} />
                 </Marker>
             )
